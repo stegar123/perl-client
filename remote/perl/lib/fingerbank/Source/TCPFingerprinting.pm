@@ -33,7 +33,7 @@ sub match {
 
     my $Config = fingerbank::Config::get_config;
 
-    unless(isenabled($Config->{query}{use_tcp_fingerprinting})){
+    unless(is_enabled($Config->{query}{use_tcp_fingerprinting})){
         $logger->debug("TCP fingerprinting is disabled in configuration. Not interrogating p0f.");
         return $fingerbank::Status::NOT_IMPLEMENTED;
     }
