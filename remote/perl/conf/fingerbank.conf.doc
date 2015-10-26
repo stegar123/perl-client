@@ -36,6 +36,13 @@ description=<<EOT
 Should the local instance of Fingerbank record unmatched parameters so that it will be possible to submit thoses unmatched parameters to the upstream Fingerbank project for contribution
 EOT
 
+[query.use_tcp_fingerprinting]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Should the TCP fingerprinting be part of the discovery process to match a device ?
+EOT
+
 [tcp_fingerprinting.p0f_socket_path]
 type=test
 description=<<EOT
@@ -52,11 +59,4 @@ EOT
 type=test
 description=<<EOT
 The URL to download the p0f map from
-EOT
-
-[tcp_fingerprinting.use_in_queries]
-type=toggle
-options=enabled|disabled
-description=<<EOT
-Should the TCP fingerprinting be part of the discovery process to match a device ?
 EOT
