@@ -15,7 +15,6 @@ use warnings;
 
 use Config::IniFiles;
 
-use LWP::UserAgent;
 use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE);
 use fingerbank::Log;
