@@ -191,7 +191,6 @@ sub update_upstream {
     my ( $status, $status_msg );
 
     my $Config = fingerbank::Config::get_config;
-    my $map_file = $Config->{tcp_fingerprinting}{p0f_map_path};
 
     ($status, $status_msg) = update_file($Config->{'upstream'}{'db_url'}, $UPSTREAM_DB_FILE);
 
