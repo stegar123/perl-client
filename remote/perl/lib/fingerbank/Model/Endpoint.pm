@@ -145,9 +145,9 @@ sub is_a_by_id {
     my $logger = fingerbank::Log::get_logger;
     $logger->debug("Testing if device '".$self->name."' is or has $id for parent");
 
-    my ($status, $parent) = fingerbank::Model::Device->read($id);
+    my ($status, $device) = fingerbank::Model::Device->read($id);
 
-    my $result = $self->is_a($parent->{name});
+    my $result = $self->is_a($device->{name});
 
     $logger->debug("Device '".$self->name."' is or has $id for parent") if $result;
 
