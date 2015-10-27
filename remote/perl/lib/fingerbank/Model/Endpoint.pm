@@ -71,12 +71,7 @@ Test if endpoint is Windows based
 
 sub isWindows {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $WINDOWS_PARENT_ID = 1;
-    my $result = $self->is_a_by_id($WINDOWS_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{WINDOWS});
 }
 
 =head2 isMacOS
@@ -87,12 +82,7 @@ Test if endpoint is MAC OS based
 
 sub isMacOS {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $MACOS_PARENT_ID = 2;
-    my $result = $self->is_a_by_id($MACOS_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{MACOS});
 }
 
 =head2 isAndroid
@@ -103,12 +93,7 @@ Test if endpoint is Android based
 
 sub isAndroid {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $ANDROID_PARENT_ID = 202;
-    my $result = $self->is_a_by_id($ANDROID_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{ANDROID});
 }
 
 =head2 isIOS
@@ -119,12 +104,7 @@ Test if endpoint is IOS based
 
 sub isIOS {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $IOS_PARENT_ID = 193;
-    my $result = $self->is_a_by_id($IOS_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{IOS});
 }
 
 
@@ -136,12 +116,7 @@ Test if endpoint is Windows Phone based
 
 sub isWindowsPhone {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $WINDOWS_PHONE_PARENT_ID = 5474;
-    my $result = $self->is_a_by_id($WINDOWS_PHONE_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{WINDOWS_PHONE});
 }
 
 =head2 isBlackberry
@@ -152,12 +127,7 @@ Test if endpoint is Blackberry based
 
 sub isBlackberry {
     my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $BLACKBERRY_PARENT_ID = 192;
-    my $result = $self->is_a_by_id($BLACKBERRY_PARENT_ID);
-
-    return $result;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{BLACKBERRY});
 }
 
 =head2 is_a
