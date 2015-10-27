@@ -44,19 +44,19 @@ Should the TCP fingerprinting be part of the discovery process to match a device
 EOT
 
 [tcp_fingerprinting.p0f_socket_path]
-type=test
+type=text
 description=<<EOT
 The path to the p0f socket
 EOT
 
 [tcp_fingerprinting.p0f_socket_map]
-type=test
+type=text
 description=<<EOT
 The path to the p0f map
 EOT
 
 [tcp_fingerprinting.p0f_map_url]
-type=test
+type=text
 description=<<EOT
 The URL to download the p0f map from
 EOT
