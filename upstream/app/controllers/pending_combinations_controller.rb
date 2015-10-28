@@ -1,7 +1,12 @@
 class PendingCombinationsController < ApplicationController
   before_action :set_pending_combination, only: [:show, :approve, :decline]
   def index
-    @pending_combinations = PendingCombination.all.paginate(:page => params[:page])
+    if params[:all]
+      @pending_combinations = PendingCombination.all
+    else
+      @pending_combinations = PendingCombination.where(:completed => false)
+    end
+    @pending_combinations = @pending_combinations.order('created_at DESC').paginate(:page => params[:page])
   end
 
   def show
