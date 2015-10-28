@@ -119,27 +119,19 @@ class CombinationsController < ApplicationController
       :mac_value => new_params[:mac_value],
     }
 
-    UserAgent.create(:value => new_params[:user_agent_value]) 
-    DhcpVendor.create(:value => new_params[:dhcp_vendor_value]) 
-    DhcpFingerprint.create(:value => new_params[:dhcp_fingerprint_value]) 
+    @combination = Combination.get_or_create(:user_agent => new_params[:user_agent_value], :dhcp_vendor => new_params[:dhcp_vendor_value], :dhcp_fingerprint => new_params[:dhcp_fingerprint_value], :mac => new_params[:mac_value])
+    if @combination.just_created
+      @combination.submitter = @current_user
+      @combination.device = Device.find(new_params[:device_id])
+      @combination.version = new_params[:version]
+      created = (@combination.validate_submition && @combination.save)
+    else
+      created = true
+    end
 
-    new_params[:user_agent_id] = UserAgent.where(:value => new_params[:user_agent_value]).first.id
-    new_params[:dhcp_vendor_id] = DhcpVendor.where(:value => new_params[:dhcp_vendor_value]).first.id
-    new_params[:dhcp_fingerprint_id] = DhcpFingerprint.where(:value => new_params[:dhcp_fingerprint_value]).first.id
-    mac_vendor = MacVendor.from_mac(new_params[:mac_value])
-    new_params[:mac_vendor_id] = mac_vendor ? mac_vendor.id : nil
-
-    new_params[:submitter] = @current_user
-
-    new_params.delete(:user_agent_value)
-    new_params.delete(:dhcp_vendor_value)
-    new_params.delete(:dhcp_fingerprint_value)
-    new_params.delete(:mac_value)
-
-    @combination = Combination.new(new_params)
-  
     respond_to do |format|
-      if @combination.user_submit
+      if created
+        pending_combination = PendingCombination.create(:owner => @current_user, :combination => @combination, :comment => "Autocreated from submit page.", :new_device_id => new_params[:device_id], :new_version => new_params[:version])
         format.html { redirect_to @combination, notice: 'combination was successfully created.' }
         format.json { render :show, status: :created, location: @combination }
       else

@@ -1,0 +1,32 @@
+
+<%= simple_index_container do %>
+  <%= render partial: "shared/help" %>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Requested by</th>
+        <th>Combination ID</th>
+        <th>New Device</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @pending_combinations.each do |pending_combination| %>
+        <tr>
+          <td>
+            <%= link_to '', pending_combination, :class => "btn-show" %>
+          </td>
+          <td class="hover-popup"><%= pending_combination.owner.name %></td>
+          <td class="hover-popup"><%= pending_combination.combination_id %></td>
+          <td class="hover-popup"><%= pending_combination.new_device.name unless pending_combination.new_device.nil? %></td> 
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= will_paginate %>
+
+<% end %>
+
