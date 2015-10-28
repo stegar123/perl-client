@@ -142,9 +142,9 @@ ActiveRecord::Schema.define(version: 20151028170606) do
     t.integer  "new_device_id",  limit: 4
     t.string   "new_version",    limit: 255
     t.text     "comment",        limit: 65535
-    t.boolean  "completed"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.boolean  "completed",                    default: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
   end
 
   create_table "query_logs", force: :cascade do |t|

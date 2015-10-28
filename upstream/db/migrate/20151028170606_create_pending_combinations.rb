@@ -6,7 +6,7 @@ class CreatePendingCombinations < ActiveRecord::Migration
       t.integer :new_device_id
       t.string :new_version
       t.text :comment
-      t.boolean :completed
+      t.boolean :completed, :default => false
       t.timestamps null: false
     end
   end
