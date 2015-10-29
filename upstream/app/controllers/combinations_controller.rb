@@ -8,8 +8,8 @@ class CombinationsController < ApplicationController
 
   before_action :record_search, only: [:index, :unknown, :unrated]
 
-  skip_before_filter :ensure_admin, :only => [:new, :create, :unknown, :unrated, :interogate]
-  before_filter :ensure_community, :only => [:new, :create]
+  skip_before_filter :ensure_admin, :only => [:new, :create, :update, :unknown, :unrated, :interogate]
+  before_filter :ensure_community, :only => [:new, :create, :update]
 
   def advanced_only_for_users
     unless params[:search].nil? && params[:order].nil?
@@ -117,22 +117,23 @@ class CombinationsController < ApplicationController
       :dhcp_vendor_value => new_params[:dhcp_vendor_value],
       :dhcp_fingerprint_value => new_params[:dhcp_fingerprint_value],
       :mac_value => new_params[:mac_value],
+      :version => new_params[:version],
     }
 
     @combination = Combination.get_or_create(:user_agent => new_params[:user_agent_value], :dhcp_vendor => new_params[:dhcp_vendor_value], :dhcp_fingerprint => new_params[:dhcp_fingerprint_value], :mac => new_params[:mac_value])
+    @combination.device = !(new_params[:device_id].empty?) ? Device.find(new_params[:device_id]) : nil
+    @combination.version = new_params[:version]
     if @combination.just_created
       @combination.submitter = @current_user
-      @combination.device = Device.find(new_params[:device_id])
-      @combination.version = new_params[:version]
-      created = (@combination.validate_submition && @combination.save)
+      created = (@combination.validate_submition && @combination.save) ? true : false
     else
-      created = true
+      created = @combination.validate_submition
     end
 
     respond_to do |format|
       if created
         pending_combination = PendingCombination.create(:owner => @current_user, :combination => @combination, :comment => "Autocreated from submit page.", :new_device_id => new_params[:device_id], :new_version => new_params[:version])
-        format.html { redirect_to @combination, notice: 'combination was successfully created.' }
+        format.html { redirect_to pending_combination, notice: 'Combination was successfully created. The final approval will be done shortly.' }
         format.json { render :show, status: :created, location: @combination }
       else
         format.html { render :new }
