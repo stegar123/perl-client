@@ -152,6 +152,21 @@ class CombinationsController < ApplicationController
     end
   end
 
+  def edit
+  end
+
+  def update
+    respond_to do |format|
+      if @combination.update(edit_combination_params)
+        format.html { redirect_to @combination, notice: 'Combination was successfully updated.' }
+        format.json { render :show, status: :ok, location: @combination }
+      else
+        format.html { render :edit }
+        format.json { render json: @combination.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # DELETE /combinations/1
   # DELETE /combinations/1.json
   def destroy
@@ -199,6 +214,10 @@ class CombinationsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def combination_params
       params.require(:combination).permit(:version, :score, :user_agent_id, :dhcp_fingerprint_id, :dhcp_vendor_id, :device_id, :user_agent_value, :dhcp_fingerprint_value, :dhcp_vendor_value, :mac_value)
+    end
+
+    def edit_combination_params
+      params.require(:combination).permit(:fixed, :device_id, :version)
     end
 
 end
