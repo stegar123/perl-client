@@ -36,6 +36,7 @@ class User < ActiveRecord::Base
   end
 
   def add_request
+    self.increment!(:requests)
     self.increment!(:timeframed_requests)
   end
 
