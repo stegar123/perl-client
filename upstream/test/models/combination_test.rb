@@ -171,5 +171,15 @@ class CombinationTest < ActiveSupport::TestCase
 
   end
 
+  test 'cant process a fixed combination' do
+    combination = Combination.get_or_create(:user_agent => 'iphone', :mac => "12:34:56:78:90:ab")
+    assert combination.process(:with_version => true, :save => true), "Can process the test fixed combination with fixed flag off"
+    assert combination.device == devices(:iphone), "Test fixed combination gives proper result"
+    combination.fixed = true
+    combination.device = devices(:android)
+    combination.save
+    combination.process(:with_version => true, :save => true)
+    assert combination.device == devices(:android), "Processing a fixed combination doesn't change it's device"
+  end
 
 end
