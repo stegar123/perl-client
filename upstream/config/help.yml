@@ -27,6 +27,17 @@ combinations:
     If you can't find your device in the list, feel free to add it by clicking the 'Not listed ?' link
     Enter the information that you have for the device. If some information is missing, simply leave it empty.
 
+pending_combinations:
+  index: | 
+    These are pending requests to modify the target device and version of a combination.
+    These requests can be created using the 'Submit a combination' button on the home page or by <a href="/combinations/new">clicking here</a>
+  show: |
+    This page shows a user requested change to a combination.
+    It can also originate from a new combination being submitted though the website.
+    If the request is approved, it will lock the combination with the device and version specified in the request.
+    If the request is declined, the combination will be left as is.
+    If it's a new combination, it will be left with the user submitted information but may be overwritten during the nightly job as most likely no discoverer handles this result.
+
 devices:
   index: |
     These are all the devices that are known to Fingerbank.
