@@ -13,6 +13,7 @@ class PendingCombinationsController < ApplicationController
   end
 
   def approve
+    UserMailer.pending_combination_approved(@pending_combination).deliver_later
     @pending_combination.combination.update(:device => @pending_combination.new_device, :version => @pending_combination.new_version)
     @pending_combination.update(:completed => true)
     flash.now[:success] = "Change has been approved"
@@ -20,6 +21,7 @@ class PendingCombinationsController < ApplicationController
   end
 
   def decline
+    UserMailer.pending_combination_declined(@pending_combination, params[:reason]).deliver_later
     @pending_combination.update(:completed => true)
     flash.now[:notice] = "Change has been declined"
     render 'show'
