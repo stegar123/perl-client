@@ -99,8 +99,12 @@ class CombinationsController < ApplicationController
 
   def calculate 
     begin
-      @combination.process(:with_version => true, :save => true)
-      flash[:success] = "Combination was processed sucessfully. Yielded (Device='#{@combination.device.nil? ? "Unknown" : @combination.device.full_path}', Version='#{@combination.version}')"
+      if @combination.fixed
+        flash[:error] = "Combination cannot be re-processed as it has been fixed."
+      else
+        @combination.process(:with_version => true, :save => true)
+        flash[:success] = "Combination was processed sucessfully. Yielded (Device='#{@combination.device.nil? ? "Unknown" : @combination.device.full_path}', Version='#{@combination.version}')"
+      end
       redirect_to :back
     rescue Exception => e
       flash[:error] = "An error happened while processing this combination. #{e.message}"

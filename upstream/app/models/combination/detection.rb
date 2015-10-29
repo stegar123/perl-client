@@ -2,6 +2,12 @@
 
 class Combination < FingerbankModel
   def process(options = {:with_version => false, :save => true})
+    if self.fixed
+      logger.info "Not processing combination #{self.id} as it is set to be fixed"
+      return
+    end
+
+
     discoverer_detected_device = nil
     new_score = nil
 

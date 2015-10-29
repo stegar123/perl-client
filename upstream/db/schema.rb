@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151028170606) do
+ActiveRecord::Schema.define(version: 20151029131436) do
 
   create_table "combinations", force: :cascade do |t|
     t.integer  "dhcp_fingerprint_id",  limit: 4
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20151028170606) do
     t.integer  "submitter_id",         limit: 4
     t.integer  "dhcp6_fingerprint_id", limit: 4
     t.integer  "dhcp6_enterprise_id",  limit: 4
+    t.boolean  "fixed",                            default: false
   end
 
   add_index "combinations", ["dhcp6_enterprise_id"], name: "combinations_dhcp6_enterprise_id_ix", using: :btree
