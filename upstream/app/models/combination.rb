@@ -86,15 +86,7 @@ class Combination < FingerbankModel
     if version.nil? or version.empty?
       errors.add(:version, 'cannot be empty')
     end
-  end
-
-  def user_submit
-    validate_submition
-    if errors.empty? && save
-      return true
-    else
-      return false
-    end
+    return errors.empty?
   end
 
   def self.score_from_discoverers(discoverers)

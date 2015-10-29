@@ -8,8 +8,8 @@ class CombinationsController < ApplicationController
 
   before_action :record_search, only: [:index, :unknown, :unrated]
 
-  skip_before_filter :ensure_admin, :only => [:new, :create, :unknown, :unrated, :interogate]
-  before_filter :ensure_community, :only => [:new, :create]
+  skip_before_filter :ensure_admin, :only => [:new, :create, :update, :unknown, :unrated, :interogate]
+  before_filter :ensure_community, :only => [:new, :create, :update]
 
   def advanced_only_for_users
     unless params[:search].nil? && params[:order].nil?
@@ -99,8 +99,12 @@ class CombinationsController < ApplicationController
 
   def calculate 
     begin
-      @combination.process(:with_version => true, :save => true)
-      flash[:success] = "Combination was processed sucessfully. Yielded (Device='#{@combination.device.nil? ? "Unknown" : @combination.device.full_path}', Version='#{@combination.version}')"
+      if @combination.fixed
+        flash[:error] = "Combination cannot be re-processed as it has been fixed."
+      else
+        @combination.process(:with_version => true, :save => true)
+        flash[:success] = "Combination was processed sucessfully. Yielded (Device='#{@combination.device.nil? ? "Unknown" : @combination.device.full_path}', Version='#{@combination.version}')"
+      end
       redirect_to :back
     rescue Exception => e
       flash[:error] = "An error happened while processing this combination. #{e.message}"
@@ -117,33 +121,47 @@ class CombinationsController < ApplicationController
       :dhcp_vendor_value => new_params[:dhcp_vendor_value],
       :dhcp_fingerprint_value => new_params[:dhcp_fingerprint_value],
       :mac_value => new_params[:mac_value],
+      :version => new_params[:version],
     }
 
-    UserAgent.create(:value => new_params[:user_agent_value]) 
-    DhcpVendor.create(:value => new_params[:dhcp_vendor_value]) 
-    DhcpFingerprint.create(:value => new_params[:dhcp_fingerprint_value]) 
+    @combination = Combination.get_or_create(:user_agent => new_params[:user_agent_value], :dhcp_vendor => new_params[:dhcp_vendor_value], :dhcp_fingerprint => new_params[:dhcp_fingerprint_value], :mac => new_params[:mac_value])
+    @combination.device = !(new_params[:device_id].empty?) ? Device.find(new_params[:device_id]) : nil
+    @combination.version = new_params[:version]
+    if @combination.just_created
+      @combination.submitter = @current_user
+      created = (@combination.validate_submition && @combination.save) ? true : false
+    else
+      created = @combination.validate_submition
+    end
 
-    new_params[:user_agent_id] = UserAgent.where(:value => new_params[:user_agent_value]).first.id
-    new_params[:dhcp_vendor_id] = DhcpVendor.where(:value => new_params[:dhcp_vendor_value]).first.id
-    new_params[:dhcp_fingerprint_id] = DhcpFingerprint.where(:value => new_params[:dhcp_fingerprint_value]).first.id
-    mac_vendor = MacVendor.from_mac(new_params[:mac_value])
-    new_params[:mac_vendor_id] = mac_vendor ? mac_vendor.id : nil
-
-    new_params[:submitter] = @current_user
-
-    new_params.delete(:user_agent_value)
-    new_params.delete(:dhcp_vendor_value)
-    new_params.delete(:dhcp_fingerprint_value)
-    new_params.delete(:mac_value)
-
-    @combination = Combination.new(new_params)
-  
     respond_to do |format|
-      if @combination.user_submit
-        format.html { redirect_to @combination, notice: 'combination was successfully created.' }
+      if created
+        pending_combination = PendingCombination.create(:owner => @current_user, :combination => @combination, :comment => "Autocreated from submit page.", :new_device_id => new_params[:device_id], :new_version => new_params[:version])
+        Event.create(:title => "New combination submitted (#{@combination.id})", :value => "
+          Type : #{@combination.just_created ? "new" : "recategorization"}
+          Submitted by : #{pending_combination.owner.name}
+          New device : #{pending_combination.new_device.full_path}
+          New version : #{pending_combination.new_version}
+        ")
+        format.html { redirect_to pending_combination, notice: 'Combination was successfully created. The final approval will be done shortly.' }
         format.json { render :show, status: :created, location: @combination }
       else
         format.html { render :new }
+        format.json { render json: @combination.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    respond_to do |format|
+      if @combination.update(edit_combination_params)
+        format.html { redirect_to @combination, notice: 'Combination was successfully updated.' }
+        format.json { render :show, status: :ok, location: @combination }
+      else
+        format.html { render :edit }
         format.json { render json: @combination.errors, status: :unprocessable_entity }
       end
     end
@@ -196,6 +214,10 @@ class CombinationsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def combination_params
       params.require(:combination).permit(:version, :score, :user_agent_id, :dhcp_fingerprint_id, :dhcp_vendor_id, :device_id, :user_agent_value, :dhcp_fingerprint_value, :dhcp_vendor_value, :mac_value)
+    end
+
+    def edit_combination_params
+      params.require(:combination).permit(:fixed, :device_id, :version)
     end
 
 end

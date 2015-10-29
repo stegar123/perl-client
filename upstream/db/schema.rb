@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009134254) do
+ActiveRecord::Schema.define(version: 20151029131436) do
 
   create_table "combinations", force: :cascade do |t|
     t.integer  "dhcp_fingerprint_id",  limit: 4
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20151009134254) do
     t.integer  "submitter_id",         limit: 4
     t.integer  "dhcp6_fingerprint_id", limit: 4
     t.integer  "dhcp6_enterprise_id",  limit: 4
+    t.boolean  "fixed",                            default: false
   end
 
   add_index "combinations", ["dhcp6_enterprise_id"], name: "combinations_dhcp6_enterprise_id_ix", using: :btree
@@ -135,6 +136,17 @@ ActiveRecord::Schema.define(version: 20151009134254) do
   end
 
   add_index "mac_vendors", ["mac"], name: "index_mac_vendors_on_mac", unique: true, using: :btree
+
+  create_table "pending_combinations", force: :cascade do |t|
+    t.integer  "owner_id",       limit: 4
+    t.integer  "combination_id", limit: 4
+    t.integer  "new_device_id",  limit: 4
+    t.string   "new_version",    limit: 255
+    t.text     "comment",        limit: 65535
+    t.boolean  "completed",                    default: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
 
   create_table "query_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4

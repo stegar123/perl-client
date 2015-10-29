@@ -21,4 +21,17 @@ class UserMailer < ActionMailer::Base
     end
   end
 
+  def pending_combination_declined(pending_combination, reason)
+    @pending_combination = pending_combination
+    @user = @pending_combination.owner
+    @reason = reason
+    mail(to: @user.email, reply_to: "support@inverse.ca", subject: "Fingerbank - Recategorization request declined")
+  end
+
+  def pending_combination_approved(pending_combination)
+    @pending_combination = pending_combination
+    @user = @pending_combination.owner
+    mail(to: @user.email, reply_to: "support@inverse.ca", subject: "Fingerbank - Recategorization request approved")
+  end
+
 end

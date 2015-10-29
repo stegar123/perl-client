@@ -1,6 +1,6 @@
 
 <%= simple_form_container do %>
-  <%= form_for(@combination) do |f| %>
+  <%= form_tag combinations_path do %>
 
     <%= render partial: "shared/help" %>
     <h3>Submit a new combination</h3>    
@@ -8,14 +8,14 @@
     <%= render 'shared/errors', :object => @combination %>
 
     <div class="field">
-      <%= f.label "What is the device ?" %>
-      <%= f.hidden_field :device_id %>
+      <%= label_tag :device, "What is the device ?" %>
+      <%= hidden_field_tag 'combination[device_id]' %>
       <%= render :partial => 'devices/devices_selection', :locals => {:set => '#combination_device_id', :selected => nil} %>
       <a id="new_device" href="javascript:void(0)">Not listed ?</a>
     </div>
     <div class="field">
-      <%= f.label :device, "What is the version of the device ?" %>
-      <%= f.text_field :version %>
+      <%= label_tag :version, "What is the version of the device ?" %>
+      <%= text_field_tag 'combination[version]', @initial_values[:version] %>
     </div>
 
 
@@ -38,12 +38,12 @@
       <%= text_field_tag 'combination[mac_value]', @initial_values[:mac_value] %>
     </div>
     <div class="actions">
-      <%= f.submit "Submit" %>
+      <%= submit_tag "Submit" %>
     </div>
   <% end %>
 
   <script>
-    $('#new_combination #new_device').click(function(e){
+    $('#new_device').click(function(e){
       e.preventDefault()
       $('#device_creation_modal').modal('show')
     }) 

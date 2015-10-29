@@ -16,6 +16,13 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :pending_combinations do
+    member do
+      post 'approve'
+      post 'decline'
+    end
+  end
+
   # dumb dumb did a typo so we're adding this as another call
   # so this way previous libs are not affected
 
