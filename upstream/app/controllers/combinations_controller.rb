@@ -133,6 +133,12 @@ class CombinationsController < ApplicationController
     respond_to do |format|
       if created
         pending_combination = PendingCombination.create(:owner => @current_user, :combination => @combination, :comment => "Autocreated from submit page.", :new_device_id => new_params[:device_id], :new_version => new_params[:version])
+        Event.create(:title => "New combination submitted (#{@combination.id})", :value => "
+          Type : #{@combination.just_created ? "new" : "recategorization"}
+          Submitted by : #{pending_combination.owner.name}
+          New device : #{pending_combination.new_device.full_path}
+          New version : #{pending_combination.new_version}
+        ")
         format.html { redirect_to pending_combination, notice: 'Combination was successfully created. The final approval will be done shortly.' }
         format.json { render :show, status: :created, location: @combination }
       else
