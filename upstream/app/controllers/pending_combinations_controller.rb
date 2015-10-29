@@ -1,5 +1,7 @@
 class PendingCombinationsController < ApplicationController
   before_action :set_pending_combination, only: [:show, :approve, :decline]
+  before_filter :check_if_completed, only: [:approve, :decline]
+
   def index
     if params[:all]
       @pending_combinations = PendingCombination.all
@@ -30,5 +32,12 @@ class PendingCombinationsController < ApplicationController
   private
     def set_pending_combination
       @pending_combination = PendingCombination.find(params[:id])
+    end
+
+    def check_if_completed
+      if @pending_combination.completed
+        flash.now[:error] = "This request has already been processed"
+        redirect_to :back
+      end
     end
 end
