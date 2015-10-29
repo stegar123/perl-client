@@ -26,6 +26,7 @@ case "$1" in
     remove)
         #remove user and group pf
         set +e
+        deluser pf fingerbank
         userdel fingerbank
         if [ $? -ne 0 ]; then
             echo "Unable to remove fingerbank user"
