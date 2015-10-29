@@ -33,7 +33,7 @@ switch ( $database ) {
 
     case 'both' {
         fingerbank::DB::initialize_local;
-        fingerbank::DB::fetch_upstream;
+        fingerbank::DB::update_upstream;
     }
 }
 

@@ -1,12 +1,14 @@
 CREATE TABLE "combination" (
   "id" varchar(11) NOT NULL,
   "dhcp_fingerprint_id" varchar(11) DEFAULT NULL,
+  "dhcp6_fingerprint_id" varchar(11) DEFAULT NULL,
   "user_agent_id" varchar(11) DEFAULT NULL,
   "created_at" datetime DEFAULT NULL,
   "updated_at" datetime DEFAULT NULL,
   "device_id" varchar(11) DEFAULT NULL,
   "version" varchar(255) DEFAULT NULL,
   "dhcp_vendor_id" varchar(11) DEFAULT NULL,
+  "dhcp6_enterprise_id" varchar(11) DEFAULT NULL,
   "score" int(11) DEFAULT '0',
   "mac_vendor_id" varchar(11) DEFAULT NULL,
   "submitter_id" int(11) DEFAULT NULL,
@@ -54,6 +56,22 @@ CREATE TABLE "mac_vendor" (
 CREATE INDEX "mac_vendors_index_mac_vendors_on_mac" ON "mac_vendor" ("mac");
 
 CREATE TABLE "user_agent" (
+  "id" varchar(11) NOT NULL,
+  "value" varchar(1000) DEFAULT NULL,
+  "created_at" datetime DEFAULT NULL,
+  "updated_at" datetime DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "dhcp6_fingerprint" (
+  "id" varchar(11) NOT NULL,
+  "value" varchar(1000) DEFAULT NULL,
+  "created_at" datetime DEFAULT NULL,
+  "updated_at" datetime DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "dhcp6_enterprise" (
   "id" varchar(11) NOT NULL,
   "value" varchar(1000) DEFAULT NULL,
   "created_at" datetime DEFAULT NULL,

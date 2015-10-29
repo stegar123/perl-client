@@ -13,7 +13,9 @@ __PACKAGE__->add_columns(
     "id",
     "score",
     "dhcp_fingerprint_id",
+    "dhcp6_fingerprint_id",
     "dhcp_vendor_id",
+    "dhcp6_enterprise_id",
     "user_agent_id",
     "mac_vendor_id",
 );
@@ -26,9 +28,11 @@ __PACKAGE__->result_source_instance->is_virtual(1);
 # $2 = dhcp_vendor
 # $3 = user_agent
 # $4 = mac_vendor
+# $5 = dhcp6_fingerprint
+# $6 = dhcp6_enterprise
 __PACKAGE__->result_source_instance->view_definition(q{
     SELECT * FROM combination
-    WHERE dhcp_fingerprint_id = $1 OR dhcp_vendor_id = $2 OR user_agent_id = $3 OR (mac_vendor_id = $4 OR mac_vendor_id IS NULL)
+    WHERE dhcp_fingerprint_id = $1 OR dhcp_vendor_id = $2 OR user_agent_id = $3 OR (mac_vendor_id = $4 OR mac_vendor_id IS NULL) OR dhcp6_fingerprint_id = $5 OR dhcp6_enterprise_id = $6
     ORDER BY
     case when (dhcp_fingerprint_id = $1 AND dhcp_fingerprint_id != '0') OR ( $1 = 0 AND dhcp_fingerprint_id = 0 )then 2 else 0 END +
     case when (dhcp_vendor_id = $2 AND dhcp_vendor_id != '0') OR ( $2 = '0' AND dhcp_vendor_id = '0')then 2 else 0 END +

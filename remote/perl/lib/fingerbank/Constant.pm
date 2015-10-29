@@ -59,6 +59,8 @@ Readonly::Scalar our $NO        => 'no';
 
 Readonly::Scalar our $DHCP_FINGERPRINT  => 'DHCP_Fingerprint';
 Readonly::Scalar our $DHCP_VENDOR       => 'DHCP_Vendor';
+Readonly::Scalar our $DHCP6_FINGERPRINT => 'DHCP6_Fingerprint';
+Readonly::Scalar our $DHCP6_ENTERPRISE  => 'DHCP6_Enterprise';
 Readonly::Scalar our $USER_AGENT        => 'User_Agent';
 Readonly::Scalar our $MAC_VENDOR        => 'MAC_Vendor';
 
@@ -73,6 +75,8 @@ Readonly::Array our @QUERY_PARAMETERS => (
     $DHCP_VENDOR,
     $USER_AGENT,
     $MAC_VENDOR,
+    $DHCP6_FINGERPRINT,
+    $DHCP6_ENTERPRISE,
 );
 
 =item %PARENT_IDS
