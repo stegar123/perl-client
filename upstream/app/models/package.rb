@@ -9,6 +9,8 @@ class Package
     self.db_stats[:user_agents] = UserAgent.count
     self.db_stats[:dhcp_vendors] = DhcpVendor.count
     self.db_stats[:dhcp_fingerprints] = DhcpFingerprint.count
+    self.db_stats[:dhcp6_fingerprints] = Dhcp6Fingerprint.count
+    self.db_stats[:dhcp6_enterprises] = Dhcp6Enterprise.count
     self.db_stats[:mac_vendors] = MacVendor.count
   end
 
@@ -22,6 +24,8 @@ class Package
           Has #{self.db_stats[:combinations]} combinations in it
           Has #{self.db_stats[:user_agents]} user agents in it
           Has #{self.db_stats[:dhcp_fingerprints]} DHCP fingerprints in it
+          Has #{self.db_stats[:dhcp6_fingerprints]} DHCPv6 fingerprints in it
+          Has #{self.db_stats[:dhcp6_enterprises]} DHCPv6 enterprises in it
           Has #{self.db_stats[:mac_vendors]} MAC vendors in it
         ")
       else
@@ -41,7 +45,7 @@ class Package
     username = config[Rails.env]["username"]
     password = config[Rails.env]["password"]
 
-    sqlite_sql = `sh #{Rails.root.join('db', 'mysql2sqlite.sh')} #{host} #{username} #{password} #{database} "combinations dhcp_vendors user_agents dhcp_fingerprints mac_vendors devices"` 
+    sqlite_sql = `sh #{Rails.root.join('db', 'mysql2sqlite.sh')} #{host} #{username} #{password} #{database} "combinations dhcp_vendors user_agents dhcp_fingerprints dhcp6_fingerprints dhcp6_enterprises mac_vendors devices"` 
     dump_fname = Rails.root.join('tmp', "#{Time.now.to_i}.sqlite3dump.sql")
     bak_dump_fname = Rails.root.join('tmp', "#{Time.now.to_i}.sqlite3dump.sql.bak")
     sqlite_sql_output = File.open(dump_fname, 'w') 
@@ -52,6 +56,8 @@ class Package
     success = system ('sed -i.bak s/\"devices\"/\"device\"/g '+dump_fname.to_s)
     success = system ('sed -i.bak s/\"combinations\"/\"combination\"/g '+dump_fname.to_s)
     success = system ('sed -i.bak s/\"dhcp_fingerprints\"/\"dhcp_fingerprint\"/g '+dump_fname.to_s)
+    success = system ('sed -i.bak s/\"dhcp6_fingerprints\"/\"dhcp6_fingerprint\"/g '+dump_fname.to_s)
+    success = system ('sed -i.bak s/\"dhcp6_enterprises\"/\"dhcp6_enterprise\"/g '+dump_fname.to_s)
     success = system ('sed -i.bak s/\"user_agents\"/\"user_agent\"/g '+dump_fname.to_s)
     success = system ('sed -i.bak s/\"mac_vendors\"/\"mac_vendor\"/g '+dump_fname.to_s)
     success = system ('sed -i.bak s/\"dhcp_vendors\"/\"dhcp_vendor\"/g '+dump_fname.to_s)
@@ -84,6 +90,12 @@ class Package
 
     result = packaged.execute("select count(*) from dhcp_fingerprint") 
     package_stats[:dhcp_fingerprints] = result[0][0]
+
+    result = packaged.execute("select count(*) from dhcp6_fingerprint") 
+    package_stats[:dhcp6_fingerprints] = result[0][0]
+
+    result = packaged.execute("select count(*) from dhcp6_enterprise") 
+    package_stats[:dhcp6_enterprises] = result[0][0]
 
     result = packaged.execute("select count(*) from mac_vendor") 
     package_stats[:mac_vendors] = result[0][0]
