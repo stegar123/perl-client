@@ -120,11 +120,20 @@ class CombinationsController < ApplicationController
       :user_agent_value => new_params[:user_agent_value],
       :dhcp_vendor_value => new_params[:dhcp_vendor_value],
       :dhcp_fingerprint_value => new_params[:dhcp_fingerprint_value],
+      :dhcp6_fingerprint_value => new_params[:dhcp6_fingerprint_value],
+      :dhcp6_enterprise_value => new_params[:dhcp6_enterprise_value],
       :mac_value => new_params[:mac_value],
       :version => new_params[:version],
     }
 
-    @combination = Combination.get_or_create(:user_agent => new_params[:user_agent_value], :dhcp_vendor => new_params[:dhcp_vendor_value], :dhcp_fingerprint => new_params[:dhcp_fingerprint_value], :mac => new_params[:mac_value])
+    @combination = Combination.get_or_create(
+      :user_agent => new_params[:user_agent_value], 
+      :dhcp_vendor => new_params[:dhcp_vendor_value], 
+      :dhcp_fingerprint => new_params[:dhcp_fingerprint_value], 
+      :dhcp6_fingerprint => new_params[:dhcp6_fingerprint_value], 
+      :dhcp6_enterprise => new_params[:dhcp6_enterprise_value], 
+      :mac => new_params[:mac_value]
+    )
     @combination.device = !(new_params[:device_id].empty?) ? Device.find(new_params[:device_id]) : nil
     @combination.version = new_params[:version]
     if @combination.just_created
@@ -213,7 +222,7 @@ class CombinationsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def combination_params
-      params.require(:combination).permit(:version, :score, :user_agent_id, :dhcp_fingerprint_id, :dhcp_vendor_id, :device_id, :user_agent_value, :dhcp_fingerprint_value, :dhcp_vendor_value, :mac_value)
+      params.require(:combination).permit(:version, :score, :device_id, :user_agent_value, :dhcp_fingerprint_value, :dhcp_vendor_value, :dhcp6_fingerprint_value, :dhcp6_enterprise_value, :mac_value)
     end
 
     def edit_combination_params

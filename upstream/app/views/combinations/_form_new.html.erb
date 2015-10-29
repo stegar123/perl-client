@@ -22,19 +22,27 @@
     <h3>Enter the information you have for your device.</h3>
 
     <div class="field">
-      <%= label_tag 'User Agent' %>
+      <%= label_tag 'combination[user_agent_value]', 'User Agent' %>
       <%= text_area_tag 'combination[user_agent_value]', @initial_values[:user_agent_value] %>
     </div>
     <div class="field">
-      <%= label_tag 'DhcpFingerprint' %>
+      <%= label_tag 'combination[dhcp_fingerprint_value]', 'DHCP Fingerprint' %>
       <%= text_field_tag 'combination[dhcp_fingerprint_value]', @initial_values[:dhcp_fingerprint_value] %>
     </div>
     <div class="field">
-      <%= label_tag 'DHCP vendor' %>
+      <%= label_tag 'combination[dhcp_vendor_value]', 'DHCP Vendor' %>
       <%= text_field_tag 'combination[dhcp_vendor_value]', @initial_values[:dhcp_vendor_value] %>
     </div>
     <div class="field">
-      <%= label_tag 'MAC address' %>
+      <%= label_tag 'combination[dhcp6_fingerprint_value]', 'DHCPv6 Fingerprint' %>
+      <%= text_field_tag 'combination[dhcp6_fingerprint_value]', @initial_values[:dhcp6_fingerprint_value] %>
+    </div>
+    <div class="field">
+      <%= label_tag 'combination[dhcp6_enterprise_value]', 'DHCPv6 Enterprise ID' %>
+      <%= text_field_tag 'combination[dhcp6_enterprise_value]', @initial_values[:dhcp6_enterprise_value] %>
+    </div>
+    <div class="field">
+      <%= label_tag 'combination[mac_value]', 'MAC Address' %>
       <%= text_field_tag 'combination[mac_value]', @initial_values[:mac_value] %>
     </div>
     <div class="actions">
