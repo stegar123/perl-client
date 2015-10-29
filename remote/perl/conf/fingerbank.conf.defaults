@@ -1,9 +1,15 @@
 [upstream]
 api_key =
-db_url = https://fingerbank.inverse.ca/api/v1/download?key=
+db_url = https://fingerbank.inverse.ca/api/v1/download
 interrogate = enabled
-interrogate_url = https://fingerbank.inverse.ca/api/v1/combinations/interrogate?key=
-submit_url = https://fingerbank.inverse.ca/api/v1/combinations/submit?key=
+interrogate_url = https://fingerbank.inverse.ca/api/v1/combinations/interrogate
+submit_url = https://fingerbank.inverse.ca/api/v1/combinations/submit
 
 [query]
 record_unmatched = disabled
+use_tcp_fingerprinting = enabled
+
+[tcp_fingerprinting]
+p0f_socket_path = /var/run/p0f.sock
+p0f_map_path = /usr/local/fingerbank/conf/fingerbank-p0f.fp
+p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map

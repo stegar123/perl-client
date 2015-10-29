@@ -75,6 +75,21 @@ Readonly::Array our @QUERY_PARAMETERS => (
     $MAC_VENDOR,
 );
 
+=item %PARENT_IDS
+
+A hash containing the parent ids for the base devices
+
+=cut
+
+Readonly::Hash our %PARENT_IDS => (
+    WINDOWS => 1,
+    MACOS => 2,
+    ANDROID => 202,
+    IOS => 193,
+    WINDOWS_PHONE => 5474,
+    BLACKBERRY => 192,
+);
+
 =back
 
 =head1 AUTHOR

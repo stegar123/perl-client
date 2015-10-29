@@ -19,7 +19,7 @@ use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE);
 use fingerbank::Log;
 use fingerbank::Status;
-use fingerbank::Util qw(is_enabled);
+use fingerbank::Util qw(is_enabled is_success update_file);
 
 our %Config;
 
@@ -270,6 +270,27 @@ sub do_we_interrogate_upstream {
     my $interrogate_upstream = get_config('upstream', 'interrogate');
     ( is_enabled($interrogate_upstream) ) ? return $TRUE : return $FALSE;
 }
+
+=head2 update_p0f_map
+
+Updates the p0f map from Fingerbank upstream
+
+=cut
+
+sub update_p0f_map {
+    my ( $self ) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my ( $status, $status_msg );
+
+    my $Config = fingerbank::Config::get_config;
+    my $map_file = $Config->{tcp_fingerprinting}{p0f_map_path};
+
+    ($status, $status_msg) = update_file($Config->{'tcp_fingerprinting'}{'p0f_map_url'}, $map_file);
+
+    return ( $status, $status_msg )
+}
+
 
 =head1 AUTHOR
 

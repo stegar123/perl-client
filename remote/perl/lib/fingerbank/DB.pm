@@ -24,7 +24,7 @@ use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $LOCAL_DB_SCHEMA $UPSTR
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
-use fingerbank::Util qw(is_success is_error is_disabled);
+use fingerbank::Util qw(is_success is_error is_disabled update_file);
 
 has 'schema'        => (is => 'rw', isa => 'Str');
 has 'handle'        => (is => 'rw', isa => 'Object');
@@ -148,48 +148,6 @@ sub _test {
     return $self->status_code;
 }
 
-=head2 fetch_upstream
-
-Download the latest version of the upstream Fingerbank database
-
-=cut
-
-sub fetch_upstream {
-    my ( $self, $is_updating ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $Config = fingerbank::Config::get_config;
-
-    if ( !fingerbank::Config::is_api_key_configured ) {
-        $logger->warn("Can't communicate with Fingerbank project without a valid API key.");
-        return $fingerbank::Status::UNAUTHORIZED;
-    }
-
-    my $database_file = $UPSTREAM_DB_FILE;
-    $database_file = $database_file . ".new" if ( defined($is_updating) && $is_updating );
-    my $download_url = $Config->{'upstream'}{'db_url'} . $Config->{'upstream'}{'api_key'};
-
-    $logger->debug("Downloading the latest version of upstream database from '$download_url' to '$database_file'");
-
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(60);   # An update query should not take more than 60 seconds
-    
-    my $status;
-    my $res = $ua->get($download_url);
-
-    if ( $res->is_success ) {
-        $status = $fingerbank::Status::OK;
-        $logger->info("Successfully fetched 'Upstream' database from Fingerbank project");
-        open my $fh, ">", $database_file;
-        print {$fh} $res->decoded_content;
-    } else {
-        $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $logger->warn("Failed to download latest version of 'Upstream' database with the following return code: " . $res->status_line);
-    }
-
-    return $status;
-}
-
 =head2 initialize_local
 
 Create with the appropriate schema, the local version of the Fingerbank database
@@ -232,51 +190,9 @@ sub update_upstream {
 
     my ( $status, $status_msg );
 
-    my $database_file = $UPSTREAM_DB_FILE;
+    my $Config = fingerbank::Config::get_config;
 
-    my $is_an_update;
-    if ( -f $database_file ) {
-        $is_an_update = $TRUE;
-    } else {
-        $is_an_update = $FALSE;
-    }
-
-    $status = fetch_upstream($self, $is_an_update);
-
-    if ( is_success($status) && $is_an_update ) {
-        my $date                    = POSIX::strftime( "%Y%m%d_%H%M%S", localtime );
-        my $database_file_backup    = $database_file . "_$date";
-        my $database_file_new       = $database_file . ".new";
-
-        my $return_code;
-
-        # We create a backup of the actual upstream database file
-        $logger->debug("Backing up actual 'upstream' database file to '$database_file_backup'");
-        $return_code = copy($database_file, $database_file_backup);
-
-        # If copy operation succeed
-        if ( $return_code == 1 ) {
-            # We move the newly downloaded upstream database file to the existing one
-            $logger->debug("Moving new 'upstream' database file to existing one");
-            $return_code = move($database_file_new, $database_file);
-        }
-
-        # Handling error in either copy or move operation
-        if ( $return_code == 0 ) {
-            $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-            $logger->warn("An error occured while copying / moving files during 'upstream' database update process: $!");
-        }
-    }
-
-    if ( is_success($status) ) {
-        $status_msg = "Successfully updated Fingerbank 'upstream' database file";
-        $logger->info($status_msg);
-
-        return ( $status, $status_msg );
-    }
-
-    $status_msg = "An error occured while updating Fingerbank 'upstream' database file";
-    $logger->warn($status_msg);
+    ($status, $status_msg) = update_file($Config->{'upstream'}{'db_url'}, $UPSTREAM_DB_FILE);
 
     return ( $status, $status_msg )
 }
