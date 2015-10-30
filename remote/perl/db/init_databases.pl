@@ -15,6 +15,10 @@ BEGIN {
 
 use fingerbank::DB;
 
+unless(@ARGV){
+    die pod2usage("\nthe 'database' argument must be 'local', 'upstream' or 'both'\n");
+}
+
 my $database = "local";
 GetOptions ( "database=s" => \$database, );
 $database = lc($database);
@@ -24,7 +28,7 @@ if ( !($database =~ /^local|upstream|both$/) ) {
 
 switch ( $database ) {
     case 'local' {
-        fingerbank::DB::initialize_local;
+        `/usr/local/fingerbank/db/upgrade.pl`;
     }
 
     case 'upstream' {
