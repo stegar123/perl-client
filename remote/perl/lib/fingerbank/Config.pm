@@ -19,7 +19,7 @@ use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE);
 use fingerbank::Log;
 use fingerbank::Status;
-use fingerbank::Util qw(is_enabled is_success update_file);
+use fingerbank::Util qw(is_enabled is_success);
 
 our %Config;
 
@@ -286,7 +286,7 @@ sub update_p0f_map {
     my $Config = fingerbank::Config::get_config;
     my $map_file = $Config->{tcp_fingerprinting}{p0f_map_path};
 
-    ($status, $status_msg) = update_file($Config->{'tcp_fingerprinting'}{'p0f_map_url'}, $map_file);
+    ($status, $status_msg) = fingerbank::Util::update_file($Config->{'tcp_fingerprinting'}{'p0f_map_url'}, $map_file);
 
     return ( $status, $status_msg )
 }

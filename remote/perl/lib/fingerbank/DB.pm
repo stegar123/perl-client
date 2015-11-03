@@ -24,7 +24,7 @@ use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $LOCAL_DB_SCHEMA $UPSTR
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
-use fingerbank::Util qw(is_success is_error is_disabled update_file);
+use fingerbank::Util qw(is_success is_error is_disabled);
 
 has 'schema'        => (is => 'rw', isa => 'Str');
 has 'handle'        => (is => 'rw', isa => 'Object');
@@ -192,7 +192,7 @@ sub update_upstream {
 
     my $Config = fingerbank::Config::get_config;
 
-    ($status, $status_msg) = update_file($Config->{'upstream'}{'db_url'}, $UPSTREAM_DB_FILE);
+    ($status, $status_msg) = fingerbank::Util::update_file($Config->{'upstream'}{'db_url'}, $UPSTREAM_DB_FILE);
 
     return ( $status, $status_msg )
 }

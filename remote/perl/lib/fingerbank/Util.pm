@@ -26,7 +26,6 @@ BEGIN {
         is_disabled
         is_success
         is_error
-        update_file
     );
 }
 
