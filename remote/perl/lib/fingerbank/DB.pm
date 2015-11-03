@@ -192,7 +192,7 @@ sub update_upstream {
 
     my $Config = fingerbank::Config::get_config;
 
-    ($status, $status_msg) = fingerbank::Util::update_file($Config->{'upstream'}{'db_url'}, $UPSTREAM_DB_FILE);
+    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $Config->{'upstream'}{'db_url'}, 'destination' => $UPSTREAM_DB_FILE) );
 
     return ( $status, $status_msg )
 }

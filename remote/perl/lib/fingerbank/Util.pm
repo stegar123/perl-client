@@ -92,10 +92,22 @@ sub is_error {
 }
 
 sub update_file {
-    my ( $download_url, $destination ) = @_;
+    my ( %params ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
     my ( $status, $status_msg );
+
+    my @require = qw(download_url destination);
+    foreach ( @require ) {
+        if ( !exists $params{$_} ) {
+            $status_msg = "Missing parameter '$_' while trying to update file";
+            $logger->warn($status_msg);
+            return ( $fingerbank::Status::INTERNAL_SERVER_ERROR, $status_msg );
+        }
+    }
+
+    my $download_url    = $params{'download_url'};
+    my $destination     = $params{'destination'};
 
     my $is_an_update;
     if ( -f $destination ) {
