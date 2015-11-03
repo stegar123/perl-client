@@ -106,51 +106,48 @@ sub update_file {
         }
     }
 
-    my $download_url    = $params{'download_url'};
-    my $destination     = $params{'destination'};
-
     my $is_an_update;
-    if ( -f $destination ) {
+    if ( -f $params{'destination'} ) {
         $is_an_update = $TRUE;
     } else {
         $is_an_update = $FALSE;
     }
 
-    $status = fetch_file($download_url, $is_an_update ? $destination . ".new" : $destination);
+    $status = fetch_file(%params, $is_an_update ? ('destination' => $params{'destination'} . '.new') : ());
 
     if ( is_success($status) && $is_an_update ) {
         my $date                    = POSIX::strftime( "%Y%m%d_%H%M%S", localtime );
-        my $destination_backup    = $destination . "_$date";
-        my $destination_new       = $destination . ".new";
+        my $destination_backup    = $params{'destination'} . "_$date";
+        my $destination_new       = $params{'destination'} . ".new";
 
         my $return_code;
 
         # We create a backup of the actual file
-        $logger->debug("Backing up current file '$destination' to '$destination_backup'");
-        $return_code = copy($destination, $destination_backup);
+        $logger->debug("Backing up current file '$params{'destination'}' to '$destination_backup'");
+        $return_code = copy($params{'destination'}, $destination_backup);
 
         # If copy operation succeed
         if ( $return_code == 1 ) {
             # We move the newly downloaded file to the existing one
             $logger->debug("Moving new file to existing one");
-            $return_code = move($destination_new, $destination);
+            $return_code = move($destination_new, $params{'destination'});
         }
 
         # Handling error in either copy or move operation
         if ( $return_code == 0 ) {
             $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-            $logger->warn("An error occured while copying / moving files while updating '$destination' : $!");
+            $logger->warn("An error occured while copying / moving files while updating '$params{'destination'}' : $!");
         }
     }
 
     if ( is_success($status) ) {
-        $status_msg = "Successfully updated file '$destination'";
+        $status_msg = "Successfully updated file '$params{'destination'}'";
         $logger->info($status_msg);
 
         return ( $status, $status_msg );
     }
 
-    $status_msg = "An error occured while updating file '$destination'";
+    $status_msg = "An error occured while updating file '$params{'destination'}'";
     $logger->warn($status_msg);
 
     return ( $status, $status_msg )
@@ -163,8 +160,16 @@ Download the latest version of a file
 =cut
 
 sub fetch_file {
-    my ( $download_url, $destination ) = @_;
+    my ( %params ) = @_;
     my $logger = fingerbank::Log::get_logger;
+
+    my @require = qw(download_url destination);
+    foreach ( @require ) {
+        if ( !exists $params{$_} ) {
+            $logger->warn("Missing parameter '$_' while trying to fetch file");
+            return $fingerbank::Status::INTERNAL_SERVER_ERROR;
+        }
+    }
 
     my $Config = fingerbank::Config::get_config();
 
@@ -173,13 +178,13 @@ sub fetch_file {
         return $fingerbank::Status::UNAUTHORIZED;
     }
 
-    $logger->debug("Downloading the latest version from '$download_url' to '$destination'");
+    $logger->debug("Downloading the latest version from '$params{'download_url'}' to '$params{'destination'}'");
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(60);   # An update query should not take more than 60 seconds
     
     my %parameters = ( key => $Config->{'upstream'}{'api_key'} );
-    my $url = URI->new($download_url);
+    my $url = URI->new($params{'download_url'});
     $url->query_form(%parameters);
 
     my $status;
@@ -187,12 +192,12 @@ sub fetch_file {
 
     if ( $res->is_success ) {
         $status = $fingerbank::Status::OK;
-        $logger->info("Successfully fetched '$download_url' from Fingerbank project");
-        open my $fh, ">", $destination;
+        $logger->info("Successfully fetched '$params{'download_url'}' from Fingerbank project");
+        open my $fh, ">", $params{'destination'};
         print {$fh} $res->decoded_content;
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $logger->warn("Failed to download latest version of file '$destination' on '$download_url' with the following return code: " . $res->status_line);
+        $logger->warn("Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line);
     }
 
     return $status;
