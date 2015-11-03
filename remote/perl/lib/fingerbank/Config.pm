@@ -278,7 +278,7 @@ Updates the p0f map from Fingerbank upstream
 =cut
 
 sub update_p0f_map {
-    my ( $self ) = @_;
+    my ( $self, %params ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
     my ( $status, $status_msg );
@@ -286,7 +286,7 @@ sub update_p0f_map {
     my $Config = fingerbank::Config::get_config;
     my $map_file = $Config->{tcp_fingerprinting}{p0f_map_path};
 
-    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $Config->{'tcp_fingerprinting'}{'p0f_map_url'}, 'destination' => $map_file) );
+    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $Config->{'tcp_fingerprinting'}{'p0f_map_url'}, 'destination' => $map_file, %params) );
 
     return ( $status, $status_msg )
 }
