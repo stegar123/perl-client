@@ -173,7 +173,7 @@ sub fetch_file {
 
     my $Config = fingerbank::Config::get_config();
 
-    if ( !fingerbank::Config::is_api_key_configured() ) {
+    unless ( fingerbank::Config::is_api_key_configured() || (exists($params{'api_key'}) && $params{'api_key'} ne "") ) {
         $logger->warn("Can't communicate with Fingerbank project without a valid API key.");
         return $fingerbank::Status::UNAUTHORIZED;
     }
@@ -182,8 +182,9 @@ sub fetch_file {
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(60);   # An update query should not take more than 60 seconds
-    
-    my %parameters = ( key => $Config->{'upstream'}{'api_key'} );
+
+    my $api_key = ( exists($params{'api_key'}) && $params{'api_key'} ne "" ) ? $params{'api_key'} : $Config->{'upstream'}{'api_key'};    
+    my %parameters = ( key => $api_key );
     my $url = URI->new($params{'download_url'});
     $url->query_form(%parameters);
 
