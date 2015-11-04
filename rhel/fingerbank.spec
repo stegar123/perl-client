@@ -64,9 +64,11 @@ cp rhel/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
 
 %post
 # Local database initialization
+cd /usr/local/fingerbank/
 /usr/local/fingerbank/db/init_databases.pl
 chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Local.db
 chmod 664 /usr/local/fingerbank/db/fingerbank_Local.db
+make update-p0f-map
 
 # Log file handling
 if [ ! -e /usr/local/fingerbank/logs/fingerbank.log ]; then
