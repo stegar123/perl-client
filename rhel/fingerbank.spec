@@ -1,8 +1,8 @@
 Name:       fingerbank
-Version:    1.0.4
+Version:    2.0.0
 Release:    1%{?dist}
 BuildArch:  noarch
-Summary:    An exhaustive profiling tool
+Summary:    An exhaustive device profiling tool
 Packager:   Inverse inc. <info@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
