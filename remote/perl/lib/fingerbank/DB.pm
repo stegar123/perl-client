@@ -185,14 +185,17 @@ Update the existing 'upstream' database by taking care of backing up the current
 =cut
 
 sub update_upstream {
-    my ( $self, %params ) = @_;
+    my ( %params ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
     my ( $status, $status_msg );
 
     my $Config = fingerbank::Config::get_config;
 
-    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $Config->{'upstream'}{'db_url'}, 'destination' => $UPSTREAM_DB_FILE, %params) );
+    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'upstream'}{'db_url'};
+    my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $UPSTREAM_DB_FILE;
+
+    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
 
     return ( $status, $status_msg )
 }

@@ -13,6 +13,9 @@ Methods that helps simplify code reading
 use strict;
 use warnings;
 
+use LWP::UserAgent;
+use POSIX;
+
 use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::Config;
 use File::Copy qw(copy move);
