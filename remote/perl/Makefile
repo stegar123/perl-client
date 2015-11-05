@@ -29,9 +29,9 @@ package-files:
 			mv $$tmp_dir/remote/perl/* $$tmp_dir/; \
 			rm -rf $$tmp_dir/remote; \
 			rm -rf $$tmp_dir/t; \
-			read -p "API key (ENTER if none): " api_key; \
-			perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::DB::update_upstream( (api_key => \"$$api_key\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
-			perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\", destination => \"$$tmp_dir/conf/fingerbank-p0f.fp\") )"; \
+			read -p "API key: " api_key; \
+			perl -I$$tmp_dir/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::DB::update_upstream( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
+			perl -I$$tmp_dir/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download-p0f-map\", destination => \"$$tmp_dir/conf/fingerbank-p0f.fp\") )"; \
 			tar -czf fingerbank.tar.gz $$tmp_dir; \
 			rm -rf $$tmp_dir; \
 		fi \
