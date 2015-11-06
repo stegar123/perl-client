@@ -86,7 +86,6 @@ rm -rf %{buildroot}
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
                                     /usr/local/fingerbank/*
-%attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/init_databases.pl
 %dir                                %{_sysconfdir}/logrotate.d
 %config                             %{_sysconfdir}/logrotate.d/fingerbank
 %ghost                              /usr/local/fingerbank/logs/fingerbank.log

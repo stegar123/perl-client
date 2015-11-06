@@ -82,7 +82,6 @@ Readonly::Array our @FILES => (
     $LOCAL_DB_FILE,
     $UPSTREAM_DB_FILE,
     $LOCAL_DB_SCHEMA,
-    $INSTALL_PATH . 'db/init_databases.pl',
     $LOG_FILE,
 );
 
