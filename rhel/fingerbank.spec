@@ -33,6 +33,7 @@ Requires:   perl(Catalyst::Action::REST)
 Requires:   perl(DBD::SQLite)
 Requires:   perl(LWP::Protocol::https)
 Requires:   perl(MooseX::NonMoose)
+Requires:   perl(SQL::Translator)
 
 %description
 Fingerbank
