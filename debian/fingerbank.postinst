@@ -26,7 +26,7 @@ case "$1" in
     configure)
         export FINGERBANK=/usr/local/fingerbank
         cd /usr/local/fingerbank
-        make init-local-db
+        make init-db-local
         touch  $FINGERBANK/fingerbank.log
         chown -R fingerbank:fingerbank $FINGERBANK
     ;;

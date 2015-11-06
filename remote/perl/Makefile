@@ -1,15 +1,15 @@
 SHELL = /bin/bash
 
-init-local-db:
-		@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::DB::initialize_local()"; \
+init-db-local:
+		@db/upgrade.pl --database db/fingerbank_Local.db; \
 		chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Local.db; \
 		chmod 664 /usr/local/fingerbank/db/fingerbank_Local.db; \
 
-update-upstream-db:
+init-db-upstream:
 		@read -p "API key (ENTER if none): " api_key; \
         perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::DB::update_upstream( (api_key => \"$$api_key\") )"; \
 
-update-p0f-map:
+init-p0f-map:
 		@read -p "API key (ENTER if none): " api_key; \
 		perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\") )"; \
 
