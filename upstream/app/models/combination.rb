@@ -64,11 +64,22 @@ class Combination < FingerbankModel
       mac_vendor = MacVendor.from_mac(values[:mac])
       combination = Combination.where(:dhcp_fingerprint_id => dhcp_fingerprint.id, :dhcp6_fingerprint_id => dhcp6_fingerprint.id, :dhcp6_enterprise_id => dhcp6_enterprise.id, :user_agent_id => user_agent.id, :dhcp_vendor_id => dhcp_vendor.id, :mac_vendor => mac_vendor).first
       if combination.nil?
-        combination = self.create!(:dhcp_fingerprint => dhcp_fingerprint, :dhcp6_fingerprint => dhcp6_fingerprint, :dhcp6_enterprise_id => dhcp6_enterprise.id, :user_agent => user_agent, :dhcp_vendor => dhcp_vendor, :mac_vendor => mac_vendor)
-        combination.just_created = true
+        begin
+          combination = self.create!(:dhcp_fingerprint => dhcp_fingerprint, :dhcp6_fingerprint => dhcp6_fingerprint, :dhcp6_enterprise_id => dhcp6_enterprise.id, :user_agent => user_agent, :dhcp_vendor => dhcp_vendor, :mac_vendor => mac_vendor)
+          combination.just_created = true
+          return combination
+        rescue
+          if values[:retrying]
+            logger.info "Failed to get_or_create combination twice, will not try again"
+            return nil
+          else
+            logger.info "Failed to get_or_create combinaton once, will try again."
+            values[:retrying] = true
+            return self.get_or_create(values)
+          end
+        end
       end
     end
-    return combination
   end
 
   def validate_combination_uniqueness
