@@ -80,6 +80,7 @@ class Combination < FingerbankModel
         end
       end
     end
+    return combination
   end
 
   def validate_combination_uniqueness
