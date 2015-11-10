@@ -70,6 +70,10 @@ class Package
 
     self.path = db_fname
 
+    # delete dump files
+    File.delete(dump_fname)
+    File.delete(bak_dump_fname)
+
   end
 
   def validate
