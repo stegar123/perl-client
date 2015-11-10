@@ -74,23 +74,6 @@ namespace :deprecated do |ns|
 
   end
 
-  task import_pf_oui: :environment do
-    line_num=0
-    text=File.open('tmp/oui.txt').read
-    text.gsub!(/\r\n?/, "\n")
-    text.each_line do |line|
-      line.gsub!(/\n/, "")
-      if line =~ /.*\(hex\).*/
-        info = line.match(/(?<mac>.{8}).*\(hex\)\s+(?<name>.*)/)
-        mac = info['mac'].gsub!(/-/, '').downcase
-        name = info['name']
-        puts mac+", "+name
-        MacVendor.create!(:name => name, :mac => mac) unless MacVendor.where(:mac => mac).first
-      end
-    end
- 
-  end
-
   task import_pf_os: :environment do
     line_num=0
     text=File.open('tmp/os.csv').read

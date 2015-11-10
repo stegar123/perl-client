@@ -569,4 +569,30 @@ namespace :import do |ns|
     end
   end
 
+  task :mac_vendors_from_oui_file, [:file_path] => [:environment] do |t, args|
+    unless args[:file_path] && File.exists?(args[:file_path])
+      puts "Missing file path or file doesn't exist..."
+      next
+    end
+
+    created = []
+    line_num=0
+    text=File.open(args[:file_path]).read
+    text.gsub!(/\r\n?/, "\n")
+    text.each_line do |line|
+      line.gsub!(/\n/, "")
+      if line =~ /.*\(hex\).*/
+        info = line.match(/(?<mac>.{8}).*\(hex\)\s+(?<name>.*)/)
+        mac = info['mac'].gsub!(/-/, '').downcase
+        name = info['name']
+        puts mac+", "+name
+        unless MacVendor.where(:mac => mac).first
+          mac_vendor = MacVendor.create!(:name => name, :mac => mac)
+          created << mac_vendor
+        end
+      end
+    end
+    Event.create(:title => "MAC vendor processing : Created #{created.size} new MAC vendors")    
+  end
+
 end

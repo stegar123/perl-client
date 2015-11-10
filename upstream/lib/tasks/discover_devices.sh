@@ -19,6 +19,9 @@ curl http://user-agents.me/cfnetwork-version-list > tmp/cfnetwork-version-list.h
 echo "Starting CFNETWORK import job"
 RAILS_ENV=production bundle exec rake import:cfnetwork[tmp/cfnetwork-version-list.html]
 
+curl http://standards-oui.ieee.org/oui.txt > tmp/oui.txt
+RAILS_ENV=production bundle exec rake import:mac_vendors_from_oui_file[tmp/oui.txt]
+
 # discovery jobs
 echo "Starting Windows phone discovery job"
 RAILS_ENV=production bundle exec rake import:discover_windows_phone
