@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # We first create the new packaged database
-RAILS_ENV=production bundle exec rake fdb:package
+#RAILS_ENV=production bundle exec rake fdb:package
 
 DESTINATION="$1"
 
@@ -11,6 +11,8 @@ for db in db/package/*.sqlite3; do
   # We don't touch the current snapshot that is offered through the API
   if ! [ "$db" == "db/package/packaged.sqlite3" ] ; then
     echo "Backing up $db to $DESTINATION"
+    gzip $db
+    db="$db.gz"
     scp $db $DESTINATION
 
     # We make sure it worked
