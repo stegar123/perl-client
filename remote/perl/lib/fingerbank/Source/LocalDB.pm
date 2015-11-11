@@ -199,7 +199,7 @@ sub _getCombinationID {
     foreach my $key ( @fingerbank::Constant::QUERY_PARAMETERS ) {
         my $concatenated_key = $key . '_id';
         push @bindings, $self->$concatenated_key;
-        $logger->debug("- $concatenated_key: '" . $self->$concatenated_key . "'");
+        $logger->debug("Query - $concatenated_key: '" . $self->$concatenated_key . "'");
     }
 
     # Looking for best matching combination in schemas
@@ -221,7 +221,8 @@ sub _getCombinationID {
             foreach ( @fingerbank::Constant::QUERY_PARAMETERS ) {
                 my $concatenated_key = $_ . '_id';
                 my $lc_concatenated_key = lc($concatenated_key);
-                $matched_keys ++ if ( $resultset->$lc_concatenated_key eq $self->$concatenated_key );
+                $logger->debug("ResultSet - $lc_concatenated_key: '" . $resultset->$lc_concatenated_key . "'");
+                $matched_keys ++ if ( $resultset->$lc_concatenated_key eq $self->$concatenated_key || $resultset->$lc_concatenated_key eq '' );
             }
             my $exact_matched_keys = @fingerbank::Constant::QUERY_PARAMETERS;
             $self->combination_is_exact($TRUE) if ( $matched_keys == $exact_matched_keys );
