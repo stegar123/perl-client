@@ -39,6 +39,7 @@ foreach my $key ( @fingerbank::Constant::QUERY_PARAMETERS ) {
 has 'device_id' => (is => 'rw', isa => 'Str');
 has 'combination_id' => (is => 'rw', isa => 'Str');
 has 'combination_is_exact' => (is => 'rw', isa => 'Str');
+has 'matched_schema' => (is => 'rw', isa => 'Str');
 
 
 =head2 match
@@ -122,6 +123,7 @@ sub _buildResult {
 
     # Tracking down from where the result is coming
     $result->{'SOURCE'} = "Local";
+    $result->{'SCHEMA'} = $self->matched_schema;
 
     return ( $fingerbank::Status::OK, $result );
 }
@@ -226,6 +228,7 @@ sub _getCombinationID {
             }
             my $exact_matched_keys = @fingerbank::Constant::QUERY_PARAMETERS;
             $self->combination_is_exact($TRUE) if ( $matched_keys == $exact_matched_keys );
+            $self->matched_schema($schema);
 
             last;
         }

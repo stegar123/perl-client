@@ -31,6 +31,13 @@ sub match {
     my ($self, $args, $other_results) = @_;
     my $logger = fingerbank::Log::get_logger;
 
+    foreach my $discoverer_id (keys %$other_results){
+        if( $discoverer_id eq "fingerbank::Source::LocalDB" && $other_results->{$discoverer_id}->{'SCHEMA'} eq "Local" ){
+            $logger->debug("Found a good hit in the Fingerbank Local Schema. Will not interrogate p0f as these are considered final.");
+            return $fingerbank::Status::NOT_FOUND;
+        }
+    }
+
     my $Config = fingerbank::Config::get_config;
 
     unless(is_enabled($Config->{query}{use_tcp_fingerprinting})){
