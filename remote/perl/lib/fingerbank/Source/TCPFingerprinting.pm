@@ -62,7 +62,7 @@ sub match {
 
     my $socket = IO::Socket::UNIX->new(
         Type => SOCK_STREAM,
-        Peer => '/var/run/p0f.sock',
+        Peer => $Config->{tcp_fingerprinting}{p0f_socket_path},
     );
 
     unless($socket){
