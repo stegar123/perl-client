@@ -20,7 +20,7 @@ use POSIX qw(strftime);
 
 use fingerbank::Config;
 use fingerbank::Constant qw($TRUE $FALSE);
-use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $LOCAL_DB_SCHEMA $UPSTREAM_DB_FILE);
+use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE);
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
@@ -146,36 +146,6 @@ sub _test {
 
     $self->status_code($fingerbank::Status::OK);
     return $self->status_code;
-}
-
-=head2 initialize_local
-
-Create with the appropriate schema, the local version of the Fingerbank database
-
-Will also make sure a local instance doesn't already exists.
-
-=cut
-
-sub initialize_local {
-    my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $database_file   = $LOCAL_DB_FILE;
-    my $schema_file     = $LOCAL_DB_SCHEMA;
-
-    if ( -f $database_file ) {
-        $logger->warn("Tried to initialize 'Local' database by applying default schema on an existing database. Exiting");
-        return;
-    }
-
-    $logger->debug("Initializing 'Local' database by applying default schema");
-    system("sqlite3 $database_file < $schema_file");
-    if ( $? != 0 ) {
-        $logger->warn("Failed to initialize 'Local' database when applying default schema");
-        return;
-    } else {
-        $logger->info("Successfully initialized 'Local' database by applying default schema");
-    }
 }
 
 =head2 update_upstream

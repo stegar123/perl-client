@@ -28,7 +28,6 @@ BEGIN {
         $LOG_CONF_FILE
         $LOG_FILE
         $LOCAL_DB_FILE
-        $LOCAL_DB_SCHEMA
         $UPSTREAM_DB_FILE
     );
 }
@@ -51,8 +50,6 @@ BEGIN {
 
 =item $LOCAL_DB_FILE
 
-=item $LOCAL_DB_SCHEMA
-
 =item $UPSTREAM_DB_FILE
 
 =cut
@@ -64,7 +61,6 @@ Readonly::Scalar our $CONFIG_DOC_FILE       => catfile($INSTALL_PATH, 'conf/fing
 Readonly::Scalar our $LOG_CONF_FILE         => catfile($INSTALL_PATH, 'conf/log.conf');
 Readonly::Scalar our $LOG_FILE              => catfile($INSTALL_PATH, 'logs/fingerbank.log');
 Readonly::Scalar our $LOCAL_DB_FILE         => catfile($INSTALL_PATH, 'db/fingerbank_Local.db');
-Readonly::Scalar our $LOCAL_DB_SCHEMA       => catfile($INSTALL_PATH, 'db/schema_Local.sql');
 Readonly::Scalar our $UPSTREAM_DB_FILE      => catfile($INSTALL_PATH, 'db/fingerbank_Upstream.db');
 
 Readonly::Array our @PATHS => (
@@ -81,7 +77,6 @@ Readonly::Array our @FILES => (
     $LOG_CONF_FILE,
     $LOCAL_DB_FILE,
     $UPSTREAM_DB_FILE,
-    $LOCAL_DB_SCHEMA,
     $INSTALL_PATH . 'db/upgrade.pl',
     $LOG_FILE,
 );
