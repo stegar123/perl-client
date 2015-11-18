@@ -21,13 +21,8 @@ package-files:
 			echo "Destination for git clone ($$tmp_dir) already exists"; \
 		else \
 			mkdir $$tmp_dir; \
-			git clone https://github.com/inverse-inc/fingerbank.git $$tmp_dir; \
-			rm -f $$tmp_dir/dhcp_fingerprints.conf; \
+			git clone https://github.com/fingerbank/perl-client.git $$tmp_dir; \
 			rm -f $$tmp_dir/README.md; \
-			rm -rf $$tmp_dir/obsolete; \
-			rm -rf $$tmp_dir/upstream; \
-			mv $$tmp_dir/remote/perl/* $$tmp_dir/; \
-			rm -rf $$tmp_dir/remote; \
 			rm -rf $$tmp_dir/t; \
 			read -p "API key: " api_key; \
 			perl -I$$tmp_dir/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::DB::update_upstream( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
