@@ -1,8 +1,0 @@
-<%= link_to '', edit_combination_path(combination), :class => "btn-edit" if current_user_admin? %>
-
-<%= link_to '', combination, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'btn-delete' if current_user_admin? %>
-
-<%= link_to '', calculate_combination_path(combination), :class => "btn-refresh" if current_user_admin? %>
-
-<%= link_to '', user_watched_combinations_path(@current_user, combination_id: combination.id), method: :post, :class => "btn-watch" unless @current_user.nil? %>
-

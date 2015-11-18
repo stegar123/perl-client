@@ -1,7 +1,0 @@
-<p id="notice"><%= notice %></p>
-
-<%= render @combination %>
-
-<%= link_to 'Edit', edit_combination_path(@combination) if current_user_admin? %> 
-<%= link_to 'Delete', @combination, method: :delete, data: { confirm: 'Are you sure?' } if current_user_admin? %>
-<%= link_to 'Index', combinations_path %>
