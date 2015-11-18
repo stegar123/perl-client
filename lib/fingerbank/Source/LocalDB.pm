@@ -230,7 +230,7 @@ sub _getCombinationID {
             $self->combination_is_exact($TRUE) if ( $matched_keys == $exact_matched_keys );
             $self->matched_schema($schema);
 
-            last;
+            last if $self->combination_is_exact;
         }
 
         $logger->debug("No combination ID found in schema '$schema'");
