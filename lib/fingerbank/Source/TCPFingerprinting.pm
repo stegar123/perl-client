@@ -19,6 +19,7 @@ use warnings;
 use fingerbank::Constant qw($TRUE);
 use fingerbank::Status;
 use fingerbank::Util qw(is_error is_success is_enabled);
+use bytes;
 use IO::Socket::UNIX;
 
 =head2 match
@@ -91,7 +92,7 @@ sub match {
     ($info{uptime_min}, $info{up_mod_days},$response) = unpack("I I a*", $response); 
     ($info{last_nat}, $info{last_chg}, $response) = unpack("I I a*", $response); 
     ($info{last_nat}, $info{bad_sw}, $info{os_match_q}, $response) = unpack("s C C a*", $response); 
-    ($info{os_name}, $info{os_flavor}, $response) = unpack("a32 a32 a*", $response); 
+    ($info{os_name}, $info{os_flavor}, $response) = unpack("A32 a32 a*", $response); 
     ($info{http_name}, $info{http_flavor}, $response) = unpack("a32 a32 a*", $response); 
     ($info{link_type}, $info{language}, $response) = unpack("a32 a32 a*", $response); 
 
