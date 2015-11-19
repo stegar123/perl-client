@@ -35,6 +35,12 @@ sub match_best {
     my ($self, $args) = @_;
     my $logger = fingerbank::Log::get_logger;
     my ($results, $results_array) = $self->match_all($args);
+
+    unless(@$results_array){
+        $logger->debug("No result found for query.");
+        return undef;
+    }
+
     my @ordered = reverse sort { $results->{$a} <=> $results->{$b} } keys %$results;
     my $best_match = $results_array->[$ordered[0]];
     my $pretty_args = '[' . join(',', map { "'$_' : '$args->{$_}'" } keys %$args) . ']';
