@@ -215,8 +215,15 @@ sub _getCombinationID {
 
         my $resultset = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
         if ( defined($resultset) ) {
-            $self->combination_id($resultset->id);
-            $logger->info("Found combination ID '" . $self->combination_id . "' in schema '$schema'");
+            # Make sure combination found is valid (contains a device ID)
+            if ( defined($resultset->device_id) && $resultset->device_id ne "" ) {
+                $self->combination_id($resultset->id);
+                $logger->info("Found combination ID '" . $self->combination_id . "' in schema '$schema'");
+            } else {
+                my $status_msg = "Found combination ID '" . $self->combination_id . "' in schema '$schema' but combination does not contain a device ID";
+                $logger->info($status_msg);
+                return ( $fingerbank::Status::NOT_FOUND, $status_msg );
+            }
 
             # Check if exact match
             my $matched_keys = 0;

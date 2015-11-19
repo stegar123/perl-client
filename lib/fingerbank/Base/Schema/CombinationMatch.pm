@@ -18,6 +18,7 @@ __PACKAGE__->add_columns(
     "dhcp6_enterprise_id",
     "user_agent_id",
     "mac_vendor_id",
+    "device_id",
 );
 
 __PACKAGE__->set_primary_key('id');
