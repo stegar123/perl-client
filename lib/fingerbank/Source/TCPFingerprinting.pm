@@ -96,9 +96,8 @@ sub match {
     ($info{http_name}, $info{http_flavor}, $response) = unpack("a32 a32 a*", $response); 
     ($info{link_type}, $info{language}, $response) = unpack("a32 a32 a*", $response); 
 
-    $info{os_name} = int($info{os_name});
-
     if($result eq 16){
+        $info{os_name} = int($info{os_name});
         $logger->info("Found device : ".$info{os_name}." through p0f.");
         return $self->_buildResult(\%info);
     }
