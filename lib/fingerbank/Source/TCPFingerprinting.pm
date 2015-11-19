@@ -44,6 +44,12 @@ sub match {
         $logger->debug("TCP fingerprinting is disabled in configuration. Not interrogating p0f.");
         return $fingerbank::Status::NOT_IMPLEMENTED;
     }
+    
+    unless(defined($args->{ip})){
+        $logger->debug("No IP address provided. Cannot do p0f lookup");
+        return $fingerbank::Status::BAD_REQUEST;
+    }
+
  
     my @parts = split '\.', $args->{ip};
     unless(@parts eq 4){
