@@ -81,6 +81,7 @@ sub match {
 
     my $response;
     $socket->recv($response, 236);
+    $socket->close();
 
     use Data::Dumper;
     my ($magic, $result, %info);
