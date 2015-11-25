@@ -33,6 +33,8 @@ has 'status_msg'    => (is => 'rw', isa => 'Str');
 
 our @schemas = ('Local', 'Upstream');
 
+our %_HANDLES = ();
+
 =head1 OBJECT STATUS
 
 =head2 isError
@@ -85,9 +87,10 @@ sub statusMsg {
 
 =cut
 
+
 sub BUILD {
-    my ( $self ) = @_;
     my $logger = fingerbank::Log::get_logger;
+    my ( $self ) = @_;
 
     my $schema = $self->schema;
 
@@ -105,8 +108,17 @@ sub BUILD {
     # Test requested schema DB file validity
     return if is_error($self->_test);
 
+    if($_HANDLES{$schema}){
+        $self->handle($_HANDLES{$schema});
+        return;
+    }
+
     # Returning the requested schema db handle
-    $self->handle("fingerbank::Schema::$schema"->connect("dbi:SQLite:" . $INSTALL_PATH . "db/fingerbank_$schema.db"));
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:" . $INSTALL_PATH . "db/fingerbank_$schema.db");
+    $handle->{AutoInactiveDestroy} = 1;
+    $self->handle($handle);
+
+    $_HANDLES{$schema} = $self->handle();
 
     return;
 }
