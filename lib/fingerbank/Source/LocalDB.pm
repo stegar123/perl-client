@@ -220,7 +220,7 @@ sub _getCombinationID {
                 $self->combination_id($resultset->id);
                 $logger->info("Found combination ID '" . $self->combination_id . "' in schema '$schema'");
             } else {
-                my $status_msg = "Found combination ID '" . $self->combination_id . "' in schema '$schema' but combination does not contain a device ID";
+                my $status_msg = "Found combination ID '" . $resultset->id . "' in schema '$schema' but combination does not contain a device ID";
                 $logger->info($status_msg);
                 return ( $fingerbank::Status::NOT_FOUND, $status_msg );
             }
