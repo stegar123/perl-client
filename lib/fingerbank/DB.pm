@@ -15,7 +15,6 @@ use namespace::autoclean;
 
 use File::Copy qw(copy move);
 use JSON;
-use LWP::UserAgent;
 use POSIX qw(strftime);
 
 use fingerbank::Config;
