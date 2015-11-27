@@ -33,6 +33,8 @@ has 'status_msg'    => (is => 'rw', isa => 'Str');
 
 our @schemas = ('Local', 'Upstream');
 
+our %_HANDLES = ();
+
 =head1 OBJECT STATUS
 
 =head2 isError
@@ -85,6 +87,7 @@ sub statusMsg {
 
 =cut
 
+
 sub BUILD {
     my ( $self ) = @_;
     my $logger = fingerbank::Log::get_logger;
@@ -105,8 +108,23 @@ sub BUILD {
     # Test requested schema DB file validity
     return if is_error($self->_test);
 
+    my $file_path = $INSTALL_PATH . "db/fingerbank_$schema.db";
+
+    my $file_timestamp = ( stat($file_path) )[9];
+
+    if( $_HANDLES{$schema} && $file_timestamp <= $_HANDLES{$schema}->{timestamp} ){
+        $self->handle($_HANDLES{$schema}->{handle});
+        return;
+    }
+
+    $logger->info("Database $file_path was changed or handles weren't initialized. Creating handle.");
+
     # Returning the requested schema db handle
-    $self->handle("fingerbank::Schema::$schema"->connect("dbi:SQLite:" . $INSTALL_PATH . "db/fingerbank_$schema.db"));
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:".$file_path);
+    $handle->{AutoInactiveDestroy} = $TRUE;
+    $self->handle($handle);
+
+    $_HANDLES{$schema} = { handle => $self->handle(), timestamp => $file_timestamp };
 
     return;
 }
