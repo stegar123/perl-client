@@ -207,6 +207,34 @@ sub fetch_file {
     return $status;
 }
 
+=head2 get_lwp_client
+
+Returns a LWP::UserAgent for WWW interaction
+
+=cut
+
+sub get_lwp_client {
+    my $ua = LWP::UserAgent->new;
+
+    my $Config = fingerbank::Config::get_config();
+
+    # Proxy is enabled
+    if ( $Config->{'proxy'}{'use_proxy'} ) {
+        return $ua if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
+
+        my $proxy_host = $Config->{'proxy'}{'host'};
+        my $proxy_port = $Config->{'proxy'}{'port'};
+
+        $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
+        $ua->proxy(['https', 'http', 'ftp'] => "$host:$port");
+        $ua->protocols_allowed([ 'https', 'http', 'ftp' ]);
+
+        return $ua;
+    }
+
+    return $ua;
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
