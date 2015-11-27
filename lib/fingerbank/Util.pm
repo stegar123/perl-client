@@ -183,7 +183,7 @@ sub fetch_file {
 
     $logger->debug("Downloading the latest version from '$params{'download_url'}' to '$params{'destination'}'");
 
-    my $ua = LWP::UserAgent->new;
+    my $ua = fingerbank::Util::get_lwp_client;
     $ua->timeout(60);   # An update query should not take more than 60 seconds
 
     my $api_key = ( exists($params{'api_key'}) && $params{'api_key'} ne "" ) ? $params{'api_key'} : $Config->{'upstream'}{'api_key'};    
