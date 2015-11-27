@@ -89,8 +89,8 @@ sub statusMsg {
 
 
 sub BUILD {
-    my $logger = fingerbank::Log::get_logger;
     my ( $self ) = @_;
+    my $logger = fingerbank::Log::get_logger;
 
     my $schema = $self->schema;
 
@@ -121,7 +121,7 @@ sub BUILD {
 
     # Returning the requested schema db handle
     my $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:".$file_path);
-    $handle->{AutoInactiveDestroy} = 1;
+    $handle->{AutoInactiveDestroy} = $TRUE;
     $self->handle($handle);
 
     $_HANDLES{$schema} = { handle => $self->handle(), timestamp => $file_timestamp };
