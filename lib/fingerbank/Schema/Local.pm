@@ -7,7 +7,7 @@ use fingerbank::FilePath qw($INSTALL_PATH);
 
 extends 'DBIx::Class::Schema';
 
-our $VERSION = "2.0";
+our $VERSION = "2.1";
 
 __PACKAGE__->load_classes;
 
