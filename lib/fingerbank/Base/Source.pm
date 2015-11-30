@@ -13,6 +13,8 @@ Base class for the library sources
 use Moose;
 use fingerbank::Status;
 
+has 'cache' => (is => 'rw', required => 1);
+
 =head2 match
 
 Whether or not the arguments match a result in this source
