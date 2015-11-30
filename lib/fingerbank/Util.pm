@@ -219,7 +219,7 @@ sub get_lwp_client {
     my $Config = fingerbank::Config::get_config();
 
     # Proxy is enabled
-    if ( $Config->{'proxy'}{'use_proxy'} ) {
+    if ( is_enabled($Config->{'proxy'}{'use_proxy'}) ) {
         return $ua if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
 
         my $proxy_host = $Config->{'proxy'}{'host'};
