@@ -162,21 +162,25 @@ sub _getQueryKeyIDs {
             $logger->debug("Attempting to find an ID for '$key'. This is a special case. Using mangled value '$mac'");
         }
 
-        my ($status, $result) = "fingerbank::Model::$key"->find([$query, { columns => ['id'] }]);
-       
-        if ( is_error($status) ) {
-            my $status_msg = "Cannot find any ID for '$key' with value '" . $self->$concatenated_key . "'";
-            $logger->warn($status_msg);
+        my $id = $self->cache->compute("$key\_".encode_json($query), sub { 
+            my ($status, $result) = "fingerbank::Model::$key"->find([$query, { columns => ['id'] }]);
+            if ( is_error($status) ) {
+                my $status_msg = "Cannot find any ID for '$key' with value '" . $self->$concatenated_key . "'";
+                $logger->warn($status_msg);
 
-            # We record the unmatched query key if configured to do so
-            my $record_unmatched = fingerbank::Config::get_config('query', 'record_unmatched');
-            $self->_recordUnmatched($key, $self->$concatenated_key) if is_enabled($record_unmatched);
+                # We record the unmatched query key if configured to do so
+                my $record_unmatched = fingerbank::Config::get_config('query', 'record_unmatched');
+                $self->_recordUnmatched($key, $self->$concatenated_key) if is_enabled($record_unmatched);
 
-            return ( $fingerbank::Status::NOT_FOUND, $status_msg );
-            last
+                return ( $fingerbank::Status::NOT_FOUND, $status_msg );
+            }
+            return $result->id;
+        });
+    
+        if($id){
+            $self->{$key . '_id'} = $id;
         }
-
-        $self->{$key . '_id'} = $result->id;
+       
         $logger->debug("Found ID '" . $self->{$key . '_id'} . "' for '$key' with value '" . $self->$concatenated_key . "'");
     }
 
