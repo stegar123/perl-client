@@ -11,7 +11,6 @@ Class for matching multiple sources
 =cut
 
 use Moose;
-use fingerbank::NullCache;
 
 has 'sources' => (is => 'rw', isa => 'ArrayRef', default => sub {[]});
 
