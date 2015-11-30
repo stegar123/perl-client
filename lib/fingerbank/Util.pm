@@ -183,7 +183,7 @@ sub fetch_file {
 
     $logger->debug("Downloading the latest version from '$params{'download_url'}' to '$params{'destination'}'");
 
-    my $ua = fingerbank::Util::get_lwp_client;
+    my $ua = fingerbank::Util::get_lwp_client();
     $ua->timeout(60);   # An update query should not take more than 60 seconds
 
     my $api_key = ( exists($params{'api_key'}) && $params{'api_key'} ne "" ) ? $params{'api_key'} : $Config->{'upstream'}{'api_key'};    
@@ -226,7 +226,7 @@ sub get_lwp_client {
         my $proxy_port = $Config->{'proxy'}{'port'};
 
         $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
-        $ua->proxy(['https', 'http', 'ftp'] => "$host:$port");
+        $ua->proxy(['https', 'http', 'ftp'] => "$proxy_host:$proxy_port");
         $ua->protocols_allowed([ 'https', 'http', 'ftp' ]);
 
         return $ua;

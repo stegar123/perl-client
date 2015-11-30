@@ -235,7 +235,7 @@ sub submit_unknown {
         }
     }
 
-    my $ua = fingerbank::Util::get_lwp_client;
+    my $ua = fingerbank::Util::get_lwp_client();
     $ua->timeout(10);  # A submit query should not take more than 10 seconds
     my $submitted_data = encode_json(\%data);
 

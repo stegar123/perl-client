@@ -58,7 +58,7 @@ sub match {
 
     my %upstream_args = map {lc($_) => $args->{lc($_)}} @fingerbank::Constant::QUERY_PARAMETERS;
 
-    my $ua = fingerbank::Util::get_lwp_client;
+    my $ua = fingerbank::Util::get_lwp_client();
     $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
     my $query_args = encode_json(\%upstream_args);
 
