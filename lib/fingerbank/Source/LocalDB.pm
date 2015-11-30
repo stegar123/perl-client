@@ -162,8 +162,9 @@ sub _getQueryKeyIDs {
             $logger->debug("Attempting to find an ID for '$key'. This is a special case. Using mangled value '$mac'");
         }
 
-        my $id = $self->cache->compute("$key\_".encode_json($query), sub { 
-            my ($status, $result) = "fingerbank::Model::$key"->find([$query, { columns => ['id'] }]);
+        my $model = "fingerbank::Model::$key";
+        my $id = $self->cache->compute("$model\_".encode_json($query), sub { 
+            my ($status, $result) = $model->find([$query, { columns => ['id'] }]);
             if ( is_error($status) ) {
                 my $status_msg = "Cannot find any ID for '$key' with value '" . $self->$concatenated_key . "'";
                 $logger->warn($status_msg);
