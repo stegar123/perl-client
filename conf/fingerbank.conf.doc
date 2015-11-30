@@ -79,3 +79,10 @@ type=text
 description=<<EOT
 Port the proxy is listening on
 EOT
+
+[proxy.verify_ssl]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not to verify SSL when using proxying
+EOT

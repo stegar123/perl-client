@@ -18,3 +18,4 @@ p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map
 use_proxy = disabled
 host =
 port =
+verify_ssl = enabled

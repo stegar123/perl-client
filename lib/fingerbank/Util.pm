@@ -224,8 +224,9 @@ sub get_lwp_client {
 
         my $proxy_host = $Config->{'proxy'}{'host'};
         my $proxy_port = $Config->{'proxy'}{'port'};
+        my $verify_ssl = ( is_enabled($Config->{'proxy'}{'verify_ssl'}) ) ? "1" : "0";
 
-        $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
+        $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => $verify_ssl });
         $ua->proxy(['https', 'http', 'ftp'] => "$proxy_host:$proxy_port");
         $ua->protocols_allowed([ 'https', 'http', 'ftp' ]);
 
