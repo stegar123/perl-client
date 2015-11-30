@@ -231,7 +231,13 @@ sub _getCombinationID {
         }
         # Otherwise, we proceed with the complex select query using a view and where / case clauses 
         else {
-            $resultset = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
+            my $id = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
+                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
+                return $result ? $result->id : undef;
+            });
+            if($id) {
+                $resultset = $db->handle->resultset('Combination')->search({id => $id})->first;
+            }
         }
 
         if ( defined($resultset) ) {
