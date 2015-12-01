@@ -50,7 +50,8 @@ if (!$schema->get_db_version()) {
     }
     else {
         fingerbank::Log::get_logger->info("Database $database_path doesn't exist. Deploying schema");
-        $schema->deploy();
+        `touch $database_path && sqlite3 $database_path < db/upgrade/fingerbank-Schema-Local-1.0-SQLite.sql`;
+        $schema->install("1.0");
     }
 }
 
