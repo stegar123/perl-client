@@ -8,6 +8,8 @@ init-db-local:
 init-db-upstream:
 		@read -p "API key (ENTER if none): " api_key; \
         perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::DB::update_upstream( (api_key => \"$$api_key\") )"; \
+		chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Upstream.db; \
+		chmod 664 /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 
 init-p0f-map:
 		@read -p "API key (ENTER if none): " api_key; \
