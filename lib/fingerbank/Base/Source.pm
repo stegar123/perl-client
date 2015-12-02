@@ -12,8 +12,9 @@ Base class for the library sources
 
 use Moose;
 use fingerbank::Status;
+use fingerbank::NullCache;
 
-has 'cache' => (is => 'rw', required => 1);
+has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
 
 =head2 match
 

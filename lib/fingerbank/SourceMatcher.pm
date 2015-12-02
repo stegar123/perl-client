@@ -24,6 +24,7 @@ Register source into the engine for use in matching
 
 sub register_source {
   my ($self, $source) = @_;
+  $source->cache($self->cache);
   push @{$self->sources}, $source;
 }
 

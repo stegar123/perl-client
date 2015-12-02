@@ -31,9 +31,9 @@ sub match {
     my ( $self, $args ) = @_;
     my $logger = fingerbank::Log::get_logger;
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
-    $matcher->register_source(fingerbank::Source::LocalDB->new(cache => $self->cache));
-    $matcher->register_source(fingerbank::Source::API->new(cache => $self->cache));
-    $matcher->register_source(fingerbank::Source::TCPFingerprinting->new(cache => $self->cache));
+    $matcher->register_source(fingerbank::Source::LocalDB->new);
+    $matcher->register_source(fingerbank::Source::API->new);
+    $matcher->register_source(fingerbank::Source::TCPFingerprinting->new);
 
     return $matcher->match_best($args);
 }
