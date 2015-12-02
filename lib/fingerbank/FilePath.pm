@@ -29,6 +29,7 @@ BEGIN {
         $LOG_FILE
         $LOCAL_DB_FILE
         $UPSTREAM_DB_FILE
+        %SCHEMA_DBS
     );
 }
 
@@ -62,6 +63,11 @@ Readonly::Scalar our $LOG_CONF_FILE         => catfile($INSTALL_PATH, 'conf/log.
 Readonly::Scalar our $LOG_FILE              => catfile($INSTALL_PATH, 'logs/fingerbank.log');
 Readonly::Scalar our $LOCAL_DB_FILE         => catfile($INSTALL_PATH, 'db/fingerbank_Local.db');
 Readonly::Scalar our $UPSTREAM_DB_FILE      => catfile($INSTALL_PATH, 'db/fingerbank_Upstream.db');
+
+our %SCHEMA_DBS = (
+    Local => $LOCAL_DB_FILE,
+    Upstream => $UPSTREAM_DB_FILE,
+);
 
 Readonly::Array our @PATHS => (
     $INSTALL_PATH, 

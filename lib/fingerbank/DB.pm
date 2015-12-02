@@ -20,7 +20,7 @@ use POSIX qw(strftime);
 
 use fingerbank::Config;
 use fingerbank::Constant qw($TRUE $FALSE);
-use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE);
+use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE %SCHEMA_DBS);
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
@@ -108,7 +108,7 @@ sub BUILD {
     # Test requested schema DB file validity
     return if is_error($self->_test);
 
-    my $file_path = $INSTALL_PATH . "db/fingerbank_$schema.db";
+    my $file_path = $SCHEMA_DBS{$schema};
 
     my $file_timestamp = ( stat($file_path) )[9];
 
