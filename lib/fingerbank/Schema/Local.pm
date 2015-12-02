@@ -9,6 +9,10 @@ extends 'DBIx::Class::Schema';
 
 our $VERSION = "2.1";
 
+sub ordered_schema_versions {
+    return ("1.0", "2.0", "2.1");
+}
+
 __PACKAGE__->load_classes;
 
 __PACKAGE__->load_components(qw/Schema::Versioned/);
