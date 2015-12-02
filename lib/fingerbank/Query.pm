@@ -30,7 +30,6 @@ has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
 sub match {
     my ( $self, $args ) = @_;
     my $logger = fingerbank::Log::get_logger;
-    my %args;
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
     $matcher->register_source(fingerbank::Source::LocalDB->new(cache => $self->cache));
     $matcher->register_source(fingerbank::Source::API->new(cache => $self->cache));
