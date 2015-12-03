@@ -13,6 +13,7 @@ Methods that helps simplify code reading
 use strict;
 use warnings;
 
+use File::Copy qw(copy move);
 use File::Touch;
 use LWP::UserAgent;
 use POSIX;
