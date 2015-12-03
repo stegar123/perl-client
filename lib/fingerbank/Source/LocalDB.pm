@@ -150,7 +150,6 @@ sub _getQueryKeyIDs {
                 next;
             }
             $query->{'mac'} = delete $query->{'value'}; # The 'value' column is the 'mac' column in this specific case
-            $logger->debug("Attempting to find an ID for '$key'. This is a special case. Using mangled value '" . $query->{'mac'} . "'");
         }
 
         my $model = "fingerbank::Model::$key";
