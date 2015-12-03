@@ -39,6 +39,9 @@ package-files:
 			rm -rf $$tmp_dir; \
 		fi \
 
+reset-db-handles:
+		@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::reset_db_handles"; \
+
 test:
 	FINGERBANK_KEY=$$api_key perl t/smoke.t
 
