@@ -56,7 +56,7 @@ sub match {
 
     $logger->debug("Attempting to interrogate upstream Fingerbank project");
 
-    my %upstream_args = map {$_ => $args->{$_}} qw(mac_vendor dhcp_fingerprint dhcp_vendor dhcp6_fingerprint dhcp6_enterprise user_agent);
+    my %upstream_args = map {lc($_) => $args->{lc($_)}} @fingerbank::Constant::QUERY_PARAMETERS;
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
