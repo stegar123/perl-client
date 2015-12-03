@@ -15,7 +15,6 @@ use namespace::autoclean;
 
 use File::Copy qw(copy move);
 use JSON;
-use LWP::UserAgent;
 use POSIX qw(strftime);
 
 use fingerbank::Config;
@@ -236,7 +235,7 @@ sub submit_unknown {
         }
     }
 
-    my $ua = LWP::UserAgent->new;
+    my $ua = fingerbank::Util::get_lwp_client();
     $ua->timeout(10);  # A submit query should not take more than 10 seconds
     my $submitted_data = encode_json(\%data);
 

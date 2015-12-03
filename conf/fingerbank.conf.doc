@@ -60,3 +60,29 @@ type=text
 description=<<EOT
 The URL to download the p0f map from
 EOT
+
+[proxy.use_proxy]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Should Fingerbank interact with WWW using a proxy ?
+EOT
+
+[proxy.host]
+type=text
+description=<<EOT
+Host the proxy is listening on
+EOT
+
+[proxy.port]
+type=text
+description=<<EOT
+Port the proxy is listening on
+EOT
+
+[proxy.verify_ssl]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not to verify SSL when using proxying
+EOT

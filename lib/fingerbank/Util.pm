@@ -183,7 +183,7 @@ sub fetch_file {
 
     $logger->debug("Downloading the latest version from '$params{'download_url'}' to '$params{'destination'}'");
 
-    my $ua = LWP::UserAgent->new;
+    my $ua = fingerbank::Util::get_lwp_client();
     $ua->timeout(60);   # An update query should not take more than 60 seconds
 
     my $api_key = ( exists($params{'api_key'}) && $params{'api_key'} ne "" ) ? $params{'api_key'} : $Config->{'upstream'}{'api_key'};    
@@ -205,6 +205,35 @@ sub fetch_file {
     }
 
     return $status;
+}
+
+=head2 get_lwp_client
+
+Returns a LWP::UserAgent for WWW interaction
+
+=cut
+
+sub get_lwp_client {
+    my $ua = LWP::UserAgent->new;
+
+    my $Config = fingerbank::Config::get_config();
+
+    # Proxy is enabled
+    if ( is_enabled($Config->{'proxy'}{'use_proxy'}) ) {
+        return $ua if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
+
+        my $proxy_host = $Config->{'proxy'}{'host'};
+        my $proxy_port = $Config->{'proxy'}{'port'};
+        my $verify_ssl = ( is_enabled($Config->{'proxy'}{'verify_ssl'}) ) ? $TRUE : $FALSE;
+
+        $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => $verify_ssl });
+        $ua->proxy(['https', 'http', 'ftp'] => "$proxy_host:$proxy_port");
+        $ua->protocols_allowed([ 'https', 'http', 'ftp' ]);
+
+        return $ua;
+    }
+
+    return $ua;
 }
 
 =head1 AUTHOR

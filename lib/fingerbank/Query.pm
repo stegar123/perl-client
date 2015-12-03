@@ -4,7 +4,6 @@ use Moose;
 use namespace::autoclean;
 
 use JSON;
-use LWP::UserAgent;
 use Module::Load;
 use POSIX;
 

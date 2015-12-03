@@ -13,3 +13,9 @@ use_tcp_fingerprinting = enabled
 p0f_socket_path = /var/run/p0f.sock
 p0f_map_path = /usr/local/fingerbank/conf/fingerbank-p0f.fp
 p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map
+
+[proxy]
+use_proxy = disabled
+host =
+port =
+verify_ssl = enabled
