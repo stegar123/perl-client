@@ -13,11 +13,13 @@ Methods that helps simplify code reading
 use strict;
 use warnings;
 
+use File::Touch;
 use LWP::UserAgent;
 use POSIX;
 
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
+use fingerbank::FilePath qw($INSTALL_PATH);
 use File::Copy qw(copy move);
 use File::Find;
 
@@ -292,6 +294,25 @@ sub set_file_permissions {
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
     chown $uid, $gid, $file;
+}
+
+=head2
+
+Touch each database schema file to change timestamp which will lead to invalidate active handles and recreate them
+
+=cut
+
+sub reset_db_handles {
+    my ( $self ) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my @database_files = ();
+    foreach my $schema ( @fingerbank::DB::schemas ) {
+        my $database_file = $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
+        push(@database_files, $database_file);
+    }
+
+    touch(@database_files);
 }
 
 =head1 AUTHOR
