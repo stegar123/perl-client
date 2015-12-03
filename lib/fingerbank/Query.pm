@@ -19,6 +19,9 @@ use fingerbank::SourceMatcher;
 use fingerbank::Source::LocalDB;
 use fingerbank::Source::API;
 use fingerbank::Source::TCPFingerprinting;
+use fingerbank::NullCache;
+
+has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
 
 =head2 match
 
@@ -27,7 +30,7 @@ use fingerbank::Source::TCPFingerprinting;
 sub match {
     my ( $self, $args ) = @_;
     my $logger = fingerbank::Log::get_logger;
-    my $matcher = fingerbank::SourceMatcher->new;
+    my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
     $matcher->register_source(fingerbank::Source::LocalDB->new);
     $matcher->register_source(fingerbank::Source::API->new);
     $matcher->register_source(fingerbank::Source::TCPFingerprinting->new);

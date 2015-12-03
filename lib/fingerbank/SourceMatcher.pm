@@ -14,6 +14,8 @@ use Moose;
 
 has 'sources' => (is => 'rw', isa => 'ArrayRef', default => sub {[]});
 
+has 'cache' => (is => 'rw', required => 1);
+
 =head2 register_source
 
 Register source into the engine for use in matching
@@ -22,6 +24,7 @@ Register source into the engine for use in matching
 
 sub register_source {
   my ($self, $source) = @_;
+  $source->cache($self->cache);
   push @{$self->sources}, $source;
 }
 

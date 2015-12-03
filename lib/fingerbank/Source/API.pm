@@ -56,30 +56,34 @@ sub match {
 
     $logger->debug("Attempting to interrogate upstream Fingerbank project");
 
+    my %upstream_args = map {lc($_) => $args->{lc($_)}} @fingerbank::Constant::QUERY_PARAMETERS;
+
     my $ua = LWP::UserAgent->new;
     $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
-    my $query_args = encode_json($args);
+    my $query_args = encode_json(\%upstream_args);
 
-    my %parameters = ( key => $Config->{'upstream'}{'api_key'} );
-    my $url = URI->new($Config->{'upstream'}{'interrogate_url'});
-    $url->query_form(%parameters);
+    return $self->cache->compute("upstream_result_$query_args", sub {
+        my %parameters = ( key => $Config->{'upstream'}{'api_key'} );
+        my $url = URI->new($Config->{'upstream'}{'interrogate_url'});
+        $url->query_form(%parameters);
 
-    my $req = HTTP::Request->new( GET => $url->as_string);
-    $req->content_type('application/json');
-    $req->content($query_args);
+        my $req = HTTP::Request->new( GET => $url->as_string);
+        $req->content_type('application/json');
+        $req->content($query_args);
 
-    my $res = $ua->request($req);
+        my $res = $ua->request($req);
 
-    if ( $res->is_success ) {
-        my $result = decode_json($res->content);
-        $logger->info("Successfully interrogate upstream Fingerbank project for matching. Got device : ".$result->{device}->{id});
-        # Tracking down from where the result is coming
-        $result->{'SOURCE'} = "Upstream";
-        return ( $fingerbank::Status::OK, $result );
-    } else {
-        $logger->warn("An error occured while interrogating upstream Fingerbank project: " . $res->status_line);
-        return $fingerbank::Status::INTERNAL_SERVER_ERROR;
-    }
+        if ( $res->is_success ) {
+            my $result = decode_json($res->content);
+            $logger->info("Successfully interrogate upstream Fingerbank project for matching. Got device : ".$result->{device}->{id});
+            # Tracking down from where the result is coming
+            $result->{'SOURCE'} = "Upstream";
+            return ( $fingerbank::Status::OK, $result );
+        } else {
+            $logger->warn("An error occured while interrogating upstream Fingerbank project: " . $res->status_line);
+            return $fingerbank::Status::INTERNAL_SERVER_ERROR;
+        }
+    });
 
 }
 

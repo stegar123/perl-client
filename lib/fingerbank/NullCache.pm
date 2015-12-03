@@ -1,33 +1,59 @@
-package fingerbank::Base::Source;
+package fingerbank::NullCache;
 
 =head1 NAME
 
-fingerbank::Base::Source
+fingerbank::NullCache
 
 =head1 DESCRIPTION
 
-Base class for the library sources
+Default Fingerbank cache.
+
+Will always miss.
 
 =cut
 
-use Moose;
-use fingerbank::Status;
-use fingerbank::NullCache;
+=head1 METHODS
 
-has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
+=head2 new
 
-=head2 match
-
-Whether or not the arguments match a result in this source
+Instantiate a new cache object
 
 =cut
 
-sub match {
-    my ($self, $args) = @_;
-    return $fingerbank::Status::NOT_IMPLEMENTED; 
+sub new {
+    my ($class) = @_;
+    my $self = bless {}, $class;
+    return $self;
 }
 
-=back
+=head2 get
+
+Get a key from the cache
+Always misses
+
+=cut
+
+sub get {return undef;}
+
+=head2 set
+
+Set a key in the cache
+
+=cut
+
+sub set {return undef;}
+
+=head2 compute
+
+Compute a value from the cache
+Always misses and will always execute the computing method
+
+=cut
+
+sub compute {
+    my ($self, $key, $fct) = @_;
+    return $fct->();
+}
 
 =head1 AUTHOR
 
@@ -55,4 +81,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
 USA.
 
 =cut
+
 1;
