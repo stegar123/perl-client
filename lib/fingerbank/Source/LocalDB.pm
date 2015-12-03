@@ -55,9 +55,6 @@ sub match {
     # We set the status to OK so we can proceed
     my ($status, $status_msg) = $fingerbank::Status::OK;
 
-    # TODO: Review that part to make it less "hacky"
-    $args->{'mac_vendor'} = $args->{'mac'};
-
     # We assign the value of each key to the corresponding object attribute (ie.: DHCP_Fingerprint_value)
     # Note: We must have all of the keys in the query, either with a value or with ''
     $logger->debug("Attempting to match a device with the following attributes:");
