@@ -240,8 +240,23 @@ sub _getCombinationID {
             foreach ( @fingerbank::Constant::QUERY_PARAMETERS ) {
                 my $concatenated_key = $_ . '_id';
                 my $lc_concatenated_key = lc($concatenated_key);
-                $logger->debug("ResultSet - $lc_concatenated_key: '" . $resultset->$lc_concatenated_key . "'");
-                $matched_keys ++ if ( $resultset->$lc_concatenated_key eq $self->$concatenated_key || $resultset->$lc_concatenated_key eq '' );
+                $logger->debug("ResultSet - $lc_concatenated_key: '" . defined($resultset->$lc_concatenated_key) ? $resultset->$lc_concatenated_key : "NULL" . "'");
+                # both are undefined so they are the same
+                if (!defined($resultset->$lc_concatenated_key) && !defined($self->$concatenated_key)){
+                    $matched_keys ++;
+                }
+                # One of the value is undefined
+                elsif(!defined($resultset->$lc_concatenated_key) || !defined($self->$concatenated_key)){
+                    # No chance to match conditions below as they test equality and one of the value is not defined
+                }
+                # both keys are equal
+                elsif ( $resultset->$lc_concatenated_key eq $self->$concatenated_key){
+                    $matched_keys ++;
+                }
+                # the result from the DB is the wildcard (empty string)
+                elsif ($resultset->$lc_concatenated_key eq '' ){
+                    $matched_keys ++;
+                }
             }
             my $exact_matched_keys = @fingerbank::Constant::QUERY_PARAMETERS;
             $self->combination_is_exact($TRUE) if ( $matched_keys == $exact_matched_keys );
