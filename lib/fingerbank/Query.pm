@@ -40,11 +40,21 @@ sub match {
     return $matcher->match_best($args);
 }
 
+=head2 matchEndpoint
+
+=cut
+
 sub matchEndpoint {
     my ( $self, $args ) = @_;
     my $result = $self->match($args);
     return defined($result) ? fingerbank::Model::Endpoint->fromResult($result) : undef;
 }
+
+=head2 parseArgs
+
+Parse / Clean query arguments coming in for matching purposes.
+
+=cut
 
 sub parseArgs {
     my ( $self, $args ) = @_;
