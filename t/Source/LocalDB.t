@@ -25,7 +25,7 @@ my $args = {
     dhcp_fingerprint => $data::seed::seed_data_ids{Valid_DHCP_Fingerprint}->{value},
     dhcp_vendor => $data::seed::seed_data_ids{Valid_DHCP_Vendor}->{value},
     user_agent => $data::seed::seed_data_ids{Valid_User_Agent}->{value},
-    mac => $data::seed::seed_data_ids{Valid_MAC_Vendor}->{mac}."abcdef",
+    mac_vendor => $data::seed::seed_data_ids{Valid_MAC_Vendor}->{mac},
 };
 
 my ($status, $result);
@@ -39,6 +39,9 @@ ok($result->{SCHEMA} eq "Local",
 ok($result->{SOURCE} eq "Local",
     "Result is coming from the Local source");
 
+ok($source->{combination_is_exact},
+    "Combination exactness is properly detected");
+
 ok($result->{id} eq $data::seed::seed_data_ids{FullMatchCombination}->{id},
     "Result matches the right combination");
 
@@ -48,6 +51,8 @@ ok($result->{device}->{id} eq $data::seed::seed_data_ids{FullMatchCombination}->
 # test matching with a wildcard (L2 on user_agent_id)
 $args->{user_agent} = $data::seed::seed_data_ids{UnmatchableUser_Agent}->{value};
 
+# reset the source
+$source = fingerbank::Source::LocalDB->new();
 ($status, $result) = $source->match($args);
 
 ok($result->{SCHEMA} eq "Local",
@@ -58,6 +63,12 @@ ok($result->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{id},
 
 ok($result->{device}->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{device_id},
     "Result matches the right device");
+
+ok($source->{combination_is_exact},
+    "Combination exactness is properly detected");
+
+# reset the source
+$source = fingerbank::Source::LocalDB->new();
 
 # matching with no user agent
 delete $args->{user_agent};
@@ -72,6 +83,29 @@ ok($result->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{id},
 
 ok($result->{device}->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{device_id},
     "Result matches the right device");
+
+ok($source->{combination_is_exact},
+    "Combination exactness is properly detected");
+
+# reset the source
+$source = fingerbank::Source::LocalDB->new();
+
+# matching with part of the info right
+delete $args->{mac_vendor};
+
+($status, $result) = $source->match($args);
+
+ok($result->{SCHEMA} eq "Local",
+    "Result is coming from the Local schema");
+
+ok($result->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{id},
+    "Result matches the right combination");
+
+ok($result->{device}->{id} eq $data::seed::seed_data_ids{WildcardMatchCombination}->{device_id},
+    "Result matches the right device");
+
+ok(!$source->{combination_is_exact},
+    "Combination non-exactness is properly detected");
 
 done_testing();
 
