@@ -17,13 +17,19 @@ init-p0f-map:
 
 package-files:
 		@read -p "Version (X.Y.Z): " version; \
+		read -p "Branch: " branch; \
 		tmp_dir=fingerbank-$$version; \
 		echo Building package files tgz for fingerbank-$$version; \
-	    if [ -d $$tmp_dir ]; then \
+		if [ -d $$tmp_dir ]; then \
 			echo "Destination for git clone ($$tmp_dir) already exists"; \
 		else \
 			mkdir $$tmp_dir; \
 			git clone https://github.com/fingerbank/perl-client.git $$tmp_dir; \
+			if [ -n $$branch ]; then \
+				cd $$tmp_dir ; \
+				git checkout $$branch ; \
+				cd .. ; \
+			fi ; \
 			rm -f $$tmp_dir/README.md; \
 			rm -rf $$tmp_dir/t; \
 			read -p "API key: " api_key; \
