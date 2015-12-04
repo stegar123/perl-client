@@ -17,7 +17,7 @@ init-p0f-map:
 
 package-files:
 		@read -p "Version (X.Y.Z): " version; \
-		read -p "Branch: " branch; \
+		read -p "From Branch: " branch; \
 		tmp_dir=fingerbank-$$version; \
 		echo Building package files tgz for fingerbank-$$version; \
 		if [ -d $$tmp_dir ]; then \
