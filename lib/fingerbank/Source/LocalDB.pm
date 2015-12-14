@@ -153,7 +153,7 @@ sub _getQueryKeyIDs {
         }
 
         my $model = "fingerbank::Model::$key";
-        my $id = $self->cache->compute("$model\_".encode_json($query), sub { 
+        my ($status, $id) = $self->cache->compute("$model\_".encode_json($query), sub { 
             my ($status, $result) = $model->find([$query, { columns => ['id'] }]);
             if ( is_error($status) ) {
                 my $status_msg = "Cannot find any ID for '$key' with value '" . $self->$concatenated_key . "'";
@@ -165,10 +165,10 @@ sub _getQueryKeyIDs {
 
                 return ( $fingerbank::Status::NOT_FOUND, $status_msg );
             }
-            return $result->id;
+            return ( $fingerbank::Status::OK, $result->id );
         });
     
-        if($id){
+        if(is_success($status)){
             $self->{$key . '_id'} = $id;
         }
        
@@ -211,15 +211,23 @@ sub _getCombinationID {
         # If API is configured, we want an exact match to save us some time by avoiding a complex query
         my $resultset;
         if ( fingerbank::Config::is_api_key_configured && fingerbank::Config::do_we_interrogate_upstream ) {
-            $resultset = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => [ @bindings ] })->first;
+            # TODO : change cache key to CombinationMatchExact
+            # Should be done in a major or minor
+            my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
+                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => [ @bindings ] })->first;
+                return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
+            });
+            if(is_success($status)) {
+                $resultset = $db->handle->resultset('Combination')->search({id => $id})->first;
+            }
         }
         # Otherwise, we proceed with the complex select query using a view and where / case clauses 
         else {
-            my $id = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
+            my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
                 my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
-                return $result ? $result->id : undef;
+                return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
-            if($id) {
+            if(is_success($status)) {
                 $resultset = $db->handle->resultset('Combination')->search({id => $id})->first;
             }
         }
