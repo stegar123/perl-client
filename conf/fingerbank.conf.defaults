@@ -14,6 +14,11 @@ p0f_socket_path = /var/run/p0f.sock
 p0f_map_path = /usr/local/fingerbank/conf/fingerbank-p0f.fp
 p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map
 
+[redis]
+use_for_matching=enabled
+host=127.0.0.1
+port=6379
+
 [proxy]
 use_proxy = disabled
 host =
