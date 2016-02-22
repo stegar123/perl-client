@@ -53,6 +53,7 @@ my @found = $redis->sinter(@sets);
 
 if(@found){
     print "Found perfect match ! : ".$found[0];
+    print "Took : ".(time-$start);
     exit;
 }
 
@@ -104,5 +105,3 @@ while($failing && $i > 1){
     }
     $i -= 1;
 }
-
-print "Took : ".(time-$start);
