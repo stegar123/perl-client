@@ -35,12 +35,12 @@ my %attr_map = (
 
 my %search = (
 #    "mac_vendor"=>"b84fd5", 
-    "mac_vendor"=>"", 
+    "mac_vendor"=>"accf85", 
     "dhcp6_enterprise"=>"", 
-    "dhcp_fingerprint"=>"1,15,3,6,44,46,47,31,33,121,249,252,43", 
+    "dhcp_fingerprint"=>"", 
     "dhcp6_fingerprint"=>"", 
-    "dhcp_vendor"=>"MSFT 5.0", 
-    "user_agent" => "",
+    "dhcp_vendor"=>"", 
+    "user_agent" => "Dalvik/2.1.0 (Linux; U; Android 5.1.1; HUAWEI SCL-L04 Build/HuaweiSCL-L04)",
 #    "dhcp_vendor"=>"dhcpcd-5.5.6", 
 #    "user_agent" => "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko",
 );
@@ -52,7 +52,8 @@ my @sets = map{$attr_map{$_}."-".$search{$_}} keys(%search);
 my @found = $redis->sinter(@sets);
 
 if(@found){
-    print "Found perfect match ! : ".Dumper($found[0]);
+    print "Found perfect match ! : ".$found[0];
+    exit;
 }
 
 # searching for partial matches without the empty values
