@@ -40,8 +40,6 @@ foreach my $attr (keys(%infos)){
         my $key = "$attr-".$elem->$value_column;
         $redis->del($key);
         my @combinations = $db->handle->resultset("Combination")->search($fkey_column => $elem->$id_column);
-        foreach my $combination (@combinations){
-            $redis->sadd($key, $combination->id);
-        }
+        $redis->sadd($key, map { $_->id } @combinations) if(@combinations);
     }
 }
