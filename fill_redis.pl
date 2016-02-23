@@ -28,6 +28,8 @@ my %infos = (
     MAC_Vendor => {value_column => "mac"},
 );
 
+my %supermap;
+
 foreach my $attr (keys(%infos)){
     my $id_column = $infos{$attr}{id_column} // "id";
     my $value_column = $infos{$attr}{value_column} // "value";
@@ -37,9 +39,15 @@ foreach my $attr (keys(%infos)){
 
     foreach my $elem (@values){
         $logger->info("Processing $attr ".$elem->$id_column);
-        my $key = "$attr-".$elem->$value_column;
-        $redis->del($key);
+        my $key = lc($attr)."-".$elem->$value_column;
+#        $redis->del($key);
         my @combinations = $db->handle->resultset("Combination")->search($fkey_column => $elem->$id_column);
-        $redis->sadd($key, map { $_->id } @combinations) if(@combinations);
+#        $redis->sadd($key, map { $_->id } @combinations) if(@combinations);
+        $supermap{$key} = [map { $_->id } @combinations] if(@combinations);
     }
 }
+
+use JSON::MaybeXS;
+my $supermap_json = encode_json(\%supermap);
+
+print $supermap_json;
