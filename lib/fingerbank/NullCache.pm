@@ -23,6 +23,7 @@ Instantiate a new cache object
 sub new {
     my ($class) = @_;
     my $self = bless {}, $class;
+    $self->{dummy} = 1;
     return $self;
 }
 

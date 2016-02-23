@@ -185,10 +185,6 @@ sub update_upstream {
 
     ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
 
-    if(is_enabled($Config->{redis}{use_for_matching})){
-        fingerbank::DB::update_redis_from_db();
-    }
-
     return ( $status, $status_msg )
 }
 
@@ -262,52 +258,6 @@ sub submit_unknown {
     }
 
     return ( $status, $status_msg );
-}
-
-sub update_redis_from_db {
-    
-    my $logger = fingerbank::Log::get_logger;
-    
-    my $db = fingerbank::DB->new(schema => "Upstream");
-
-    my $redis = redis_connection();
-
-    my %infos = (
-        DHCP_Fingerprint => {},
-        DHCP6_Fingerprint => {},
-        DHCP_Vendor => {},
-        DHCP6_Enterprise => {},
-        User_Agent => {},
-        MAC_Vendor => {value_column => "mac"},
-    );
-
-    foreach my $attr (keys(%infos)){
-        my $id_column = $infos{$attr}{id_column} // "id";
-        my $value_column = $infos{$attr}{value_column} // "value";
-        my $fkey_column = $infos{$attr}{fkey_column} // lc($attr)."_id";
-        
-        my @values = $db->handle->resultset($attr)->all();
-
-        foreach my $elem (@values){
-            $logger->info("Processing $attr ".$elem->$id_column);
-            my $key = "$attr-".$elem->$value_column;
-            $redis->del($key);
-            my @combinations = $db->handle->resultset("Combination")->search($fkey_column => $elem->$id_column);
-            $redis->sadd($key, map { $_->id } @combinations) if(@combinations);
-        }
-    }
-}
-
-## rework this
-sub redis_connection {
-    my $Config = fingerbank::Config::get_config;
-    my $redis = Redis::Fast->new(
-      server => $Config->{redis}->{host}.':'.$Config->{redis}->{port},
-      name => 'fingerbank',
-      reconnect => 1,
-      every => 100,
-    ); 
-    return $redis;
 }
 
 =head1 AUTHOR
