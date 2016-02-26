@@ -160,7 +160,7 @@ sub is_a_by_id {
 
 sub hasParent {
     my ( $self, $device_name ) = @_;
-    return any { $_ eq $device_name } @{$self->parents};
+    return any { $_ eq $device_name } @{$self->parents // []};
 }
 
 
