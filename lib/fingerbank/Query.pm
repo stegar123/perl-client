@@ -33,7 +33,13 @@ sub match {
     $self->parseArgs($args);
 
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
-    $matcher->register_source(fingerbank::Source::LocalDB->new);
+    if(is_enabled(fingerbank::Config::get_config('redis', 'use_for_matching'))) {
+        $matcher->register_source(fingerbank::Source::LocalDB->new(search_schemas => ['Local']));
+        $matcher->register_source(fingerbank::Source::RedisDB->new);
+    }
+    else {
+        $matcher->register_source(fingerbank::Source::LocalDB->new);
+    }
     $matcher->register_source(fingerbank::Source::API->new);
     $matcher->register_source(fingerbank::Source::TCPFingerprinting->new);
 
