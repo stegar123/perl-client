@@ -49,7 +49,7 @@ sub match {
     if(@found){
         $logger->info("Found perfect match ! : ".$found[0]);
         my (@infos) = $self->_buildResult($self->combination_to_device($found[0]));
-        $logger->info("Took : ".(time-$start));
+        $logger->trace(sub { "RedisDB took : ".(time-$start) });
         return @infos;
     }
 
@@ -73,15 +73,9 @@ sub match {
             else{
                 $combinations = $found{[keys(%found)]->[0]};
             }
-            $logger->info("The best match in found has : ".@$combinations." results in it");
-
-
-#        my $big_or = join(',', @$combinations);
-#        $big_or = "($big_or)";
-#        my $devices_count = $db->handle->storage->dbh->selectall_hashref("select id,count(device_id) as device_count from combination where id IN $big_or group by device_id order by device_count DESC", "id");
+            $logger->debug(sub { "The best match in found has : ".@$combinations." results in it" });
 
             my $devices_count = $self->combinations_device_count(@$combinations);
-
             
             my $max = -1;
             my $max_device_id = undef;
@@ -93,7 +87,7 @@ sub match {
             }
 
             my (@infos) = $self->_buildResult($max_device_id);
-            $logger->info("Took : ".(time-$start));
+            $logger->trace(sub { "RedisDB took : ".(time-$start) });
             return @infos;
 
             $failing = 0;
@@ -114,7 +108,7 @@ sub _get_combination2device {
 
     my $start = time;
     if(!$self->cache->{dummy} && ( my $combination2device = $self->cache->compute("combination2device", sub { _build_combination2device() }, {expires_in => 0xffffffff} ) ) ){
-        $logger->info("Deserialization took : ".(time-$start));
+        $logger->trace(sub { "Deserialization of combination2device took : ".(time-$start)} );
         return $combination2device;
     }
 }
