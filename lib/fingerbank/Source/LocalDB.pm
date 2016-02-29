@@ -40,6 +40,7 @@ has 'combination_id' => (is => 'rw', isa => 'Str');
 has 'combination_is_exact' => (is => 'rw', isa => 'Str');
 has 'matched_schema' => (is => 'rw', isa => 'Str');
 
+has 'search_schemas' => (is => 'rw', default => sub {\@fingerbank::DB::schemas});
 
 =head2 match
 
@@ -201,7 +202,7 @@ sub _getCombinationID {
 
     # Looking for best matching combination in schemas
     # Sorting by match is handled by the SQL query itself. See L<fingerbank::Base::Schema::CombinationMatch>
-    foreach my $schema ( @fingerbank::DB::schemas ) {
+    foreach my $schema ( @{$self->search_schemas} ) {
         my $db = fingerbank::DB->new(schema => $schema);
         if ( $db->isError ) {
             $logger->warn("Cannot read from 'CombinationMatch' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
