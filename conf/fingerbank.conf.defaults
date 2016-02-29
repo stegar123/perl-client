@@ -15,7 +15,7 @@ p0f_map_path = /usr/local/fingerbank/conf/fingerbank-p0f.fp
 p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map
 
 [redis]
-use_for_matching=enabled
+use_for_matching=disabled
 host=127.0.0.1
 port=6379
 
