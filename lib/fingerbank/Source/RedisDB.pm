@@ -2,11 +2,11 @@ package fingerbank::Source::RedisDB;
 
 =head1 NAME
 
-fingerbank::Source::TCPFingerprinting
+fingerbank::Source::RedisDB
 
 =head1 DESCRIPTION
 
-Source for TCPFingerprinting (p0f)
+Source for RedisDB combination matching
 
 =cut
 
@@ -97,10 +97,22 @@ sub match {
 
 }
 
+=head2 _build_combination2device
+
+Build the combination2device hash map
+
+=cut
+
 sub _build_combination2device {
     my $db = fingerbank::DB->new(schema => "Upstream");
     return $db->handle->storage->dbh->selectall_hashref("select id,device_id from combination", "id");
 }
+
+=head2 _get_combination2device
+
+Compute the combination2device hash map if there is a cache available
+
+=cut
 
 sub _get_combination2device {
     my ($self) = @_;
@@ -113,6 +125,12 @@ sub _get_combination2device {
     }
 }
 
+=head2 _get_combination2device
+
+Get the associated device ID that belongs to the combination
+
+=cut
+
 sub combination_to_device {
     my ($self, $combination_id) = @_;
     if(my $combination2device = $self->_get_combination2device()){
@@ -122,8 +140,13 @@ sub combination_to_device {
         my $db = fingerbank::DB->new(schema => "Upstream");
         return fingerbank::Model::Combination->read($combination_id)->{device_id};
     }
-
 }
+
+=head2 _get_combination2device
+
+Get the count of combinations per device ID for a list of combinations
+
+=cut
 
 sub combinations_device_count {
     my ($self, @combination_ids) = @_;
@@ -148,7 +171,7 @@ sub combinations_device_count {
 
 =head2 _buildResult
 
-Build expected resulting output (hash) from the information p0f has returned
+Build expected resulting output (hash) from the information we got from Redis
 
 =cut
 
