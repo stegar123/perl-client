@@ -18,6 +18,7 @@ use fingerbank::SourceMatcher;
 use fingerbank::Source::LocalDB;
 use fingerbank::Source::API;
 use fingerbank::Source::TCPFingerprinting;
+use fingerbank::Source::RedisDB;
 use fingerbank::NullCache;
 
 has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
