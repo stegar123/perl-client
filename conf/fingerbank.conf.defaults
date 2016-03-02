@@ -18,6 +18,7 @@ p0f_map_url = https://fingerbank.inverse.ca/api/v1/download-p0f-map
 use_for_matching=disabled
 host=127.0.0.1
 port=6379
+attribute_map_url = https://fingerbank.inverse.ca/api/v1/download-attribute-map
 
 [proxy]
 use_proxy = disabled

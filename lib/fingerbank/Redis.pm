@@ -19,6 +19,10 @@ use File::Slurp qw(read_file);
 use JSON::MaybeXS;
 use fingerbank::FilePath qw($COMBINATION_MAP_FILE);
 use fingerbank::Config;
+use fingerbank::Status;
+use fingerbank::Util qw(is_success);
+use Encode qw(encode);
+use I18N::Langinfo qw(langinfo CODESET);
 
 our $_CONNECTION;
 
@@ -44,7 +48,7 @@ sub _build_redis {
     return $redis;
 }
 
-=head2 _get_combination2device
+=head2 fill_from_map
 
 Insert the sets in Redis from the JSON structure in the map file
 
@@ -52,14 +56,40 @@ Insert the sets in Redis from the JSON structure in the map file
 
 sub fill_from_map {
     my ($self) = @_;
+
+    my $os_locale = langinfo(CODESET());
+
     my $content = read_file($COMBINATION_MAP_FILE);
     my $infos = decode_json($content);
     my $redis = $self->connection;
 
     while(my ($key, $combination_ids) = each(%$infos)){
+        $key = encode($os_locale, $key);
         $redis->del($key);
-        $redis->sadd($key, @{$combination_ids});
+        if(@{$combination_ids}){
+            $redis->sadd($key, @{$combination_ids});
+        }
     }
+}
+
+=head2 update_from_api
+
+Updates the local instance with the latest available from the cloud API
+
+=cut
+
+sub update_from_api {
+    my ($status, $status_msg) = fingerbank::Config::update_attribute_map();
+
+    if(is_success($status)){
+        my $redis = fingerbank::Redis->new;
+        $redis->fill_from_map();
+        return ($fingerbank::Status::OK, "Updated successfully");
+    }
+    else {
+        return ($status, $status_msg);
+    }
+
 }
 
 =head1 AUTHOR

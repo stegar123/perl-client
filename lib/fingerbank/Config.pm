@@ -16,7 +16,7 @@ use warnings;
 use Config::IniFiles;
 
 use fingerbank::Constant qw($TRUE $FALSE);
-use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE);
+use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE $COMBINATION_MAP_FILE);
 use fingerbank::Log;
 use fingerbank::Status;
 use fingerbank::Util qw(is_enabled is_success);
@@ -288,11 +288,32 @@ sub update_p0f_map {
     my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'tcp_fingerprinting'}{'p0f_map_url'};
     my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $Config->{'tcp_fingerprinting'}{'p0f_map_path'};
 
-    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
+    ($status, $status_msg) = fingerbank::Util::fetch_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
 
     return ( $status, $status_msg )
 }
 
+=head2 update_attribute_map
+
+Updates the attribute map used to fill the redis instance
+
+=cut
+
+sub update_attribute_map {
+    my ( %params ) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my ( $status, $status_msg );
+
+    my $Config = fingerbank::Config::get_config;
+
+    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'redis'}{'attribute_map_url'};
+    my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $COMBINATION_MAP_FILE;
+
+    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
+
+    return ( $status, $status_msg )
+}
 
 =head1 AUTHOR
 
