@@ -97,7 +97,7 @@ sub match {
 
 }
 
-=head2 _get_combination2device
+=head2 combinations_device_count
 
 Get the count of combinations per device ID for a list of combinations
 
