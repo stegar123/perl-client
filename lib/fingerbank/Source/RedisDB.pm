@@ -97,51 +97,6 @@ sub match {
 
 }
 
-=head2 _build_combination2device
-
-Build the combination2device hash map
-
-=cut
-
-sub _build_combination2device {
-    my $db = fingerbank::DB->new(schema => "Upstream");
-    return $db->handle->storage->dbh->selectall_hashref("select id,device_id from combination", "id");
-}
-
-=head2 _get_combination2device
-
-Compute the combination2device hash map if there is a cache available
-
-=cut
-
-sub _get_combination2device {
-    my ($self) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $start = time;
-    if(!$self->cache->{dummy} && ( my $combination2device = $self->cache->compute("combination2device", sub { _build_combination2device() }, {expires_in => 0xffffffff} ) ) ){
-        $logger->trace(sub { "Deserialization of combination2device took : ".(time-$start)} );
-        return $combination2device;
-    }
-}
-
-=head2 _get_combination2device
-
-Get the associated device ID that belongs to the combination
-
-=cut
-
-sub combination_to_device {
-    my ($self, $combination_id) = @_;
-    if(my $combination2device = $self->_get_combination2device()){
-        return $combination2device->{$combination_id}->{device_id};
-    }
-    else {
-        my $db = fingerbank::DB->new(schema => "Upstream");
-        return fingerbank::Model::Combination->read($combination_id)->{device_id};
-    }
-}
-
 =head2 _get_combination2device
 
 Get the count of combinations per device ID for a list of combinations
@@ -151,22 +106,14 @@ Get the count of combinations per device ID for a list of combinations
 sub combinations_device_count {
     my ($self, @combination_ids) = @_;
 
-    if(my $combination2device = $self->_get_combination2device()){
-        my %devices_count;
-        foreach my $combination_id (@combination_ids){
-            my $device_id = $combination2device->{$combination_id}->{device_id};
-            $devices_count{$device_id} //= 0;
-            $devices_count{$device_id} += 1;
-        }
-        return \%devices_count;
-    }
-    else {
+    $self->cache->compute("combinations_device_count_".join(',', @combination_ids), sub {
         my $db = fingerbank::DB->new(schema => "Upstream");
         my $big_or = join(',', @combination_ids);
         $big_or = "($big_or)";
         my $devices_count = $db->handle->storage->dbh->selectall_hashref("select device_id,count(device_id) as device_count from combination where id IN $big_or group by device_id order by device_count DESC", "device_id");
         return { map { $_ => $devices_count->{$_}->{device_count} } keys(%$devices_count) };
-    }
+    });
+    
 }
 
 =head2 _buildResult
