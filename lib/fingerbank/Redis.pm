@@ -2,11 +2,11 @@ package fingerbank::Redis;
 
 =head1 NAME
 
-fingerbank::Source::LocalDB
+fingerbank::Redis
 
 =head1 DESCRIPTION
 
-Source for interrogating the local Fingerbank databases (Upstream and Local)
+To manage the connection to Redis and the data inside it
 
 =cut
 
