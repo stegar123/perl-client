@@ -34,7 +34,7 @@ sub match {
     $self->parseArgs($args);
 
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
-    if(is_enabled(fingerbank::Config::get_config('redis', 'use_for_matching'))) {
+    if(is_enabled(fingerbank::Config::get_config('query', 'use_redis'))) {
         $matcher->register_source(fingerbank::Source::LocalDB->new(search_schemas => ['Local']));
         $matcher->register_source(fingerbank::Source::RedisDB->new);
     }
