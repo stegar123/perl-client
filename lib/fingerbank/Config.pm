@@ -311,6 +311,8 @@ sub update_attribute_map {
     my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $COMBINATION_MAP_FILE;
 
     ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
+    
+    fingerbank::Util::cleanup_backup_files($destination);
 
     return ( $status, $status_msg )
 }

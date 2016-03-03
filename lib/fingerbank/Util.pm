@@ -19,6 +19,7 @@ use POSIX;
 use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::Config;
 use File::Copy qw(copy move);
+use File::Find;
 
 BEGIN {
     use Exporter ();
@@ -92,6 +93,47 @@ sub is_error {
 
     return $TRUE if ($code >= 400 && $code < 600);
     return $FALSE;
+}
+
+=head2 cleanup_backup_files
+
+Cleanup backup files that have been created while updating a file
+
+=cut
+
+sub cleanup_backup_files {
+    my ($file, $keep) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    $keep //= 5;
+
+    # extracting directory and filename from provided info
+    my @parts = split('/', $file);
+    my $filename = pop @parts;
+    my $directory = join('/', @parts);
+    my $metaquoted_name = quotemeta($filename);
+
+    my @files;
+    # we find all the backup files associated
+    # They end with an underscore digits another underscore and another serie of digits
+    File::Find::find({wanted => sub {
+        /^$metaquoted_name\_[0-9]+\_[0-9+]/ && push @files, $File::Find::name ;
+    }}, $directory);
+
+    # we sort them by name as they contain the date
+    # so that will give them in ascending order
+    @files = sort(@files);
+    
+    # we remove the amount we want to keep
+    foreach my $i (1..$keep){
+        pop @files;    
+    }
+
+    # all the files remaining are unwanted
+    foreach my $file (@files){
+        $logger->info("Deleting backup file $file");
+        unlink $file;
+    }
 }
 
 sub update_file {
