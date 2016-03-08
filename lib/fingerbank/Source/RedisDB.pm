@@ -44,19 +44,21 @@ sub match {
             
     # searching for the perfect match with the empty values
     my @sets = map{$_."-".$args->{$_}} keys(%$args);
+    my @sets_without_empty = map{ $args->{$_} ? $_."-".$args->{$_} : ()} keys(%$args);
     my @found = $connection->sinter(@sets);
 
     if(@found){
         $logger->info("Found perfect match ! : ".$found[0]);
-        my (@infos) = $self->_buildResult($self->combination_to_device($found[0]));
+        my $combination = fingerbank::Model::Combination->read($found[0]);
+        my (@infos) = $self->_buildResult($combination->{device_id});
         $logger->trace(sub { "RedisDB took : ".(time-$start) });
         return @infos;
     }
 
     my $failing = 1;
-    my $i = scalar(@sets);
+    my $i = scalar(@sets_without_empty);
     while($failing && $i > 0){
-        my $subsets = powerset({min => $i, max => $i}, @sets);
+        my $subsets = powerset({min => $i, max => $i}, @sets_without_empty);
         my %found;
         foreach my $subset (@$subsets){
             my @intersections = $connection->sinter(@$subset);
@@ -65,15 +67,16 @@ sub match {
             }
         }
         if(keys(%found)){
-            my $combinations;
+            my ($best_key, $combinations);
             if(keys(%found) > 1){
                 my @ordered = sort { @{$found{$a}} <=> @{$found{$b}} } keys(%found);
-                $combinations = $found{$ordered[-1]};
+                $best_key = $found{$ordered[-1]};
             }
             else{
-                $combinations = $found{[keys(%found)]->[0]};
+                $best_key = [keys(%found)]->[0];
             }
-            $logger->debug(sub { "The best match in found has : ".@$combinations." results in it" });
+            $combinations = $found{$best_key};
+            $logger->debug(sub { "The best match is $best_key and has : ".@$combinations." results in it" });
 
             my $devices_count = $self->combinations_device_count(@$combinations);
             
