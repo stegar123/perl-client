@@ -241,6 +241,7 @@ sub fetch_file {
         $logger->info("Successfully fetched '$params{'download_url'}' from Fingerbank project");
         open my $fh, ">", $params{'destination'};
         print {$fh} $res->decoded_content;
+        set_file_permissions($params{'destination'});
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $logger->warn("Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line);
@@ -276,6 +277,20 @@ sub get_lwp_client {
     }
 
     return $ua;
+}
+
+=head2 set_file_permissions
+
+Sets the proper file permissions a downloaded file
+
+=cut
+
+sub set_file_permissions {
+    my ($file) = @_;
+    my $user = "fingerbank";
+    my ($login,$pass,$uid,$gid) = getpwnam($user)
+        or die "$user not in passwd file";
+    chown $uid, $gid, $file;
 }
 
 =head1 AUTHOR
