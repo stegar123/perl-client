@@ -19,7 +19,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT_OK );
     @ISA = qw(Exporter);
-    @EXPORT_OK = qw($FALSE $TRUE $YES $NO);
+    @EXPORT_OK = qw($FALSE $TRUE $YES $NO $FINGERBANK_USER);
 }
 
 =head1 CONSTANTS
@@ -93,6 +93,14 @@ Readonly::Hash our %PARENT_IDS => (
     WINDOWS_PHONE => 5474,
     BLACKBERRY => 192,
 );
+
+=item $FINGERBANK_USER
+
+The OS user for Fingerbank
+
+=cut
+
+Readonly our $FINGERBANK_USER => "fingerbank";
 
 =back
 

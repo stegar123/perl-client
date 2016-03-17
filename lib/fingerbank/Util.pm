@@ -16,7 +16,7 @@ use warnings;
 use LWP::UserAgent;
 use POSIX;
 
-use fingerbank::Constant qw($TRUE $FALSE);
+use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER);
 use fingerbank::Config;
 use File::Copy qw(copy move);
 use File::Find;
@@ -287,9 +287,8 @@ Sets the proper file permissions a downloaded file
 
 sub set_file_permissions {
     my ($file) = @_;
-    my $user = "fingerbank";
-    my ($login,$pass,$uid,$gid) = getpwnam($user)
-        or die "$user not in passwd file";
+    my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
+        or die "$FINGERBANK_USER not in passwd file";
     chown $uid, $gid, $file;
 }
 
