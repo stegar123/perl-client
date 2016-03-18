@@ -16,7 +16,7 @@ use warnings;
 use LWP::UserAgent;
 use POSIX;
 
-use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER);
+use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
 use File::Copy qw(copy move);
 use File::Find;
@@ -105,7 +105,7 @@ sub cleanup_backup_files {
     my ($file, $keep) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    $keep //= 5;
+    $keep //= $DEFAULT_BACKUP_RETENTION;
 
     # extracting directory and filename from provided info
     my @parts = split('/', $file);

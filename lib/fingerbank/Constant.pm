@@ -19,7 +19,7 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT_OK );
     @ISA = qw(Exporter);
-    @EXPORT_OK = qw($FALSE $TRUE $YES $NO $FINGERBANK_USER);
+    @EXPORT_OK = qw($FALSE $TRUE $YES $NO $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 }
 
 =head1 CONSTANTS
@@ -101,6 +101,14 @@ The OS user for Fingerbank
 =cut
 
 Readonly our $FINGERBANK_USER => "fingerbank";
+
+=item $DEFAULT_BACKUP_RETENTION
+
+The amount of backups to keep by default in the file cleanup
+
+=cut
+
+Readonly our $DEFAULT_BACKUP_RETENTION => 5;
 
 =back
 
