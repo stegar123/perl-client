@@ -25,8 +25,6 @@ use fingerbank::Constant qw($REDIS_RECONNECT_INTERVAL $TRUE);
 use Encode qw(encode);
 use I18N::Langinfo qw(langinfo CODESET);
 
-our $_CONNECTION;
-
 =head2 _build_redis
 
 Build the redis object
@@ -35,10 +33,6 @@ Build the redis object
 
 sub _build_redis {
     my ($self) = @_;
-
-    if($_CONNECTION){
-        return $_CONNECTION;
-    }
 
     my $Config = fingerbank::Config::get_config;
     my $redis = Redis::Fast->new(
