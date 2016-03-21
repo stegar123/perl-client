@@ -12,6 +12,8 @@ Will always miss.
 
 =cut
 
+use fingerbank::Constant qw($TRUE);
+
 =head1 METHODS
 
 =head2 new
@@ -23,7 +25,7 @@ Instantiate a new cache object
 sub new {
     my ($class) = @_;
     my $self = bless {}, $class;
-    $self->{dummy} = 1;
+    $self->{dummy} = $TRUE;
     return $self;
 }
 
