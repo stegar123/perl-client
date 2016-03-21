@@ -21,6 +21,7 @@ use fingerbank::FilePath qw($COMBINATION_MAP_FILE);
 use fingerbank::Config;
 use fingerbank::Status;
 use fingerbank::Util qw(is_success);
+use fingerbank::Constant qw($REDIS_RECONNECT_INTERVAL $TRUE);
 use Encode qw(encode);
 use I18N::Langinfo qw(langinfo CODESET);
 
@@ -42,8 +43,8 @@ sub _build_redis {
     my $Config = fingerbank::Config::get_config;
     my $redis = Redis::Fast->new(
       server => $Config->{redis}->{host}.':'.$Config->{redis}->{port},
-      reconnect => 1,
-      every => 100,
+      reconnect => $TRUE,
+      every => $REDIS_RECONNECT_INTERVAL,
     ); 
     return $redis;
 }
