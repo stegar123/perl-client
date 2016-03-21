@@ -27,7 +27,7 @@ use I18N::Langinfo qw(langinfo CODESET);
 
 our $_CONNECTION;
 
-=head2 _get_combination2device
+=head2 _build_redis
 
 Build the redis object
 
