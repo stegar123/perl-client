@@ -71,7 +71,7 @@ EOT
 [redis.host]
 type=text
 description=<<EOT
-Hostname of IP address of the Redis server
+Hostname or IP address of the Redis server
 EOT
 
 [redis.port]
