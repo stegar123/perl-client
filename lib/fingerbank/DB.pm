@@ -16,7 +16,6 @@ use namespace::autoclean;
 use File::Copy qw(copy move);
 use JSON;
 use POSIX qw(strftime);
-use Redis::Fast;
 
 use fingerbank::Config;
 use fingerbank::Constant qw($TRUE $FALSE);
@@ -24,7 +23,7 @@ use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE %SCHE
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
-use fingerbank::Util qw(is_success is_error is_disabled is_enabled);
+use fingerbank::Util qw(is_success is_error is_disabled);
 
 has 'schema'        => (is => 'rw', isa => 'Str');
 has 'handle'        => (is => 'rw', isa => 'Object');
