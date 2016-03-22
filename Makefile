@@ -69,6 +69,24 @@ package-files-standalone:
 		rm -rf $$tmp_dir; \
 	fi \
 
+package-files-debian:
+	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
+	tmp_dir=fingerbank-$$DEB_VERSION; \
+	if [ -d $$tmp_dir ]; then \
+		echo "Destination for git clone ($$tmp_dir) already exists"; \
+	else \
+		mkdir $$tmp_dir; \
+		git clone https://github.com/fingerbank/perl-client.git $$tmp_dir; \
+		if [ -n $$branch ]; then \
+			cd $$tmp_dir ; \
+			git checkout $$branch ; \
+			cd .. ; \
+		fi ; \
+		read -p "API key: " api_key; \
+		tar cvfj ../fingerbank_$$DEB_VERSION.orig.tar.bz2 $$tmp_dir; \
+		rm -rf $$tmp_dir; \
+	fi \
+
 reset-db-handles:
 		@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::reset_db_handles"; \
 
