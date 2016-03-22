@@ -41,8 +41,8 @@ package-files:
 		fi \
 
 test:
-	FINGERBANK_KEY=$$api_key perl t/smoke.t
+		FINGERBANK_KEY=$$api_key perl t/smoke.t
 
 full-test:
-	@read -p "API key (ENTER if none): " api_key; \
-	FINGERBANK_KEY=$$api_key perl t/smoke.t
+		@read -p "API key (ENTER if none): " api_key; \
+		FINGERBANK_KEY=$$api_key perl t/smoke.t
