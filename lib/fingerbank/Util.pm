@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use File::Copy qw(copy move);
+use File::Find;
 use File::Touch;
 use LWP::UserAgent;
 use POSIX;
@@ -21,8 +22,6 @@ use POSIX;
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
 use fingerbank::FilePath qw($INSTALL_PATH);
-use File::Copy qw(copy move);
-use File::Find;
 
 BEGIN {
     use Exporter ();
