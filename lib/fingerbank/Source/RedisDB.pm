@@ -55,9 +55,17 @@ sub match {
         return @infos;
     }
 
-    my $failing = $TRUE;
+    if(fingerbank::Config::configured_for_api){
+        $logger->debug("Not matching redis sub-sets as API is configured, thus only an exact match is useful here.");
+        return ($fingerbank::Status::NOT_FOUND)
+    }
+
     my $i = scalar(@sets_without_empty);
-    while($failing && $i > 0){
+    # While we can split our set into smaller subsets
+    while($i > 0){
+        # we split our set in all possible subsets of length $i
+        # order is not considered in subsets
+        # ex : [1,2,3] = [1,2], [2,3], ...
         my $subsets = powerset({min => $i, max => $i}, @sets_without_empty);
         my %found;
         foreach my $subset (@$subsets){
@@ -68,6 +76,7 @@ sub match {
         }
         if(keys(%found)){
             my ($best_key, $combinations);
+            # Find the subset key that has the most combinations in it
             if(keys(%found) > 1){
                 my @ordered = sort { @{$found{$a}} <=> @{$found{$b}} } keys(%found);
                 $best_key = $found{$ordered[-1]};
@@ -78,10 +87,12 @@ sub match {
             $combinations = $found{$best_key};
             $logger->debug(sub { "The best match is $best_key and has : ".@$combinations." results in it" });
 
+            # Find all the devices associated to the combinations we have along with their matching combination count
             my $devices_count = $self->combinations_device_count(@$combinations);
             
             my $max = -1;
             my $max_device_id = undef;
+            # Find the combination that is associated to the most combinations
             while(my ($device_id, $count) = each(%$devices_count)){
                 if($count > $max){
                     $max = $count;
@@ -92,11 +103,11 @@ sub match {
             my (@infos) = $self->_buildResult($max_device_id);
             $logger->trace(sub { "RedisDB took : ".(time-$start) });
             return @infos;
-
-            $failing = $FALSE;
         }
         $i -= 1;
     }
+
+    return ($fingerbank::Status::NOT_FOUND);
 
 }
 

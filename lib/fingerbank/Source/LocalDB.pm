@@ -70,7 +70,7 @@ sub match {
 
     my $result;
     # Upstream is configured (an API key is configured and interrogate upstream is enabled) with an unexact match, we go upstream
-    if ( !$self->{combination_is_exact} && fingerbank::Config::is_api_key_configured && fingerbank::Config::do_we_interrogate_upstream ) {
+    if ( !$self->{combination_is_exact} && fingerbank::Config::configured_for_api ) {
         $logger->info("Upstream is configured and unable to fullfil an exact match locally. Will ignore result from local database");
         return $fingerbank::Status::NOT_FOUND;
     } 
@@ -211,7 +211,7 @@ sub _getCombinationID {
 
         # If API is configured, we want an exact match to save us some time by avoiding a complex query
         my $resultset;
-        if ( fingerbank::Config::is_api_key_configured && fingerbank::Config::do_we_interrogate_upstream ) {
+        if ( fingerbank::Config::configured_for_api ) {
             # TODO : change cache key to CombinationMatchExact
             # Should be done in a major or minor
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 

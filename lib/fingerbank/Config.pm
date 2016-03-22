@@ -317,6 +317,16 @@ sub update_attribute_map {
     return ( $status, $status_msg )
 }
 
+=head2 configured_for_api
+
+Checks whether or not, the configuration allows for API calls to the Fingerbank API
+
+=cut
+
+sub configured_for_api {
+    return (is_api_key_configured && do_we_interrogate_upstream);
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
