@@ -15,6 +15,10 @@ init-p0f-map:
 	@read -p "API key (ENTER if none): " api_key; \
 	perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\") )"; \
 
+init-attribute-map:
+	@read -p "API key (ENTER if none): " api_key; \
+	perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_attribute_map( (api_key => \"$$api_key\") )"; \
+
 package-files:
 	@read -p "Version (X.Y.Z): " version; \
 	read -p "From Branch: " branch; \
