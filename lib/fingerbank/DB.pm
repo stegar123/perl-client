@@ -141,7 +141,7 @@ sub _test {
     my $schema = $self->schema;
 
     my $database_path = $INSTALL_PATH . "db/";
-    my $database_file = $database_path . "fingerbank_$schema.db";
+    my $database_file = fingerbank::Util::get_database_path($schema);
 
     $logger->trace("Testing '$schema' database");
 

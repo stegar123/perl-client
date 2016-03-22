@@ -283,6 +283,17 @@ sub get_lwp_client {
     return $ua;
 }
 
+=head2 get_database_path
+
+Get database file path based on schema
+
+=cut
+
+sub get_database_path {
+    my ( $schema ) = @_;
+    return $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
+}
+
 =head2 set_file_permissions
 
 Sets the proper file permissions a downloaded file
@@ -308,7 +319,7 @@ sub reset_db_handles {
 
     my @database_files = ();
     foreach my $schema ( @fingerbank::DB::schemas ) {
-        my $database_file = $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
+        my $database_file = get_database_path($schema);
         push(@database_files, $database_file);
     }
 
