@@ -132,7 +132,9 @@ sub cleanup_backup_files {
     # all the files remaining are unwanted
     foreach my $file (@files){
         $logger->info("Deleting backup file $file");
-        unlink $file;
+        unless(unlink $file){
+            $logger->error("Couldn't delete file $file");
+        }
     }
 }
 
