@@ -33,9 +33,11 @@ case "$1" in
         db_get fingerbank/apikey
         KEY=$RET
         if [ ${KEY} != "false" ] ; then
+            set +e
             curl -o $FINGERBANK/db/fingerbank_Combination_Map.json https://fingerbank.inverse.ca/api/v1/download-attribute-map?key=${KEY}
             curl -o $FINGERBANK/db/fingerbank_Upstream.db https://fingerbank.inverse.ca/api/v1/download?key=${KEY}
             curl -o $FINGERBANK/conf/fingerbank-p0f.fp https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=${KEY}
+            set -e
         fi
         touch  $FINGERBANK/fingerbank.log
         chown -R fingerbank:fingerbank $FINGERBANK
