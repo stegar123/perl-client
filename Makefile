@@ -71,6 +71,7 @@ package-files-standalone:
 
 package-files-debian:
 	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
+	read -p "From Branch: " branch; \
 	tmp_dir=fingerbank-$$DEB_VERSION; \
 	if [ -d $$tmp_dir ]; then \
 		echo "Destination for git clone ($$tmp_dir) already exists"; \
