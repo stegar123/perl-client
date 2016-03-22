@@ -13,13 +13,15 @@ Methods that helps simplify code reading
 use strict;
 use warnings;
 
+use File::Copy qw(copy move);
+use File::Find;
+use File::Touch;
 use LWP::UserAgent;
 use POSIX;
 
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
-use File::Copy qw(copy move);
-use File::Find;
+use fingerbank::FilePath qw($INSTALL_PATH);
 
 BEGIN {
     use Exporter ();
@@ -281,6 +283,17 @@ sub get_lwp_client {
     return $ua;
 }
 
+=head2 get_database_path
+
+Get database file path based on schema
+
+=cut
+
+sub get_database_path {
+    my ( $schema ) = @_;
+    return $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
+}
+
 =head2 set_file_permissions
 
 Sets the proper file permissions a downloaded file
@@ -292,6 +305,25 @@ sub set_file_permissions {
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
     chown $uid, $gid, $file;
+}
+
+=head2
+
+Touch each database schema file to change timestamp which will lead to invalidate active handles and recreate them
+
+=cut
+
+sub reset_db_handles {
+    my ( $self ) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my @database_files = ();
+    foreach my $schema ( @fingerbank::DB::schemas ) {
+        my $database_file = get_database_path($schema);
+        push(@database_files, $database_file);
+    }
+
+    touch(@database_files);
 }
 
 =head1 AUTHOR

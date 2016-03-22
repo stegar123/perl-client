@@ -34,6 +34,7 @@ Requires:   perl(DBD::SQLite)
 Requires:   perl(LWP::Protocol::https)
 Requires:   perl(MooseX::NonMoose)
 Requires:   perl(SQL::Translator)
+Requires:   perl(File::Touch)
 
 %description
 Fingerbank
