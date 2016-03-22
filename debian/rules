@@ -11,6 +11,7 @@
 NAME		= fingerbank
 PREFIX		= /usr/local
 INSTALL		= /usr/bin/install -c -D -m0664
+APIKEY := $(shell bash -c 'read -p "API KEY: " key; echo $$key')
 
 configure: configure-stamp
 configure-stamp:
@@ -51,6 +52,11 @@ install: build
 		j=$$(echo $$i | sed -e "s/remote\/perl//g"); \
 		$(INSTALL) $$i $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/$$j; \
 	done
+ifneq   "$(APIKEY)" ""
+	curl -o $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/db/fingerbank_Combination_Map.json https://fingerbank.inverse.ca/api/v1/download-attribute-map?key=$(APIKEY)
+	curl -o $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/db/fingerbank_Upstream.db https://fingerbank.inverse.ca/api/v1/download?key=$(APIKEY)
+	curl -o $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/conf/fingerbank-p0f.fp https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=$(APIKEY)
+endif
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.
