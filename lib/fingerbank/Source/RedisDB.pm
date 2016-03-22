@@ -18,7 +18,7 @@ use warnings;
 
 use fingerbank::DB;
 use fingerbank::Redis;
-use fingerbank::Constant qw($TRUE);
+use fingerbank::Constant qw($TRUE $FALSE $DEFAULT_SCORE);
 use fingerbank::Status;
 use fingerbank::Util qw(is_error is_success is_enabled);
 use fingerbank::Model::Device;
@@ -55,7 +55,7 @@ sub match {
         return @infos;
     }
 
-    my $failing = 1;
+    my $failing = $TRUE;
     my $i = scalar(@sets_without_empty);
     while($failing && $i > 0){
         my $subsets = powerset({min => $i, max => $i}, @sets_without_empty);
@@ -93,7 +93,7 @@ sub match {
             $logger->trace(sub { "RedisDB took : ".(time-$start) });
             return @infos;
 
-            $failing = 0;
+            $failing = $FALSE;
         }
         $i -= 1;
     }
@@ -135,7 +135,7 @@ sub _buildResult {
         $result->{score} = $combination->score;
     }
     else {
-        $result->{score} = 30;
+        $result->{score} = $DEFAULT_SCORE;
     }
 
     # Get device info
@@ -157,7 +157,7 @@ Inverse inc. <info@inverse.ca>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005-2015 Inverse inc.
+Copyright (C) 2005-2016 Inverse inc.
 
 =head1 LICENSE
 

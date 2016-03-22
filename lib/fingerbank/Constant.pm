@@ -19,7 +19,14 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT_OK );
     @ISA = qw(Exporter);
-    @EXPORT_OK = qw($FALSE $TRUE $YES $NO $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION $REDIS_RECONNECT_INTERVAL);
+    @EXPORT_OK = qw(
+        $FALSE $TRUE 
+        $YES $NO 
+        $FINGERBANK_USER 
+        $DEFAULT_BACKUP_RETENTION 
+        $REDIS_RECONNECT_INTERVAL
+        $DEFAULT_SCORE
+    );
 }
 
 =head1 CONSTANTS
@@ -117,6 +124,14 @@ Time (in ms) to wait between the reconnects after losing a redis connection
 =cut
 
 Readonly our $REDIS_RECONNECT_INTERVAL => 100;
+
+=item $DEFAULT_SCORE
+
+The score that is given by default on any match
+
+=cut
+
+Readonly our $DEFAULT_SCORE => 1;
 
 =back
 
