@@ -88,7 +88,9 @@ rm -rf %{buildroot}
 %dir                                /usr/local/fingerbank
                                     /usr/local/fingerbank/*
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
-%dir                                %{_sysconfdir}/logrotate.d
+%if 0%{?el6}
+    %dir                            %{_sysconfdir}/logrotate.d
+%endif
 %config                             %{_sysconfdir}/logrotate.d/fingerbank
 %ghost                              /usr/local/fingerbank/logs/fingerbank.log
 %attr(664,fingerbank,fingerbank)    /usr/local/fingerbank/logs/fingerbank.log
