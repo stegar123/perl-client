@@ -84,6 +84,9 @@ package-files-debian:
 			cd .. ; \
 		fi ; \
 		read -p "API key: " api_key; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download?key=$$api_key --output $$tmp_dir/db/fingerbank_Upstream.db; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=$$api_key --output $$tmp_dir/conf/fingerbank-p0f.fp; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download-attribute-map?key=$$api_key --output $$tmp_dir/db/fingerbank_Combination_Map.json; \
 		tar cvfj ../fingerbank_$$DEB_VERSION.orig.tar.bz2 $$tmp_dir; \
 		rm -rf $$tmp_dir; \
 	fi \
