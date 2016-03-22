@@ -40,6 +40,7 @@ has 'combination_id' => (is => 'rw', isa => 'Str');
 has 'combination_is_exact' => (is => 'rw', isa => 'Str');
 has 'matched_schema' => (is => 'rw', isa => 'Str');
 
+has 'search_schemas' => (is => 'rw', default => sub {\@fingerbank::DB::schemas});
 
 =head2 match
 
@@ -69,7 +70,7 @@ sub match {
 
     my $result;
     # Upstream is configured (an API key is configured and interrogate upstream is enabled) with an unexact match, we go upstream
-    if ( !$self->{combination_is_exact} && fingerbank::Config::is_api_key_configured && fingerbank::Config::do_we_interrogate_upstream ) {
+    if ( !$self->{combination_is_exact} && fingerbank::Config::configured_for_api ) {
         $logger->info("Upstream is configured and unable to fullfil an exact match locally. Will ignore result from local database");
         return $fingerbank::Status::NOT_FOUND;
     } 
@@ -201,7 +202,7 @@ sub _getCombinationID {
 
     # Looking for best matching combination in schemas
     # Sorting by match is handled by the SQL query itself. See L<fingerbank::Base::Schema::CombinationMatch>
-    foreach my $schema ( @fingerbank::DB::schemas ) {
+    foreach my $schema ( @{$self->search_schemas} ) {
         my $db = fingerbank::DB->new(schema => $schema);
         if ( $db->isError ) {
             $logger->warn("Cannot read from 'CombinationMatch' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -210,7 +211,7 @@ sub _getCombinationID {
 
         # If API is configured, we want an exact match to save us some time by avoiding a complex query
         my $resultset;
-        if ( fingerbank::Config::is_api_key_configured && fingerbank::Config::do_we_interrogate_upstream ) {
+        if ( fingerbank::Config::configured_for_api ) {
             # TODO : change cache key to CombinationMatchExact
             # Should be done in a major or minor
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 

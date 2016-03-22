@@ -184,6 +184,8 @@ sub update_upstream {
 
     ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
 
+    fingerbank::Util::cleanup_backup_files($destination);
+
     return ( $status, $status_msg )
 }
 

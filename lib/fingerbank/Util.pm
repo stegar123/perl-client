@@ -16,9 +16,10 @@ use warnings;
 use LWP::UserAgent;
 use POSIX;
 
-use fingerbank::Constant qw($TRUE $FALSE);
+use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
 use File::Copy qw(copy move);
+use File::Find;
 
 BEGIN {
     use Exporter ();
@@ -92,6 +93,49 @@ sub is_error {
 
     return $TRUE if ($code >= 400 && $code < 600);
     return $FALSE;
+}
+
+=head2 cleanup_backup_files
+
+Cleanup backup files that have been created while updating a file
+
+=cut
+
+sub cleanup_backup_files {
+    my ($file, $keep) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    $keep //= $DEFAULT_BACKUP_RETENTION;
+
+    # extracting directory and filename from provided info
+    my @parts = split('/', $file);
+    my $filename = pop @parts;
+    my $directory = join('/', @parts);
+    my $metaquoted_name = quotemeta($filename);
+
+    my @files;
+    # we find all the backup files associated
+    # They end with an underscore digits another underscore and another serie of digits
+    File::Find::find({wanted => sub {
+        /^$metaquoted_name\_[0-9]+\_[0-9+]/ && push @files, $File::Find::name ;
+    }}, $directory);
+
+    # we sort them by name as they contain the date
+    # so that will give them in ascending order
+    @files = sort(@files);
+    
+    # we remove the amount we want to keep
+    foreach my $i (1..$keep){
+        pop @files;    
+    }
+
+    # all the files remaining are unwanted
+    foreach my $file (@files){
+        $logger->info("Deleting backup file $file");
+        unless(unlink $file){
+            $logger->error("Couldn't delete file $file");
+        }
+    }
 }
 
 sub update_file {
@@ -199,6 +243,7 @@ sub fetch_file {
         $logger->info("Successfully fetched '$params{'download_url'}' from Fingerbank project");
         open my $fh, ">", $params{'destination'};
         print {$fh} $res->decoded_content;
+        set_file_permissions($params{'destination'});
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $logger->warn("Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line);
@@ -234,6 +279,19 @@ sub get_lwp_client {
     }
 
     return $ua;
+}
+
+=head2 set_file_permissions
+
+Sets the proper file permissions a downloaded file
+
+=cut
+
+sub set_file_permissions {
+    my ($file) = @_;
+    my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
+        or die "$FINGERBANK_USER not in passwd file";
+    chown $uid, $gid, $file;
 }
 
 =head1 AUTHOR

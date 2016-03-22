@@ -43,6 +43,13 @@ description=<<EOT
 Should the TCP fingerprinting be part of the discovery process to match a device ?
 EOT
 
+[query.use_redis]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Should Redis be used to match combinations ? Requires to have the Attribute map imported into the Redis instance
+EOT
+
 [tcp_fingerprinting.p0f_socket_path]
 type=text
 description=<<EOT
@@ -60,6 +67,25 @@ type=text
 description=<<EOT
 The URL to download the p0f map from
 EOT
+
+[redis.host]
+type=text
+description=<<EOT
+Hostname or IP address of the Redis server
+EOT
+
+[redis.port]
+type=text
+description=<<EOT
+Port of the Redis server
+EOT
+
+[redis.attribute_map_url]
+type=text
+description=<<EOT
+The URL to download the attribute map.
+EOT
+
 
 [proxy.use_proxy]
 type=toggle

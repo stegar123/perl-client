@@ -19,7 +19,14 @@ BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT_OK );
     @ISA = qw(Exporter);
-    @EXPORT_OK = qw($FALSE $TRUE $YES $NO);
+    @EXPORT_OK = qw(
+        $FALSE $TRUE 
+        $YES $NO 
+        $FINGERBANK_USER 
+        $DEFAULT_BACKUP_RETENTION 
+        $REDIS_RECONNECT_INTERVAL
+        $DEFAULT_SCORE
+    );
 }
 
 =head1 CONSTANTS
@@ -93,6 +100,38 @@ Readonly::Hash our %PARENT_IDS => (
     WINDOWS_PHONE => 5474,
     BLACKBERRY => 192,
 );
+
+=item $FINGERBANK_USER
+
+The OS user for Fingerbank
+
+=cut
+
+Readonly our $FINGERBANK_USER => "fingerbank";
+
+=item $DEFAULT_BACKUP_RETENTION
+
+The amount of backups to keep by default in the file cleanup
+
+=cut
+
+Readonly our $DEFAULT_BACKUP_RETENTION => 5;
+
+=item $REDIS_RECONNECT_INTERVAL
+
+Time (in ms) to wait between the reconnects after losing a redis connection
+
+=cut
+
+Readonly our $REDIS_RECONNECT_INTERVAL => 100;
+
+=item $DEFAULT_SCORE
+
+The score that is given by default on any match
+
+=cut
+
+Readonly our $DEFAULT_SCORE => 1;
 
 =back
 
