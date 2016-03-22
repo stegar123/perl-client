@@ -3,6 +3,9 @@
 #
 # see: dh_installdeb(1)
 
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
 set -e
 
 # summary of how this script can be called:
@@ -27,6 +30,13 @@ case "$1" in
         export FINGERBANK=/usr/local/fingerbank
         cd /usr/local/fingerbank
         make init-db-local
+        db_get fingerbank/apikey
+        KEY=$RET
+        if [ ${KEY} != "false" ] ; then
+            echo ${KEY}
+            curl -o $FINGERBANK/db/fingerbank_Upstream.db https://fingerbank.inverse.ca/api/v1/download?key=${KEY}
+            curl -o $FINGERBANK/conf/fingerbank-p0f.fp https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=key=${KEY}
+        fi
         touch  $FINGERBANK/fingerbank.log
         chown -R fingerbank:fingerbank $FINGERBANK
     ;;

@@ -1,0 +1,6 @@
+Template: fingerbank/apikey
+Type: string
+Default:
+Description: Please enter your api key.
+ Please enter your fingerbank api key in order to update the database. Leave empty if you don't have one.
+

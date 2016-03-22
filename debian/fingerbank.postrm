@@ -38,8 +38,10 @@ case "$1" in
         set -e
     ;;
     purge)
+        set + e
         # purging all files
         /usr/bin/find /usr/local/fingerbank  -type d|sort -r|xargs rm -r
+        set -e
         ;;
     *)
         echo "postrm called with unknown argument \`$1'" >&2
