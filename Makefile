@@ -89,6 +89,7 @@ package-files-debian:
 		curl -X GET https://fingerbank.inverse.ca/api/v1/download-attribute-map?key=$$api_key --output $$tmp_dir/db/fingerbank_Combination_Map.json; \
 		tar cvfj ../fingerbank_$$DEB_VERSION.orig.tar.bz2 $$tmp_dir; \
 		rm -rf $$tmp_dir; \
+		echo run dpkg-buildpackage -rfakeroot to build the package; \
 	fi \
 
 reset-db-handles:
