@@ -70,6 +70,7 @@ package-files-standalone:
 	fi \
 
 package-files-debian:
+	sudo apt-get install git dpkg-dev debhelper -y; \
 	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
 	read -p "From Branch: " branch; \
 	tmp_dir=fingerbank-$$DEB_VERSION; \
