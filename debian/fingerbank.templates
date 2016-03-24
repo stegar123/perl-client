@@ -1,4 +1,4 @@
-Template :fingerbank/haskey
+Template: fingerbank/haskey
 Type: boolean
 Default: false
 Description: Do you have an api key for fingerbank ?
