@@ -69,7 +69,7 @@ package-files-standalone:
 		rm -rf $$tmp_dir; \
 	fi \
 
-package-files-debian:
+package-debian:
 	sudo apt-get install git dpkg-dev debhelper sudo curl -y; \
 	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
 	read -p "From Branch: " branch; \
