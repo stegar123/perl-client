@@ -1,0 +1,12 @@
+Template: fingerbank/haskey
+Type: boolean
+Default: false
+Description: Do you have an API key for Fingerbank ?
+ Do you have an API key for Fingerbank ? (https://fingerbank.inverse.ca)
+
+Template: fingerbank/apikey
+Type: string
+Default:
+Description: Please enter your API key.
+ Please enter your Fingerbank API key in order to fetch the updated files.
+

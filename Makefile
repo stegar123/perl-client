@@ -69,6 +69,33 @@ package-files-standalone:
 		rm -rf $$tmp_dir; \
 	fi \
 
+package-debian:
+	sudo apt-get install git dpkg-dev debhelper sudo curl -y; \
+	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
+	read -p "From Branch: " branch; \
+	tmp_dir=fingerbank-$$DEB_VERSION; \
+	if [ -d $$tmp_dir ]; then \
+		echo "Destination for git clone ($$tmp_dir) already exists"; \
+	else \
+		mkdir $$tmp_dir; \
+		git clone https://github.com/fingerbank/perl-client.git $$tmp_dir; \
+		if [ -n $$branch ]; then \
+			cd $$tmp_dir ; \
+			git checkout $$branch ; \
+			cd .. ; \
+		fi ; \
+		read -p "API key: " api_key; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download?key=$$api_key --output $$tmp_dir/db/fingerbank_Upstream.db; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=$$api_key --output $$tmp_dir/conf/fingerbank-p0f.fp; \
+		curl -X GET https://fingerbank.inverse.ca/api/v1/download-attribute-map?key=$$api_key --output $$tmp_dir/db/fingerbank_Combination_Map.json; \
+		cp $$tmp_dir/db/fingerbank_Upstream.db db/fingerbank_Upstream.db; \
+		cp $$tmp_dir/conf/fingerbank-p0f.fp conf/fingerbank-p0f.fp; \
+		cp $$tmp_dir/db/fingerbank_Combination_Map.json db/fingerbank_Combination_Map.json; \
+		tar cvfj ../fingerbank_$$DEB_VERSION.orig.tar.bz2 $$tmp_dir; \
+		rm -rf $$tmp_dir; \
+		echo run dpkg-buildpackage -rfakeroot to build the package; \
+	fi \
+
 reset-db-handles:
 		@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::reset_db_handles"; \
 
