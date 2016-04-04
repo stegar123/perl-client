@@ -246,14 +246,19 @@ sub fetch_file {
         $status = $fingerbank::Status::OK;
         $status_msg = "Successfully fetched '$params{'download_url'}' from Fingerbank project";
         $logger->info($status_msg);
-        open my $fh, ">", $params{'destination'} or return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file ".$params{"destination"}." in write mode");
+        open my $fh, ">", $params{'destination'} or sub { 
+            undef $ua; 
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file ".$params{"destination"}." in write mode")
+        }->();
         print {$fh} $res->decoded_content;
+        close($fh);
         set_file_permissions($params{'destination'});
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line;
         $logger->warn($status_msg);
     }
+    undef $ua;
 
     return ($status, $status_msg);
 }
