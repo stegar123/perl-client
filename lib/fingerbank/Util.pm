@@ -162,7 +162,7 @@ sub update_file {
         $is_an_update = $FALSE;
     }
 
-    $status = fetch_file(%params, $is_an_update ? ('destination' => $params{'destination'} . '.new') : ());
+    ($status, $status_msg) = fetch_file(%params, $is_an_update ? ('destination' => $params{'destination'} . '.new') : ());
 
     if ( is_success($status) && $is_an_update ) {
         my $date                    = POSIX::strftime( "%Y%m%d_%H%M%S", localtime );
@@ -215,16 +215,18 @@ sub fetch_file {
     my @require = qw(download_url destination);
     foreach ( @require ) {
         if ( !exists $params{$_} ) {
-            $logger->warn("Missing parameter '$_' while trying to fetch file");
-            return $fingerbank::Status::INTERNAL_SERVER_ERROR;
+            my $msg = "Missing parameter '$_' while trying to fetch file";
+            $logger->warn($msg);
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR, $msg);
         }
     }
 
     my $Config = fingerbank::Config::get_config();
 
     unless ( fingerbank::Config::is_api_key_configured() || (exists($params{'api_key'}) && $params{'api_key'} ne "") ) {
-        $logger->warn("Can't communicate with Fingerbank project without a valid API key.");
-        return $fingerbank::Status::UNAUTHORIZED;
+        my $msg = "Can't communicate with Fingerbank project without a valid API key.";
+        $logger->warn($msg);
+        return ($fingerbank::Status::UNAUTHORIZED, $msg);
     }
 
     $logger->debug("Downloading the latest version from '$params{'download_url'}' to '$params{'destination'}'");
@@ -237,21 +239,23 @@ sub fetch_file {
     my $url = URI->new($params{'download_url'});
     $url->query_form(%parameters);
 
-    my $status;
+    my ($status, $status_msg);
     my $res = $ua->get($url);
 
     if ( $res->is_success ) {
         $status = $fingerbank::Status::OK;
-        $logger->info("Successfully fetched '$params{'download_url'}' from Fingerbank project");
-        open my $fh, ">", $params{'destination'};
+        $status_msg = "Successfully fetched '$params{'download_url'}' from Fingerbank project";
+        $logger->info($status_msg);
+        open my $fh, ">", $params{'destination'} or return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file ".$params{"destination"}." in write mode");
         print {$fh} $res->decoded_content;
         set_file_permissions($params{'destination'});
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $logger->warn("Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line);
+        $status_msg = "Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line;
+        $logger->warn($status_msg);
     }
 
-    return $status;
+    return ($status, $status_msg);
 }
 
 =head2 get_lwp_client
@@ -305,6 +309,7 @@ sub set_file_permissions {
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
     chown $uid, $gid, $file;
+    chmod 0664, $file;
 }
 
 =head2
