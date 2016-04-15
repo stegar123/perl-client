@@ -36,7 +36,6 @@ package-files:
 		fi ; \
 		rm -f $$tmp_dir/README.md; \
 		rm -rf $$tmp_dir/t; \
-		touch $$tmp_dir/conf/fingerbank.conf; \
 		read -p "API key: " api_key; \
 		perl -I$$tmp_dir/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::DB::update_upstream( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
 		perl -I$$tmp_dir/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download-p0f-map\", destination => \"$$tmp_dir/conf/fingerbank-p0f.fp\") )"; \
@@ -62,7 +61,6 @@ package-files-standalone:
 		fi ; \
 		rm -f $$tmp_dir/README.md; \
 		rm -rf $$tmp_dir/t; \
-		touch $$tmp_dir/conf/fingerbank.conf; \
 		read -p "API key: " api_key; \
 		curl -X GET https://fingerbank.inverse.ca/api/v1/download?key=$$api_key --output $$tmp_dir/db/fingerbank_Upstream.db; \
 		curl -X GET https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=$$api_key --output $$tmp_dir/conf/fingerbank-p0f.fp; \
