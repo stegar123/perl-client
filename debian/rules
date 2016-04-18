@@ -51,6 +51,7 @@ install: build
 		j=$$(echo $$i | sed -e "s/remote\/perl//g"); \
 		$(INSTALL) $$i $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/$$j; \
 	done
+	touch $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/conf/fingerbank.conf
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.
