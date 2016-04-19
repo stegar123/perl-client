@@ -76,7 +76,8 @@ if [ ! -e /usr/local/fingerbank/logs/fingerbank.log ]; then
 fi
 
 # fingerbank.conf empty file handling
-if [ ! -e /usr/local/fingerbank/conf/fingerbank.conf ]; then
+if [ ! -f /usr/local/fingerbank/conf/fingerbank.conf ]; then
+    echo "Creating non-existing 'fingerbank.conf' file"
     touch /usr/local/fingerbank/conf/fingerbank.conf
     chown fingerbank.fingerbank /usr/local/fingerbank/conf/fingerbank.conf
 fi
@@ -100,7 +101,6 @@ rm -rf %{buildroot}
 %config                             %{_sysconfdir}/logrotate.d/fingerbank
 %ghost                              /usr/local/fingerbank/logs/fingerbank.log
 %attr(664,fingerbank,fingerbank)    /usr/local/fingerbank/logs/fingerbank.log
-%config(noreplace)                  /usr/local/fingerbank/conf/fingerbank.conf
 
 
 %changelog
