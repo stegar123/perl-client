@@ -252,7 +252,7 @@ sub fetch_file {
         }->();
         print {$fh} $res->decoded_content;
         close($fh);
-        set_file_permissions($params{'destination'});
+        set_permissions($params{'destination'});
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line;
@@ -303,13 +303,13 @@ sub get_database_path {
     return $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
 }
 
-=head2 set_file_permissions
+=head2 set_permissions
 
-Sets the proper file permissions a downloaded file
+Sets the proper permissions for a given file / path
 
 =cut
 
-sub set_file_permissions {
+sub set_permissions {
     my ($file) = @_;
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
