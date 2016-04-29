@@ -252,7 +252,7 @@ sub fetch_file {
         }->();
         print {$fh} $res->decoded_content;
         close($fh);
-        set_permissions($params{'destination'});
+        set_permissions($params{'destination'}, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line;
@@ -310,11 +310,27 @@ Sets the proper permissions for a given file / path
 =cut
 
 sub set_permissions {
-    my ($file) = @_;
+    my ($path, $params) = @_;
+
+    my $permissions;
+    if ( !$params->{'permissions'} ) {
+        my %files = map { $_ => 1 } @fingerbank::FilePath::FILES;
+        my %paths = map { $_ => 1 } @fingerbank::FilePath::PATHS;
+        if ( exists($files{$path}) ) {
+            $permissions = $fingerbank::Constant::FILE_PERMISSIONS;
+        } elsif ( exists($paths{$path}) ) {
+            $permissions = $fingerbank::Constant::PATH_PERMISSIONS;
+        } else {
+            $permissions = $fingerbank::Constant::FILE_PERMISSIONS;
+        }
+    } else {
+        $permissions = $params->{'permissions'};
+    }
+
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
-    chown $uid, $gid, $file;
-    chmod 0664, $file;
+    chown $uid, $gid, $path;
+    chmod $permissions, $path;
 }
 
 =head2
