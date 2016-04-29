@@ -311,6 +311,7 @@ Sets the proper permissions for a given file / path
 
 sub set_permissions {
     my ($path, $params) = @_;
+    my $logger = fingerbank::Log::get_logger;
 
     my $permissions;
     if ( !$params->{'permissions'} ) {
@@ -329,8 +330,32 @@ sub set_permissions {
 
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
+
+    $logger->debug("Setting permissions for path '$path' | uid: '$uid' gid: '$gid' permissions: '$permissions'");
+
     chown $uid, $gid, $path;
     chmod $permissions, $path;
+}
+
+=head2 fix_permissions
+
+Fix permissions of Fingerbank "important" files / paths
+
+=cut
+
+sub fix_permissions {
+    # Handling files
+    foreach my $file ( @fingerbank::FilePath::FILES ) {
+        set_permissions($file);
+    }
+
+    # Handling paths
+    foreach my $path ( @fingerbank::FilePath::PATHS ) {
+        set_permissions($path);
+    }
+
+    # Handling specific cases
+    set_permissions($fingerbank::FilePath::INSTALL_PATH . 'db/upgrade.pl', { 'permissions' => 0775 });
 }
 
 =head2
