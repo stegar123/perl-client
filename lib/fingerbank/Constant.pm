@@ -115,7 +115,7 @@ The octal format of file permissions
 
 =cut
 
-Readonly our $FILE_PERMISSIONS => "0664";
+Readonly our $FILE_PERMISSIONS => 0664;
 
 =item $PATH_PERMISSIONS
 
@@ -123,7 +123,7 @@ The octal format of path permissions
 
 =cut
 
-Readonly our $PATH_PERMISSIONS => "0775";
+Readonly our $PATH_PERMISSIONS => 0775;
 
 =item $DEFAULT_BACKUP_RETENTION
 
