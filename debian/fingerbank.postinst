@@ -39,8 +39,7 @@ case "$1" in
             curl -o $FINGERBANK/db/fingerbank_Upstream.db https://fingerbank.inverse.ca/api/v1/download?key=${_APIKEY}
             curl -o $FINGERBANK/conf/fingerbank-p0f.fp https://fingerbank.inverse.ca/api/v1/download-p0f-map?key=${_APIKEY}
         fi
-        touch  $FINGERBANK/fingerbank.log
-        chown -R fingerbank:fingerbank $FINGERBANK
+        make fixpermissions
         db_stop
     ;;
 
