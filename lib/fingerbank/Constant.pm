@@ -109,6 +109,22 @@ The OS user for Fingerbank
 
 Readonly our $FINGERBANK_USER => "fingerbank";
 
+=item $FILE_PERMISSIONS
+
+The octal format of file permissions
+
+=cut
+
+Readonly our $FILE_PERMISSIONS => 0664;
+
+=item $PATH_PERMISSIONS
+
+The octal format of path permissions
+
+=cut
+
+Readonly our $PATH_PERMISSIONS => 0775;
+
 =item $DEFAULT_BACKUP_RETENTION
 
 The amount of backups to keep by default in the file cleanup

@@ -252,7 +252,7 @@ sub fetch_file {
         }->();
         print {$fh} $res->decoded_content;
         close($fh);
-        set_file_permissions($params{'destination'});
+        set_permissions($params{'destination'}, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
     } else {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Failed to download latest version of file '$params{'destination'}' on '$params{'download_url'}' with the following return code: " . $res->status_line;
@@ -303,18 +303,59 @@ sub get_database_path {
     return $INSTALL_PATH . "db/" . "fingerbank_$schema.db";
 }
 
-=head2 set_file_permissions
+=head2 set_permissions
 
-Sets the proper file permissions a downloaded file
+Sets the proper permissions for a given file / path
 
 =cut
 
-sub set_file_permissions {
-    my ($file) = @_;
+sub set_permissions {
+    my ($path, $params) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my $permissions;
+    if ( !$params->{'permissions'} ) {
+        my %files = map { $_ => 1 } @fingerbank::FilePath::FILES;
+        my %paths = map { $_ => 1 } @fingerbank::FilePath::PATHS;
+        if ( exists($files{$path}) ) {
+            $permissions = $fingerbank::Constant::FILE_PERMISSIONS;
+        } elsif ( exists($paths{$path}) ) {
+            $permissions = $fingerbank::Constant::PATH_PERMISSIONS;
+        } else {
+            $permissions = $fingerbank::Constant::FILE_PERMISSIONS;
+        }
+    } else {
+        $permissions = $params->{'permissions'};
+    }
+
     my ($login,$pass,$uid,$gid) = getpwnam($FINGERBANK_USER)
         or die "$FINGERBANK_USER not in passwd file";
-    chown $uid, $gid, $file;
-    chmod 0664, $file;
+
+    $logger->debug("Setting permissions for path '$path' | uid: '$uid' gid: '$gid' permissions: '$permissions'");
+
+    chown $uid, $gid, $path;
+    chmod $permissions, $path;
+}
+
+=head2 fix_permissions
+
+Fix permissions of Fingerbank "important" files / paths
+
+=cut
+
+sub fix_permissions {
+    # Handling files
+    foreach my $file ( @fingerbank::FilePath::FILES ) {
+        set_permissions($file);
+    }
+
+    # Handling paths
+    foreach my $path ( @fingerbank::FilePath::PATHS ) {
+        set_permissions($path);
+    }
+
+    # Handling specific cases
+    set_permissions($fingerbank::FilePath::INSTALL_PATH . 'db/upgrade.pl', { 'permissions' => 0775 });
 }
 
 =head2

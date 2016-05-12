@@ -72,16 +72,16 @@ make init-db-local
 # Log file handling
 if [ ! -e /usr/local/fingerbank/logs/fingerbank.log ]; then
     touch /usr/local/fingerbank/logs/fingerbank.log
-    chown fingerbank.fingerbank /usr/local/fingerbank/logs/fingerbank.log
 fi
 
 # fingerbank.conf empty file handling
 if [ ! -f /usr/local/fingerbank/conf/fingerbank.conf ]; then
     echo "Creating non-existing 'fingerbank.conf' file"
     touch /usr/local/fingerbank/conf/fingerbank.conf
-    chown fingerbank.fingerbank /usr/local/fingerbank/conf/fingerbank.conf
 fi
 
+# applying / fixing permissions
+make fixpermissions
 
 %clean
 rm -rf %{buildroot}
