@@ -60,8 +60,7 @@ cp -r * $RPM_BUILD_ROOT/usr/local/fingerbank
 touch $RPM_BUILD_ROOT/usr/local/fingerbank/logs/fingerbank.log
 
 # Logrotate
-%{__install} -d $RPM_BUILD_ROOT/etc/logrotate.d
-cp rhel/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
+%{__install} -D rhel/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
 
 
 %post
@@ -98,7 +97,7 @@ rm -rf %{buildroot}
 %if 0%{?el6}
     %dir                            %{_sysconfdir}/logrotate.d
 %endif
-%config                             %{_sysconfdir}/logrotate.d/fingerbank
+%config %attr(0644,root,root)       %{_sysconfdir}/logrotate.d/fingerbank
 %ghost                              /usr/local/fingerbank/logs/fingerbank.log
 %attr(664,fingerbank,fingerbank)    /usr/local/fingerbank/logs/fingerbank.log
 
