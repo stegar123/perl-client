@@ -41,6 +41,18 @@ sub _parseClassName {
     return $className;
 }
 
+sub all {
+    my ( $self ) = @_;
+    my $className = $self->_parseClassName;
+    my $db = fingerbank::DB->new(schema => 'Upstream');
+    my @upstream_devices = $db->handle->resultset($className)->all;
+
+    $db = fingerbank::DB->new(schema => 'Local');
+    my @local_devices = $db->handle->resultset($className)->all;
+
+    return (@upstream_devices, @local_devices);
+}
+
 =head2 _getTableID
 
 =cut
