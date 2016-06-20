@@ -41,6 +41,10 @@ sub _parseClassName {
     return $className;
 }
 
+sub value_field { 'value' }
+
+sub base_ids { }
+
 sub all {
     my ( $self ) = @_;
     my $className = $self->_parseClassName;
