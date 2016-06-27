@@ -367,8 +367,7 @@ sub search {
     my $className = $self->_parseClassName;
     my @resultSets;
 
-    # From which schema do we want the results
-    my @schemas = ( defined($schema) ) ? ($schema) : @fingerbank::DB::schemas;
+    my @schemas = fingerbank::DB->get_schemas($schema);
 
     foreach my $schema ( @schemas ) {
         $logger->debug("Searching '$className' entries in schema '$schema'");
@@ -503,8 +502,7 @@ sub count {
     my $className = $self->_parseClassName;
     my $count;
 
-    # From which schema do we want the results
-    my @schemas = ( defined($schema) ) ? ($schema) : @fingerbank::DB::schemas;
+    my @schemas = fingerbank::DB->get_schemas($schema);
 
     foreach my $schema ( @schemas ) {
         my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
