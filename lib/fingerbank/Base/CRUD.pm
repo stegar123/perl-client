@@ -57,19 +57,28 @@ Defines which IDs are generic enough to be displayed as base choices (used to di
 
 sub base_ids { }
 
+=head2 all
+
+Get all the objects
+
+=cut
+
 sub all {
-    my ( $self ) = @_;
+    my ( $self, $schema ) = @_;
     my $className = $self->_parseClassName;
-    my $db = fingerbank::DB->new(schema => 'Upstream');
-    my @upstream_devices = $db->handle->resultset($className)->all;
+    
+    my @schemas = fingerbank::DB->get_schemas($schema);
+    my @all_devices;
+    foreach my $schema ( @schemas ) {
+        my $db = fingerbank::DB->new(schema => $schema);
+        my @devices = $db->handle->resultset($className)->all;
+        push @all_devices, @devices;
+    }
 
-    $db = fingerbank::DB->new(schema => 'Local');
-    my @local_devices = $db->handle->resultset($className)->all;
-
-    return (@upstream_devices, @local_devices);
+    return @all_devices;
 }
 
-=head2 _getTableID
+=heaDevice->all()d2 _getTableID
 
 =cut
 
