@@ -41,7 +41,19 @@ sub _parseClassName {
     return $className;
 }
 
+=head2 value_field
+
+Defines what should be used as the value field in the object
+
+=cut
+
 sub value_field { 'value' }
+
+=head2 base_ids
+
+Defines which IDs are generic enough to be displayed as base choices (used to display device choice)
+
+=cut
 
 sub base_ids { }
 
