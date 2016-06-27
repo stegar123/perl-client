@@ -216,7 +216,15 @@ sub read {
 
     # Verify if the provided ID is part of the local or upstream schema to seach accordingly
     # Local schema IDs are 'L' prefixed
-    my $schema = ( lc($id) =~ /^l/ ) ? $LOCAL_SCHEMA : $UPSTREAM_SCHEMA;
+    my $schema;
+    if ( lc($id) =~ /^l/ ) {
+        $schema = $LOCAL_SCHEMA;
+        # We ensure we are uppercase in the event that the ID was passed lowercase (ex: l2)
+        $id = uc($id);
+    }
+    else {
+        $schema = $UPSTREAM_SCHEMA;
+    }
 
     $logger->debug("Looking for '$className' entry with ID '$id' in schema '$schema'");
 
