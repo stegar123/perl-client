@@ -184,7 +184,7 @@ Keyword to be used as a schema name to represent all the schemas.
 
 =cut
 
-Readonly our $ALL_SCHEMAS_KW = 'All';
+Readonly our $ALL_SCHEMAS_KW => 'All';
 
 =back
 
