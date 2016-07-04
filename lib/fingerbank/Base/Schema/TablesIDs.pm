@@ -12,6 +12,8 @@ __PACKAGE__->add_columns(
    "device",
    "dhcp_fingerprint",
    "dhcp_vendor",
+   "dhcp6_fingerprint",
+   "dhcp6_enterprise",
    "mac_vendor",
    "user_agent",
 );
