@@ -246,7 +246,9 @@ sub read {
 
     # Building the resultset to be returned
     foreach my $column ( $resultset->result_source->columns ) {
-        $return->{$column} = $resultset->$column;
+        if($resultset->can($column)) {
+            $return->{$column} = $resultset->$column;
+        }
     }
 
     $logger->debug("Found '$className' entry with ID '$id' in schema '$schema'");
