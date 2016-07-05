@@ -12,7 +12,6 @@ sub view_with_named_params {
     $class->meta->{params} = \@ordered;
     $view =~ s/\$[0-9]+/\?/g;
     $class->result_source_instance->view_definition($view);
-    print $class->result_source_instance->view_definition;
 }
 
 sub view_bind_params {
