@@ -78,7 +78,7 @@ sub all {
     return @all_devices;
 }
 
-=heaDevice->all()d2 _getTableID
+=head2 _getTableID
 
 =cut
 
