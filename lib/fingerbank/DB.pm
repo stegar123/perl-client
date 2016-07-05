@@ -119,7 +119,13 @@ sub BUILD {
     $logger->info("Database $file_path was changed or handles weren't initialized. Creating handle.");
 
     # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:".$file_path);
+    my $handle; 
+    if($schema eq "Local") {
+        $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:".$file_path);
+    }
+    else {
+        $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=fingerbank;host=localhost", "root", "inverse");
+    }
     $handle->{AutoInactiveDestroy} = $TRUE;
     $self->handle($handle);
 
