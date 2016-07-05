@@ -31,7 +31,7 @@ __PACKAGE__->result_source_instance->is_virtual(1);
 # $4 = mac_vendor
 # $5 = dhcp6_fingerprint
 # $6 = dhcp6_enterprise
-__PACKAGE__->result_source_instance->view_definition(q{
+__PACKAGE__->view_with_named_params(q{
     SELECT * FROM combination
     WHERE dhcp_fingerprint_id = $1
         AND dhcp_vendor_id = $2
