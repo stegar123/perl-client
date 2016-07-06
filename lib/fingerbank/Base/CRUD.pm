@@ -19,7 +19,6 @@ use Moose;
 use namespace::autoclean;
 use POSIX;
 
-use fingerbank::DB;
 use fingerbank::DB_Factory;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Log;

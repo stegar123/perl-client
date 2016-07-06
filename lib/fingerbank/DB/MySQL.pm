@@ -11,14 +11,17 @@ Databases related interaction class
 =cut
 
 use Moose;
-use namespace::autoclean;
 
 extends 'fingerbank::DB';
 
-has 'username'        => (is => 'rw', isa => 'Str');
-has 'password'        => (is => 'rw', isa => 'Str');
-has 'host'            => (is => 'rw', isa => 'Str');
-has 'database'        => (is => 'rw', isa => 'Str');
+use fingerbank::Log;
+use fingerbank::Util qw(is_error);
+use fingerbank::Status;
+
+has 'username'        => (is => 'rw');
+has 'password'        => (is => 'rw');
+has 'host'            => (is => 'rw');
+has 'database'        => (is => 'rw');
 
 our @schemas = ('Upstream');
 
@@ -31,11 +34,11 @@ our %_HANDLES = ();
 =cut
 
 
-sub BUILD {
+sub _build_handle {
     my ( $self ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $schema = $self->schema;
+    my $schema = $self->{schema};
 
     $logger->trace("Requesting schema '$schema' DB handle");
 
@@ -52,14 +55,14 @@ sub BUILD {
     return if is_error($self->_test);
 
     # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:MySQL:database=".$self->database.";host=".$self->host, $self->username, $self->password);
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host, $self->username, $self->password);
     
-    $self->handle($handle);
+    $_HANDLES{$schema} = { handle => $handle };
 
-    $_HANDLES{$schema} = { handle => $self->handle() };
-
-    return;
+    return $handle;
 }
+
+sub _test { $_[0]->status_code($fingerbank::Status::OK); return $fingerbank::Status::OK }
 
 =head1 AUTHOR
 
