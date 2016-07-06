@@ -217,7 +217,9 @@ sub _getCombinationID {
             # Should be done in a major or minor
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
                 my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatchExact";
-                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => $view_class->view_bind_params(\@bindings) })->first;
+                my $bind_params = $view_class->view_bind_params(\@bindings);
+                $logger->trace("Bind params : ".join(',', @$bind_params));
+                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => $bind_params })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
@@ -228,7 +230,9 @@ sub _getCombinationID {
         else {
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
                 my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatch";
-                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => $view_class->view_bind_params(\@bindings) })->first;
+                my $bind_params = $view_class->view_bind_params(\@bindings);
+                $logger->trace("Bind params : ".join(',', @$bind_params));
+                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => $bind_params })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
