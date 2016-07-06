@@ -3,6 +3,7 @@ package fingerbank::Base::Schema;
 use Moose;
 use namespace::autoclean;
 use MooseX::NonMoose;
+use fingerbank::Log;
 
 extends 'DBIx::Class::Core';
 
@@ -28,10 +29,23 @@ Get the full list of bind params for the view based on the named params (map)
 
 sub view_bind_params {
     my ($class, $map) = @_;
-    my $view_sql = $class->result_source_instance->view_definition();
+    my $logger = fingerbank::Log::get_logger;
     my @bind_params;
-    foreach my $param (@{$class->meta->{params}}) {
+
+    # Looking in this class and super classes meta for the bind params map
+    my $params = $class->meta->{params};
+    unless(defined($params)) {
+        foreach my $parent_meta (@{$class->meta->{_superclass_metas}}) {
+            $params = $parent_meta->{params};
+            if(defined($params)) {
+                last;
+            }
+        }
+    }
+
+    foreach my $param (@$params) {
         my $element = $map->[$param-1];
+        $logger->trace("Setting bind param $param with value $element");
         if(defined($element)){
             push @bind_params, $element;
         }
