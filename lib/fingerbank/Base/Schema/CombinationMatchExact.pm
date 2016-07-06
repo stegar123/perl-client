@@ -36,7 +36,7 @@ __PACKAGE__->view_with_named_params(q{
     WHERE dhcp_fingerprint_id = $1
         AND dhcp_vendor_id = $2
         AND user_agent_id = $3
-        AND (mac_vendor_id = $4
+        AND mac_vendor_id = $4
         AND dhcp6_fingerprint_id = $5
         AND dhcp6_enterprise_id = $6
     ORDER BY
