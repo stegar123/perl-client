@@ -215,7 +215,8 @@ sub _getCombinationID {
             # TODO : change cache key to CombinationMatchExact
             # Should be done in a major or minor
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
-                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => [ @bindings ] })->first;
+                my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatchExact";
+                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => $view_class->view_bind_params(\@bindings) })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
@@ -225,7 +226,8 @@ sub _getCombinationID {
         # Otherwise, we proceed with the complex select query using a view and where / case clauses 
         else {
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
-                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
+                my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatch";
+                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => $view_class->view_bind_params(\@bindings) })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
