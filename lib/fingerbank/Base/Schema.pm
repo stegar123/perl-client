@@ -6,6 +6,12 @@ use MooseX::NonMoose;
 
 extends 'DBIx::Class::Core';
 
+=head2 view_with_named_params
+
+Create a view with named params that is universal to all databases by locally creating a map of where the named params go which can then be used to create the bind params list
+
+=cut
+
 sub view_with_named_params {
     my ($class, $view) = @_;
     my @ordered = $view =~ /\$([0-9]+)/g;
@@ -13,6 +19,12 @@ sub view_with_named_params {
     $view =~ s/\$[0-9]+/\?/g;
     $class->result_source_instance->view_definition($view);
 }
+
+=head2 view_bind_params
+
+Get the full list of bind params for the view based on the named params (map)
+
+=cut
 
 sub view_bind_params {
     my ($class, $map) = @_;
