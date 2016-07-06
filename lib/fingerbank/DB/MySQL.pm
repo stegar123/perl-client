@@ -62,7 +62,20 @@ sub _build_handle {
     return $handle;
 }
 
+# TODO - rework this to a real test
 sub _test { $_[0]->status_code($fingerbank::Status::OK); return $fingerbank::Status::OK }
+
+sub initialize_from_sqlite {
+    my ($self, $from_file) = @_;
+    die("Missing or inexisting source SQLite file") unless(defined($from_file) && -f $from_file);
+
+    my $mysql_args = "-h ".$self->host." -u ".$self->username." -p".$self->password;
+    my $database = $self->database;
+    print `mysql $mysql_args -e 'drop database $database'`;
+    print `mysql $mysql_args -e 'create database $database'`;
+    print `sqlite3 $from_file .dump | python db/sqlite3-to-mysql.py | mysql $mysql_args $database`;
+
+}
 
 =head1 AUTHOR
 
