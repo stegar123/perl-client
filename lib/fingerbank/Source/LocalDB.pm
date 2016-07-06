@@ -25,6 +25,7 @@ use fingerbank::Log;
 use fingerbank::Model::Combination;
 use fingerbank::Model::Device;
 use fingerbank::Util qw(is_enabled is_disabled is_error is_success);
+use fingerbank::DB_Factory;
 
 # The query keys required to fullfil a match
 # - We load the appropriate module for each of the different query keys based on their name
@@ -203,7 +204,7 @@ sub _getCombinationID {
     # Looking for best matching combination in schemas
     # Sorting by match is handled by the SQL query itself. See L<fingerbank::Base::Schema::CombinationMatch>
     foreach my $schema ( @{$self->search_schemas} ) {
-        my $db = fingerbank::DB->new(schema => $schema);
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
         if ( $db->isError ) {
             $logger->warn("Cannot read from 'CombinationMatch' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
             return $fingerbank::Status::INTERNAL_SERVER_ERROR;
@@ -308,7 +309,7 @@ sub _recordUnmatched {
     $logger->debug("Attempting to record the unmatched query key '$key' with value '$value' in the 'unmatched' table of 'Local' database");
 
     # We first check if we already have the entry, if so we simply increment the occurence number
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         $logger->warn("Cannot read from 'Unmatched' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return;

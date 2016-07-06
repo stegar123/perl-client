@@ -20,6 +20,7 @@ use namespace::autoclean;
 use POSIX;
 
 use fingerbank::DB;
+use fingerbank::DB_Factory;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Log;
 
@@ -48,7 +49,7 @@ sub _getTableID {
     my ( $self, $table ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         $logger->warn("Can't get '$table' table ID. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return $db->statusCode;
@@ -68,7 +69,7 @@ sub _incrementTableID {
     my ( $self, $table ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         $logger->warn("Can't increment '$table' table ID. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return $db->statusCode;
@@ -125,7 +126,7 @@ sub create {
     $args->{created_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));   # Overriding created_at with current timestamp
     $args->{updated_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));   # Overriding updated_at with current timestamp
 
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         my $status_msg = "Cannot create new '$className' entry with ID '$entry_id' in schema 'Local'";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -182,7 +183,7 @@ sub read {
 
     $logger->debug("Looking for '$className' entry with ID '$id' in schema '$schema'");
 
-    my $db = fingerbank::DB->new(schema => $schema);
+    my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
     if ( $db->isError ) {
         my $status_msg = "Cannot read from '$className' table in schema '$schema'";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -233,7 +234,7 @@ sub update {
     $args->{updated_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));
 
     # Fetching current data to build the resultset from which we will then update with new data
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         my $status_msg = "Cannot read from '$className' table in schema 'Local'. Cannot update";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -287,7 +288,7 @@ sub delete {
     $logger->debug("Attempting to delete '$className' entry with ID '$id' from schema 'Local'");
 
     # Fetching current data to build the resultset from which we will delete
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         my $status_msg = "Cannot read from '$className' table in schema 'Local'. Cannot delete";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -356,7 +357,7 @@ sub search {
     foreach my $schema ( @schemas ) {
         $logger->debug("Searching '$className' entries in schema '$schema'");
 
-        my $db = fingerbank::DB->new(schema => $schema);
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
         if ( $db->isError ) {
             my $status_msg = "Cannot read from '$className' table in schema '$schema'. Cannot search";
             $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -490,7 +491,7 @@ sub count {
     my @schemas = ( defined($schema) ) ? ($schema) : @fingerbank::DB::schemas;
 
     foreach my $schema ( @schemas ) {
-        my $db = fingerbank::DB->new(schema => $schema);
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
         if ( $db->isError ) {
             my $status_msg = "Cannot read from '$className' table in schema '$schema'. Cannot search";
             $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");

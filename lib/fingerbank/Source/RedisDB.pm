@@ -17,6 +17,7 @@ use strict;
 use warnings;
 
 use fingerbank::DB;
+use fingerbank::DB_Factory;
 use fingerbank::Redis;
 use fingerbank::Constant qw($TRUE $FALSE $DEFAULT_SCORE);
 use fingerbank::Status;
@@ -121,7 +122,7 @@ sub combinations_device_count {
     my ($self, @combination_ids) = @_;
 
     $self->cache->compute("combinations_device_count_".join(',', @combination_ids), sub {
-        my $db = fingerbank::DB->new(schema => "Upstream");
+        my $db = fingerbank::DB_Factory->instantiate(schema => "Upstream");
         my $big_or = join(',', @combination_ids);
         $big_or = "($big_or)";
         my $devices_count = $db->handle->storage->dbh->selectall_hashref("select device_id,count(device_id) as device_count from combination where id IN $big_or group by device_id order by device_count DESC", "device_id");

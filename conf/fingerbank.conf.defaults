@@ -20,6 +20,13 @@ host=127.0.0.1
 port=6379
 attribute_map_url = https://fingerbank.inverse.ca/api/v1/download-attribute-map
 
+[mysql]
+state=disabled
+host=localhost
+username=fingerbank
+password=fingerbank
+database=fingerbank
+
 [proxy]
 use_proxy = disabled
 host =
