@@ -17,7 +17,7 @@ sub instantiate {
     my $Config = fingerbank::Config::get_config;
 
     # If MySQL is enabled and that the schema can be handled in MySQL
-    if(is_enabled($Config->{mysql}->{state}) && any { $_ eq $args{schema} } @fingerbank::DB::MySQL::schemas) {
+    if($args{type} eq "MySQL" || (is_enabled($Config->{mysql}->{state}) && any { $_ eq $args{schema} } @fingerbank::DB::MySQL::schemas)) {
         $logger->debug("Using MySQL as database for schema ".$args{schema});
         return fingerbank::DB::MySQL->new(%args, %{$Config->{mysql}});
     }
