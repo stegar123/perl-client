@@ -23,6 +23,7 @@ attribute_map_url = https://fingerbank.inverse.ca/api/v1/download-attribute-map
 [mysql]
 state=disabled
 host=localhost
+port=3306
 username=fingerbank
 password=fingerbank
 database=fingerbank
