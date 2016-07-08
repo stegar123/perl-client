@@ -21,6 +21,7 @@ use fingerbank::Status;
 has 'username'        => (is => 'rw');
 has 'password'        => (is => 'rw');
 has 'host'            => (is => 'rw');
+has 'port'            => (is => 'rw');
 has 'database'        => (is => 'rw');
 
 our @schemas = ('Upstream');
@@ -55,7 +56,7 @@ sub _build_handle {
     return if is_error($self->_test);
 
     # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host, $self->username, $self->password);
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password);
     
     $_HANDLES{$schema} = { handle => $handle };
 
