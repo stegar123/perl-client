@@ -15,15 +15,16 @@ use Moose;
 extends 'fingerbank::DB';
 
 use fingerbank::Log;
-use fingerbank::Util qw(is_error);
+use fingerbank::Util qw(is_error is_success);
 use fingerbank::Status;
 use fingerbank::FilePath qw($INSTALL_PATH);
 
-has 'username'        => (is => 'rw');
-has 'password'        => (is => 'rw');
-has 'host'            => (is => 'rw');
-has 'port'            => (is => 'rw');
-has 'database'        => (is => 'rw');
+has 'username'         => (is => 'rw');
+has 'password'         => (is => 'rw');
+has 'host'             => (is => 'rw');
+has 'port'             => (is => 'rw');
+has 'database'         => (is => 'rw');
+has 'incrementals_url' => (is => 'rw');
 
 our @schemas = ('Upstream');
 
@@ -71,12 +72,38 @@ sub initialize_from_sqlite {
     my ($self, $from_file) = @_;
     die("Missing or inexisting source SQLite file") unless(defined($from_file) && -f $from_file);
 
-    my $mysql_args = "-h ".$self->host." -u ".$self->username." -p".$self->password;
+    my $mysql_cli = $self->_mysql_cli;
     my $database = $self->database;
-    print `mysql $mysql_args -e 'drop database $database'`;
-    print `mysql $mysql_args -e 'create database $database'`;
-    print `sqlite3 $from_file .dump | python $INSTALL_PATH/db/sqlite3-to-mysql.py | mysql $mysql_args $database`;
+    print `$mysql_cli -e 'drop database $database'`;
+    print `$mysql_cli -e 'create database $database'`;
+    print `sqlite3 $from_file .dump | python $INSTALL_PATH/db/sqlite3-to-mysql.py | $mysql_cli $database`;
 
+}
+
+sub _mysql_cli {
+    my ($self) = @_;
+    my $mysql_args = "-h '".$self->host."' -u '".$self->username."' -p'".$self->password."'";
+    return "mysql $mysql_args";
+}
+
+sub update_from_incrementals {
+    my ($self) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my ($last_timestamp) = $self->handle->storage->dbh->selectrow_array("SELECT id from incrementals_applied ORDER by id ASC LIMIT 1;");
+
+    my $download_dest = $INSTALL_PATH."/db/incremental".int(rand()*100000).".sql";
+    my $mysql_cli = $self->_mysql_cli;
+    my $database = $self->database;
+    my ($status, $result) = fingerbank::Util::fetch_file(destination => $download_dest, download_url => $self->incrementals_url, get_params => {start => $last_timestamp});
+    if(is_success($status)) {
+        `cat $download_dest | $mysql_cli $database`;
+        unlink $download_dest;
+    }
+    else {
+        $logger->error("Can't fetch incrementals : ".$result);
+        return ($status, $result);
+    }
 }
 
 =head1 AUTHOR

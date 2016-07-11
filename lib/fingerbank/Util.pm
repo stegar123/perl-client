@@ -238,7 +238,7 @@ sub fetch_file {
     $ua->timeout(60);   # An update query should not take more than 60 seconds
 
     my $api_key = ( exists($params{'api_key'}) && $params{'api_key'} ne "" ) ? $params{'api_key'} : $Config->{'upstream'}{'api_key'};    
-    my %parameters = ( key => $api_key );
+    my %parameters = ( key => $api_key, %{$params{get_params}} );
     my $url = URI->new($params{'download_url'});
     $url->query_form(%parameters);
 
