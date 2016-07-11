@@ -97,7 +97,7 @@ sub update_from_incrementals {
     my $database = $self->database;
     my ($status, $result) = fingerbank::Util::fetch_file(destination => $download_dest, download_url => $self->incrementals_url, get_params => {start => $last_timestamp});
     if(is_success($status)) {
-        `cat $download_dest | $mysql_cli $database`;
+        `$mysql_cli $database < $download_dest`;
         unlink $download_dest;
     }
     else {
