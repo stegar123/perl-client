@@ -17,6 +17,7 @@ extends 'fingerbank::DB';
 use fingerbank::Log;
 use fingerbank::Util qw(is_error);
 use fingerbank::Status;
+use fingerbank::FilePath qw($INSTALL_PATH);
 
 has 'username'        => (is => 'rw');
 has 'password'        => (is => 'rw');
@@ -74,7 +75,7 @@ sub initialize_from_sqlite {
     my $database = $self->database;
     print `mysql $mysql_args -e 'drop database $database'`;
     print `mysql $mysql_args -e 'create database $database'`;
-    print `sqlite3 $from_file .dump | python db/sqlite3-to-mysql.py | mysql $mysql_args $database`;
+    print `sqlite3 $from_file .dump | python $INSTALL_PATH/db/sqlite3-to-mysql.py | mysql $mysql_args $database`;
 
 }
 
