@@ -92,7 +92,7 @@ sub update_from_incrementals {
 
     my ($last_timestamp) = $self->handle->storage->dbh->selectrow_array("SELECT id from incrementals_applied ORDER by id ASC LIMIT 1;");
 
-    my $download_dest = $INSTALL_PATH."/db/incremental".int(rand()*10^10).".sql";
+    my $download_dest = $INSTALL_PATH."/db/incremental".int(rand()*10**10).".sql";
     my $mysql_cli = $self->_mysql_cli;
     my $database = $self->database;
     my ($status, $result) = fingerbank::Util::fetch_file(destination => $download_dest, download_url => $self->incrementals_url, get_params => {start => $last_timestamp});
