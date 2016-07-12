@@ -16,12 +16,19 @@ sub instantiate {
     my $logger = fingerbank::Log::get_logger;
     my $Config = fingerbank::Config::get_config;
 
+    if($args{type}) {
+        $args{forced_type} = $args{type};
+    }
+
     $args{type} //= "SQLite";
     if(is_enabled($Config->{mysql}->{state}) && any { $_ eq $args{schema} } @fingerbank::DB::MySQL::schemas) {
         $args{type} = "MySQL";
     }
+
+    my $type = $args{forced_type} // $args{type};
+
     # If MySQL is enabled and that the schema can be handled in MySQL
-    if($args{type} eq "MySQL") {
+    if($type eq "MySQL") {
         $logger->debug("Using MySQL as database for schema ".$args{schema});
         return fingerbank::DB::MySQL->new(%args, %{$Config->{mysql}});
     }
