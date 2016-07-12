@@ -101,13 +101,16 @@ sub update_from_incrementals {
         my $rt = $?;
         unlink $download_dest;
         if($rt != 0) {
-            $logger->error("MySQL incremental apply failed with code $rt : $output");
-            return ($fingerbank::Status::INTERNAL_SERVER_ERROR);
+            my $msg = "MySQL incremental apply failed with code $rt : $output";
+            $logger->error();
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR, $msg);
         }
+        return ($fingerbank::Status::OK, "Successfully applied incremental to MySQL database.");
     }
     else {
-        $logger->error("Can't fetch incrementals : ".$result);
-        return ($status, $result);
+        my $msg = "Can't fetch incrementals : ".$result;
+        $logger->error($msg);
+        return ($status, $msg);
     }
 }
 
