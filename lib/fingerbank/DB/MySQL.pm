@@ -97,8 +97,13 @@ sub update_from_incrementals {
     my $database = $self->database;
     my ($status, $result) = fingerbank::Util::fetch_file(destination => $download_dest, download_url => $self->incrementals_url, get_params => {start => $last_timestamp});
     if(is_success($status)) {
-        `$mysql_cli $database < $download_dest`;
+        my $output = `$mysql_cli $database < $download_dest 2>&1`;
+        my $rt = $?;
         unlink $download_dest;
+        if($rt != 0) {
+            $logger->error("MySQL incremental apply failed with code $rt : $output");
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR);
+        }
     }
     else {
         $logger->error("Can't fetch incrementals : ".$result);
