@@ -55,19 +55,32 @@ sub _build_handle {
         return;
     }
 
-    # Test requested schema DB file validity
-    return if is_error($self->_test);
-
     # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password);
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password, { RaiseError => 0, PrintError => 0, mysql_auto_reconnect => 1 } );
     
+    # Test requested schema DB file validity
+    return if is_error($self->_test($handle));
+   
     $_HANDLES{$schema} = { handle => $handle };
 
     return $handle;
 }
 
-# TODO - rework this to a real test
-sub _test { $_[0]->status_code($fingerbank::Status::OK); return $fingerbank::Status::OK }
+sub _test { 
+    my ($self, $handle) = @_;
+
+    eval { $handle->resultset("Combination")->count };
+    my $db_exists = $@ ? 0 : 1;
+
+    if($db_exists) {
+        $self->status_code($fingerbank::Status::OK); 
+        return $fingerbank::Status::OK;
+    }
+    else {
+        $self->status_code($fingerbank::Status::INTERNAL_SERVER_ERROR); 
+        return $fingerbank::Status::INTERNAL_SERVER_ERROR;
+    }
+}
 
 sub initialize_from_sqlite {
     my ($self, $from_file) = @_;
