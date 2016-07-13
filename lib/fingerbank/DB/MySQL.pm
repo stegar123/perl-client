@@ -33,10 +33,11 @@ our %_HANDLES = ();
 
 =head1 METHODS
 
-=head2 BUILD
+=head2 _build_handle
+
+Build the database handle
 
 =cut
-
 
 sub _build_handle {
     my ( $self ) = @_;
@@ -66,6 +67,12 @@ sub _build_handle {
     return $handle;
 }
 
+=head2 _test
+
+Test the access to the database
+
+=cut
+
 sub _test { 
     my ($self, $handle) = @_;
 
@@ -81,6 +88,12 @@ sub _test {
         return $fingerbank::Status::INTERNAL_SERVER_ERROR;
     }
 }
+
+=head2 initialize_from_sqlite
+
+Initialize the database from an SQLite dump and activate MySQL as the backend
+
+=cut
 
 sub initialize_from_sqlite {
     my ($self, $from_file) = @_;
@@ -101,11 +114,23 @@ sub initialize_from_sqlite {
     }
 }
 
+=head2 _mysql_cli
+
+Helper to get a MySQL CLI command with the proper arguments based on the configuration
+
+=cut
+
 sub _mysql_cli {
     my ($self) = @_;
     my $mysql_args = "-h '".$self->host."' -u '".$self->username."' -p'".$self->password."'";
     return "mysql $mysql_args";
 }
+
+=head2 update_from_incrementals
+
+Fetch the necessary incrementals from the API and apply them on the database
+
+=cut
 
 sub update_from_incrementals {
     my ($self) = @_;
