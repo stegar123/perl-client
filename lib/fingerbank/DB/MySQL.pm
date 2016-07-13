@@ -39,7 +39,7 @@ Build the database handle
 
 =cut
 
-sub _build_handle {
+sub build_handle {
     my ( $self ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
@@ -57,36 +57,11 @@ sub _build_handle {
     }
 
     # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password, { RaiseError => 0, PrintError => 0, mysql_auto_reconnect => 1 } );
+    my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password, { RaiseError => 0, PrintError => 0, mysql_auto_reconnect => 1, unsafe => 1 } );
     
-    # Test requested schema DB file validity
-    return if is_error($self->_test($handle));
-   
     $_HANDLES{$schema} = { handle => $handle };
 
     return $handle;
-}
-
-=head2 _test
-
-Test the access to the database
-
-=cut
-
-sub _test { 
-    my ($self, $handle) = @_;
-
-    eval { $handle->resultset("Combination")->count };
-    my $db_exists = $@ ? 0 : 1;
-
-    if($db_exists) {
-        $self->status_code($fingerbank::Status::OK); 
-        return $fingerbank::Status::OK;
-    }
-    else {
-        $self->status_code($fingerbank::Status::INTERNAL_SERVER_ERROR); 
-        return $fingerbank::Status::INTERNAL_SERVER_ERROR;
-    }
 }
 
 =head2 initialize_from_sqlite

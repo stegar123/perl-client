@@ -33,7 +33,7 @@ our @schemas = ('Local', 'Upstream');
 our %_HANDLES = ();
 
 
-sub _build_handle {
+sub build_handle {
     my ( $self ) = @_;
     my $logger = fingerbank::Log::get_logger;
 

@@ -79,16 +79,25 @@ sub statusMsg {
     return $self->status_msg;
 }
 
+=head2 BUILD
+
+Initialize the handle after building the object
+
+=cut
+
 sub BUILD {
     my ($self) = @_;
     # Accessing the handle once we completed the initialization
     $self->handle;
 }
 
-sub build_handle {
-    my ($self) = @_;
-    return $self->_build_handle();
-}
+=head2 build_handle
+
+Meant to be overriden by child classes
+
+=cut
+
+sub build_handle {}
 
 =head2 update_upstream
 
