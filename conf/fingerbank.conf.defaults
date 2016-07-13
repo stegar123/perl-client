@@ -27,7 +27,7 @@ port=3306
 username=fingerbank
 password=fingerbank
 database=fingerbank
-incrementals_url=http://fingerbank-dev.inverse/api/v1/sql_incrementals/download
+incrementals_url=https://fingerbank.inverse.ca/api/v1/sql_incrementals/download
 
 [proxy]
 use_proxy = disabled
