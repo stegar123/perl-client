@@ -76,8 +76,13 @@ sub initialize_from_sqlite {
     my $database = $self->database;
     print `$mysql_cli -e 'drop database $database'`;
     print `$mysql_cli -e 'create database $database'`;
-    print `sqlite3 $from_file .dump | python $INSTALL_PATH/db/sqlite3-to-mysql.py | $mysql_cli $database`;
-
+    my $result = `sqlite3 $from_file .dump 2>&1 | python $INSTALL_PATH/db/sqlite3-to-mysql.py 2>&1 | $mysql_cli $database 2>&1`;
+    if($? == 0) {
+        return ($fingerbank::Status::OK, "Imported $from_file to $database successfully.");
+    }
+    else {
+        return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Output of the import : $result");
+    }
 }
 
 sub _mysql_cli {
