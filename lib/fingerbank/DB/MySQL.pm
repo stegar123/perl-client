@@ -18,6 +18,7 @@ use fingerbank::Log;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Status;
 use fingerbank::FilePath qw($INSTALL_PATH);
+use fingerbank::Config;
 
 has 'username'         => (is => 'rw');
 has 'password'         => (is => 'rw');
@@ -78,6 +79,8 @@ sub initialize_from_sqlite {
     print `$mysql_cli -e 'create database $database'`;
     my $result = `sqlite3 $from_file .dump 2>&1 | python $INSTALL_PATH/db/sqlite3-to-mysql.py 2>&1 | $mysql_cli $database 2>&1`;
     if($? == 0) {
+        fingerbank::Config::write_config({ mysql => { state => 'enabled' } });
+        fingerbank::Util::fix_permissions();
         return ($fingerbank::Status::OK, "Imported $from_file to $database successfully.");
     }
     else {
