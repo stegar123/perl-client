@@ -25,6 +25,8 @@ use fingerbank::Constant qw($REDIS_RECONNECT_INTERVAL $TRUE);
 use Encode qw(encode);
 use I18N::Langinfo qw(langinfo CODESET);
 
+our $REDIS_DRIVER = "Redis::Fast";
+
 =head2 _build_redis
 
 Build the redis object
@@ -35,7 +37,7 @@ sub _build_redis {
     my ($self) = @_;
 
     my $Config = fingerbank::Config::get_config;
-    my $redis = Redis::Fast->new(
+    my $redis = $REDIS_DRIVER->new(
       server => $Config->{redis}->{host}.':'.$Config->{redis}->{port},
       reconnect => $TRUE,
       every => $REDIS_RECONNECT_INTERVAL,
