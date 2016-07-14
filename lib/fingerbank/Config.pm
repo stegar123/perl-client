@@ -184,11 +184,17 @@ sub write_config {
 
     # Writing the config hash to flat file
     $logger->debug("Writing current config hash to file '$CONF_FILE'");
-    tied(%Config)->WriteConfig($CONF_FILE) or $logger->error("Error writing Fingerbank configuration file '$CONF_FILE'");
+    if(tied(%Config)->WriteConfig($CONF_FILE)) {
+        $status_msg = "Successfully written Fingerbank configuration file";
+        $logger->info($status_msg);
+        return ( $fingerbank::Status::OK, $status_msg );
+    }
+    else {
+        $status_msg = "Error writing Fingerbank configuration file '$CONF_FILE'";
+        $logger->error($status_msg);
+        return ( $fingerbank::Status::INTERNAL_SERVER_ERROR, $status_msg);
+    }
 
-    $status_msg = "Successfully written Fingerbank configuration file";
-    $logger->info($status_msg);
-    return ( $fingerbank::Status::OK, $status_msg );
 }
 
 =head2 get_config
