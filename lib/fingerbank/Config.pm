@@ -20,8 +20,10 @@ use fingerbank::FilePath qw($CONF_FILE $CONFIG_DEFAULTS_FILE $CONFIG_DOC_FILE $C
 use fingerbank::Log;
 use fingerbank::Status;
 use fingerbank::Util qw(is_enabled is_success);
+use fingerbank::NullCache;
 
 our %Config;
+our $CACHE = fingerbank::NullCache->new;
 
 =head1 METHODS
 
@@ -36,6 +38,14 @@ sub read_config {
 
     if ( ! -e $CONFIG_DEFAULTS_FILE ) {
         $logger->error("Fingerbank default configuration file '$CONFIG_DEFAULTS_FILE' has not been found. Cannot continue");
+        return;
+    }
+
+    # Check in the cache first
+    my $configCached = $CACHE->get('fingerbank::Config::read_config');
+    if(defined($configCached)) {
+        $logger->trace("Cache hit for fingerbank config");
+        tie %Config, 'fingerbank::ConfigRestore', $configCached;
         return;
     }
 
@@ -70,6 +80,7 @@ sub read_config {
 
         tied(%Config)->SetFileName($CONF_FILE);
     }
+    $CACHE->set('fingerbank::Config::read_config', tied(%Config));
 }
 
 =head2 read_defaults
@@ -332,6 +343,10 @@ Checks whether or not, the configuration allows for API calls to the Fingerbank 
 sub configured_for_api {
     return (is_api_key_configured && do_we_interrogate_upstream);
 }
+
+package fingerbank::ConfigRestore;
+
+sub TIEHASH   { $_[1] }
 
 =head1 AUTHOR
 
