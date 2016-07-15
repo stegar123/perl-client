@@ -17,6 +17,7 @@ use File::Copy qw(copy move);
 use File::Find;
 use File::Touch;
 use LWP::UserAgent;
+use HTTP::Message;
 use POSIX;
 
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
@@ -296,6 +297,8 @@ sub get_lwp_client {
 
         return $ua;
     }
+    
+    $ua->default_header('Accept-Encoding' => scalar HTTP::Message::decodable());
 
     return $ua;
 }
