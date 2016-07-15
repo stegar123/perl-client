@@ -23,6 +23,8 @@ use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENT
 use fingerbank::Config;
 use fingerbank::FilePath qw($INSTALL_PATH);
 
+use Digest::MD5 qw(md5_hex);
+
 BEGIN {
     use Exporter ();
     our ( @ISA, @EXPORT_OK );
@@ -246,6 +248,12 @@ sub fetch_file {
         $status = $fingerbank::Status::OK;
         $status_msg = "Successfully fetched '$params{'download_url'}' from Fingerbank project";
         $logger->info($status_msg);
+        my $md5 = $res->header('X-Fingerbank-Md5');
+        if(defined($md5) && md5_hex($res->decoded_content) ne $md5) {
+            undef $ua;
+            $logger->error("Checksum does not match for download.");
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Checksum is not correct for download");
+        }
         open my $fh, ">", $params{'destination'} or sub { 
             undef $ua; 
             return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file ".$params{"destination"}." in write mode")
