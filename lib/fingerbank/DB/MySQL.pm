@@ -56,6 +56,7 @@ sub build_handle {
         return;
     }
 
+    $self->status_code($fingerbank::Status::OK);
     # Returning the requested schema db handle
     my $handle = "fingerbank::Schema::$schema"->connect("dbi:mysql:database=".$self->database.";host=".$self->host.";port=".$self->port, $self->username, $self->password, { RaiseError => 0, PrintError => 0, mysql_auto_reconnect => 1, unsafe => 1 } );
     
