@@ -43,7 +43,7 @@ Returns whether or not the object status is erronous
 
 sub isError {
     my ( $self ) = @_;
-    return is_error($self->status_code);
+    return !defined($self->status_code) || is_error($self->status_code);
 }
 
 =head2 isSuccess
