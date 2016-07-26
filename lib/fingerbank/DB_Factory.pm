@@ -13,13 +13,13 @@ Factory to create database connections
 use Moose;
 use namespace::autoclean;
 
+use fingerbank::Constant qw($SQLITE_DB_TYPE $MYSQL_DB_TYPE);
 use fingerbank::DB::SQLite;
 use fingerbank::DB::MySQL;
 use fingerbank::Config;
 use fingerbank::Log;
 use fingerbank::Util qw(is_enabled);
 use List::MoreUtils qw(any);
-use fingerbank::Constant qw($SQLITE_DB_TYPE $MYSQL_DB_TYPE);
 
 sub instantiate {
     my ($self, %args) = @_;

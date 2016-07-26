@@ -161,7 +161,7 @@ Readonly our $SQLITE_DB_TYPE => "SQLite";
 
 =cut
 
-Readonly our $MYSQL_DB_TYPE => "SQLite";
+Readonly our $MYSQL_DB_TYPE => "MySQL";
 
 =back
 
