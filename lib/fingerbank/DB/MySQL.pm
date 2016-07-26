@@ -19,6 +19,7 @@ use fingerbank::Util qw(is_error is_success);
 use fingerbank::Status;
 use fingerbank::FilePath qw($INSTALL_PATH);
 use fingerbank::Config;
+use fingerbank::Constant qw($UPSTREAM_SCHEMA);
 
 has 'username'         => (is => 'rw');
 has 'password'         => (is => 'rw');
@@ -27,7 +28,7 @@ has 'port'             => (is => 'rw');
 has 'database'         => (is => 'rw');
 has 'incrementals_url' => (is => 'rw');
 
-our @schemas = ('Upstream');
+our @schemas = ($UPSTREAM_SCHEMA);
 
 our %_HANDLES = ();
 

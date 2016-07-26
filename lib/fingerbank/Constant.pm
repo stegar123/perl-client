@@ -28,6 +28,8 @@ BEGIN {
         $DEFAULT_SCORE
         $SQLITE_DB_TYPE
         $MYSQL_DB_TYPE
+        $LOCAL_SCHEMA
+        $UPSTREAM_SCHEMA
     );
 }
 
@@ -162,6 +164,18 @@ Readonly our $SQLITE_DB_TYPE => "SQLite";
 =cut
 
 Readonly our $MYSQL_DB_TYPE => "MySQL";
+
+=item $LOCAL_SCHEMA
+
+=cut
+
+Readonly our $LOCAL_SCHEMA => "Local";
+
+=item $UPSTREAM_SCHEMA
+
+=cut
+
+Readonly our $UPSTREAM_SCHEMA => "Upstream";
 
 =back
 

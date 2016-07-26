@@ -22,6 +22,7 @@ use POSIX;
 use fingerbank::DB_Factory;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Log;
+use fingerbank::Constant qw($LOCAL_SCHEMA);
 
 =head1 HELPERS
 
@@ -68,7 +69,7 @@ sub _incrementTableID {
     my ( $self, $table ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         $logger->warn("Can't increment '$table' table ID. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return $db->statusCode;
@@ -125,7 +126,7 @@ sub create {
     $args->{created_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));   # Overriding created_at with current timestamp
     $args->{updated_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));   # Overriding updated_at with current timestamp
 
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         my $status_msg = "Cannot create new '$className' entry with ID '$entry_id' in schema 'Local'";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
