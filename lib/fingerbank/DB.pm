@@ -17,7 +17,7 @@ use JSON;
 use POSIX qw(strftime);
 
 use fingerbank::Config;
-use fingerbank::Constant qw($TRUE $FALSE);
+use fingerbank::Constant qw($TRUE $FALSE $LOCAL_SCHEMA $UPSTREAM_SCHEMA);
 use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE %SCHEMA_DBS);
 use fingerbank::Log;
 use fingerbank::Schema::Local;
@@ -29,7 +29,7 @@ has 'handle'        => (is => 'rw', builder => 'build_handle', lazy => 1);
 has 'status_code'   => (is => 'rw');
 has 'status_msg'    => (is => 'rw');
 
-our @schemas = ('Local', 'Upstream');
+our @schemas = ($LOCAL_SCHEMA, $UPSTREAM_SCHEMA);
 
 our %_HANDLES = ();
 

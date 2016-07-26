@@ -22,7 +22,7 @@ use POSIX;
 use fingerbank::DB_Factory;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Log;
-use fingerbank::Constant qw($LOCAL_SCHEMA);
+use fingerbank::Constant qw($LOCAL_SCHEMA $UPSTREAM_SCHEMA);
 
 =head1 HELPERS
 
@@ -49,7 +49,7 @@ sub _getTableID {
     my ( $self, $table ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         $logger->warn("Can't get '$table' table ID. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return $db->statusCode;
@@ -179,7 +179,7 @@ sub read {
 
     # Verify if the provided ID is part of the local or upstream schema to seach accordingly
     # Local schema IDs are 'L' prefixed
-    my $schema = ( lc($id) =~ /^l/ ) ? 'Local' : 'Upstream';
+    my $schema = ( lc($id) =~ /^l/ ) ? $LOCAL_SCHEMA : $UPSTREAM_SCHEMA;
 
     $logger->debug("Looking for '$className' entry with ID '$id' in schema '$schema'");
 
