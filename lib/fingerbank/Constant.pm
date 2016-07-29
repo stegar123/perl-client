@@ -26,6 +26,10 @@ BEGIN {
         $DEFAULT_BACKUP_RETENTION 
         $REDIS_RECONNECT_INTERVAL
         $DEFAULT_SCORE
+        $SQLITE_DB_TYPE
+        $MYSQL_DB_TYPE
+        $LOCAL_SCHEMA
+        $UPSTREAM_SCHEMA
     );
 }
 
@@ -148,6 +152,30 @@ The score that is given by default on any match
 =cut
 
 Readonly our $DEFAULT_SCORE => 1;
+
+=item $SQLITE_DB_TYPE
+
+=cut
+
+Readonly our $SQLITE_DB_TYPE => "SQLite";
+
+=item $MYSQL_DB_TYPE
+
+=cut
+
+Readonly our $MYSQL_DB_TYPE => "MySQL";
+
+=item $LOCAL_SCHEMA
+
+=cut
+
+Readonly our $LOCAL_SCHEMA => "Local";
+
+=item $UPSTREAM_SCHEMA
+
+=cut
+
+Readonly our $UPSTREAM_SCHEMA => "Upstream";
 
 =back
 

@@ -31,7 +31,7 @@ __PACKAGE__->result_source_instance->is_virtual(1);
 # $4 = mac_vendor
 # $5 = dhcp6_fingerprint
 # $6 = dhcp6_enterprise
-__PACKAGE__->result_source_instance->view_definition(q{
+__PACKAGE__->view_with_named_params(q{
     SELECT * FROM combination
     WHERE dhcp_fingerprint_id = $1 OR dhcp_vendor_id = $2 OR user_agent_id = $3 OR (mac_vendor_id = $4 OR mac_vendor_id IS NULL) OR dhcp6_fingerprint_id = $5 OR dhcp6_enterprise_id = $6
     ORDER BY

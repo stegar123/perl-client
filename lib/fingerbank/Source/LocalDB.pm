@@ -25,6 +25,7 @@ use fingerbank::Log;
 use fingerbank::Model::Combination;
 use fingerbank::Model::Device;
 use fingerbank::Util qw(is_enabled is_disabled is_error is_success);
+use fingerbank::DB_Factory;
 
 # The query keys required to fullfil a match
 # - We load the appropriate module for each of the different query keys based on their name
@@ -203,7 +204,7 @@ sub _getCombinationID {
     # Looking for best matching combination in schemas
     # Sorting by match is handled by the SQL query itself. See L<fingerbank::Base::Schema::CombinationMatch>
     foreach my $schema ( @{$self->search_schemas} ) {
-        my $db = fingerbank::DB->new(schema => $schema);
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
         if ( $db->isError ) {
             $logger->warn("Cannot read from 'CombinationMatch' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
             return $fingerbank::Status::INTERNAL_SERVER_ERROR;
@@ -215,7 +216,10 @@ sub _getCombinationID {
             # TODO : change cache key to CombinationMatchExact
             # Should be done in a major or minor
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
-                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => [ @bindings ] })->first;
+                my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatchExact";
+                my $bind_params = $view_class->view_bind_params(\@bindings);
+                $logger->trace("Bind params : ".join(',', @$bind_params));
+                my $result = $db->handle->resultset('CombinationMatchExact')->search({}, { bind => $bind_params })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
@@ -225,7 +229,10 @@ sub _getCombinationID {
         # Otherwise, we proceed with the complex select query using a view and where / case clauses 
         else {
             my ($status, $id) = $self->cache->compute("CombinationMatch_$schema\_".encode_json(\@bindings), sub { 
-                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => [ @bindings ] })->first;
+                my $view_class = "fingerbank::Schema::".$db->schema."::CombinationMatch";
+                my $bind_params = $view_class->view_bind_params(\@bindings);
+                $logger->trace("Bind params : ".join(',', @$bind_params));
+                my $result = $db->handle->resultset('CombinationMatch')->search({}, { bind => $bind_params })->first;
                 return $result ? ($fingerbank::Status::OK, $result->id) : ($fingerbank::Status::NOT_FOUND, undef);
             });
             if(is_success($status)) {
@@ -306,7 +313,7 @@ sub _recordUnmatched {
     $logger->debug("Attempting to record the unmatched query key '$key' with value '$value' in the 'unmatched' table of 'Local' database");
 
     # We first check if we already have the entry, if so we simply increment the occurence number
-    my $db = fingerbank::DB->new(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         $logger->warn("Cannot read from 'Unmatched' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return;

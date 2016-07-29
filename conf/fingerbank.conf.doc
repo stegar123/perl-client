@@ -112,3 +112,46 @@ options=enabled|disabled
 description=<<EOT
 Whether or not to verify SSL when using proxying
 EOT
+
+[mysql.state]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Should Fingerbank use MySQL instead of the SQLite3 database ?
+EOT
+
+[mysql.host]
+type=text
+description=<<EOT
+The host to connect to the MySQL database
+EOT
+
+[mysql.port]
+type=text
+description=<<EOT
+The port to connect to the MySQL database
+EOT
+
+[mysql.username]
+type=text
+description=<<EOT
+The username to connect to the MySQL database
+EOT
+
+[mysql.password]
+type=text
+description=<<EOT
+The password to connect to the MySQL database
+EOT
+
+[mysql.database]
+type=text
+description=<<EOT
+The database name in MySQL
+EOT
+
+[mysql.incrementals_url]
+type=text
+description=<<EOT
+The URL to download the SQL incremental scripts
+EOT

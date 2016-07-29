@@ -11,6 +11,9 @@ init-db-upstream:
 	chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 	chmod 664 /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 
+init-mysql:
+	perl -I/usr/local/fingerbank/lib -Mfingerbank::DB_Factory -e 'fingerbank::DB_Factory->instantiate(type => "MySQL", schema => "Upstream")->initialize_from_sqlite("/usr/local/fingerbank/db/fingerbank_Upstream.db")'
+
 init-p0f-map:
 	@read -p "API key (ENTER if none): " api_key; \
 	perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\") )"; \

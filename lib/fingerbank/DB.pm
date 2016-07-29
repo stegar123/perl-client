@@ -11,26 +11,25 @@ Databases related interaction class
 =cut
 
 use Moose;
-use namespace::autoclean;
 
 use File::Copy qw(copy move);
 use JSON;
 use POSIX qw(strftime);
 
 use fingerbank::Config;
-use fingerbank::Constant qw($TRUE $FALSE);
+use fingerbank::Constant qw($TRUE $FALSE $LOCAL_SCHEMA $UPSTREAM_SCHEMA);
 use fingerbank::FilePath qw($INSTALL_PATH $LOCAL_DB_FILE $UPSTREAM_DB_FILE %SCHEMA_DBS);
 use fingerbank::Log;
 use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
 use fingerbank::Util qw(is_success is_error is_disabled);
 
-has 'schema'        => (is => 'rw', isa => 'Str');
-has 'handle'        => (is => 'rw', isa => 'Object');
-has 'status_code'   => (is => 'rw', isa => 'Int');
-has 'status_msg'    => (is => 'rw', isa => 'Str');
+has 'schema'        => (is => 'rw');
+has 'handle'        => (is => 'rw', builder => 'build_handle', lazy => 1);
+has 'status_code'   => (is => 'rw');
+has 'status_msg'    => (is => 'rw');
 
-our @schemas = ('Local', 'Upstream');
+our @schemas = ($LOCAL_SCHEMA, $UPSTREAM_SCHEMA);
 
 our %_HANDLES = ();
 
@@ -44,7 +43,7 @@ Returns whether or not the object status is erronous
 
 sub isError {
     my ( $self ) = @_;
-    return is_error($self->status_code);
+    return !defined($self->status_code) || is_error($self->status_code);
 }
 
 =head2 isSuccess
@@ -80,90 +79,25 @@ sub statusMsg {
     return $self->status_msg;
 }
 
-=head1 METHODS
-
 =head2 BUILD
 
-=cut
+Initialize the handle after building the object
 
+=cut
 
 sub BUILD {
-    my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $schema = $self->schema;
-
-    $logger->trace("Requesting schema '$schema' DB handle");
-
-    # Check if the requested schema is a valid one
-    my %schemas = map { $_ => 1 } @schemas;
-    if ( !exists($schemas{$schema}) ) {
-        $self->status_code($fingerbank::Status::INTERNAL_SERVER_ERROR);
-        $self->status_msg("Requested schema '$schema' does not exists");
-        $logger->warn($self->status_msg);
-        return;
-    }
-
-    # Test requested schema DB file validity
-    return if is_error($self->_test);
-
-    my $file_path = $SCHEMA_DBS{$schema};
-
-    my $file_timestamp = ( stat($file_path) )[9];
-
-    if( $_HANDLES{$schema} && $file_timestamp <= $_HANDLES{$schema}->{timestamp} ){
-        $self->handle($_HANDLES{$schema}->{handle});
-        return;
-    }
-
-    $logger->info("Database $file_path was changed or handles weren't initialized. Creating handle.");
-
-    # Returning the requested schema db handle
-    my $handle = "fingerbank::Schema::$schema"->connect("dbi:SQLite:".$file_path);
-    $handle->{AutoInactiveDestroy} = $TRUE;
-    $self->handle($handle);
-
-    $_HANDLES{$schema} = { handle => $self->handle(), timestamp => $file_timestamp };
-
-    return;
+    my ($self) = @_;
+    # Accessing the handle once we completed the initialization
+    $self->handle;
 }
 
-=head2 _test
+=head2 build_handle
 
-Not meant to be used outside of this class
+Meant to be overriden by child classes
 
 =cut
 
-sub _test {
-    my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my $schema = $self->schema;
-
-    my $database_path = $INSTALL_PATH . "db/";
-    my $database_file = fingerbank::Util::get_database_path($schema);
-
-    $logger->trace("Testing '$schema' database");
-
-    # Check if requested schema DB exists and is "valid"
-    if ( (!-e $database_file) || (-z $database_file) ) {
-        $self->status_code($fingerbank::Status::INTERNAL_SERVER_ERROR);
-        $self->status_msg("Requested schema '$schema' DB file does not seems to be valid");
-        $logger->error($self->status_msg);
-        return $self->status_code;
-    }
-
-    # Check for read / write permissions with the effective uid/gid
-    if ( (!-r $database_path) || (!-w $database_path) || (!-r $database_file) || (!-w $database_file) ) {
-        $self->status_code($fingerbank::Status::INTERNAL_SERVER_ERROR);
-        $self->status_msg("Requested schema '$schema' DB file does not seems to have the right permissions");
-        $logger->error($self->status_msg);
-        return $self->status_code;
-    }
-
-    $self->status_code($fingerbank::Status::OK);
-    return $self->status_code;
-}
+sub build_handle {}
 
 =head2 update_upstream
 
@@ -220,7 +154,8 @@ sub submit_unknown {
 
     $logger->debug("Attempting to submit unmatched parameters to upstream Fingerbank project");
 
-    my $db = fingerbank::DB->new(schema => 'Local');
+    require fingerbank::DB_Factory;
+    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
     if ( $db->isError ) {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Cannot read from 'Unmatched' table in schema 'Local'";
