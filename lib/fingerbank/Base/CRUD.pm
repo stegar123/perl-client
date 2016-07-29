@@ -70,7 +70,7 @@ sub all {
     my @schemas = fingerbank::DB->get_schemas($schema);
     my @all_devices;
     foreach my $schema ( @schemas ) {
-        my $db = fingerbank::DB->new(schema => $schema);
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
         my @devices = $db->handle->resultset($className)->all;
         push @all_devices, @devices;
     }
