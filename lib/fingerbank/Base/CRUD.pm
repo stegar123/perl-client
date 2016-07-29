@@ -234,7 +234,7 @@ sub update {
     $args->{updated_at} = strftime("%Y-%m-%d %H:%M:%S", localtime(time));
 
     # Fetching current data to build the resultset from which we will then update with new data
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         my $status_msg = "Cannot read from '$className' table in schema 'Local'. Cannot update";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
@@ -288,7 +288,7 @@ sub delete {
     $logger->debug("Attempting to delete '$className' entry with ID '$id' from schema 'Local'");
 
     # Fetching current data to build the resultset from which we will delete
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         my $status_msg = "Cannot read from '$className' table in schema 'Local'. Cannot delete";
         $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");

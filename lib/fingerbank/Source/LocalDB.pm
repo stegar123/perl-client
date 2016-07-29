@@ -20,7 +20,7 @@ use Module::Load;
 use POSIX;
 
 use fingerbank::Config;
-use fingerbank::Constant qw($TRUE);
+use fingerbank::Constant qw($TRUE $LOCAL_SCHEMA);
 use fingerbank::Log;
 use fingerbank::Model::Combination;
 use fingerbank::Model::Device;
@@ -313,7 +313,7 @@ sub _recordUnmatched {
     $logger->debug("Attempting to record the unmatched query key '$key' with value '$value' in the 'unmatched' table of 'Local' database");
 
     # We first check if we already have the entry, if so we simply increment the occurence number
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         $logger->warn("Cannot read from 'Unmatched' table in schema 'Local'. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
         return;

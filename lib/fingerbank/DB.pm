@@ -155,7 +155,7 @@ sub submit_unknown {
     $logger->debug("Attempting to submit unmatched parameters to upstream Fingerbank project");
 
     require fingerbank::DB_Factory;
-    my $db = fingerbank::DB_Factory->instantiate(schema => 'Local');
+    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
         $status_msg = "Cannot read from 'Unmatched' table in schema 'Local'";
