@@ -16,8 +16,13 @@ use namespace::autoclean;
 use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::Log;
 use fingerbank::Util qw(is_error is_success);
+use fingerbank::Constant;
 
 extends 'fingerbank::Base::CRUD';
+
+sub value_field { 'name' }
+
+sub base_ids { map { $fingerbank::Constant::PARENT_IDS{$_} } keys %fingerbank::Constant::PARENT_IDS }
 
 =head2 read
 

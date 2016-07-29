@@ -13,7 +13,7 @@ Class that represents an endpoint
 use Moose;
 use namespace::autoclean;
 
-use fingerbank::Constant qw($TRUE $FALSE);
+use fingerbank::Constant qw($TRUE $FALSE $UPSTREAM_SCHEMA);
 use fingerbank::Log;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Model::Device;
@@ -29,7 +29,7 @@ sub BUILD {
     my $logger = fingerbank::Log::get_logger;
 
     unless(defined($self->parents)){
-        my ($status, $result) = fingerbank::Model::Device->find([{ name => $self->name }, {columns => ['id']}], 'Upstream');
+        my ($status, $result) = fingerbank::Model::Device->find([{ name => $self->name }, {columns => ['id']}], $UPSTREAM_SCHEMA);
         if(is_success($status)){
             my $device_id = $result->id;
             ($status, $result) = fingerbank::Model::Device->read($device_id, $TRUE);

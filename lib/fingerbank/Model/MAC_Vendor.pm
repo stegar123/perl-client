@@ -15,6 +15,8 @@ use namespace::autoclean;
 
 extends 'fingerbank::Base::CRUD';
 
+sub value_field { 'mac' }
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>

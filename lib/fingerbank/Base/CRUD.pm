@@ -41,6 +41,43 @@ sub _parseClassName {
     return $className;
 }
 
+=head2 value_field
+
+Defines what should be used as the value field in the object
+
+=cut
+
+sub value_field { 'value' }
+
+=head2 base_ids
+
+Defines which IDs are generic enough to be displayed as base choices (used to display device choice)
+
+=cut
+
+sub base_ids { }
+
+=head2 all
+
+Get all the objects
+
+=cut
+
+sub all {
+    my ( $self, $schema ) = @_;
+    my $className = $self->_parseClassName;
+    
+    my @schemas = fingerbank::DB->get_schemas($schema);
+    my @all_devices;
+    foreach my $schema ( @schemas ) {
+        my $db = fingerbank::DB_Factory->instantiate(schema => $schema);
+        my @devices = $db->handle->resultset($className)->all;
+        push @all_devices, @devices;
+    }
+
+    return @all_devices;
+}
+
 =head2 _getTableID
 
 =cut
@@ -179,7 +216,15 @@ sub read {
 
     # Verify if the provided ID is part of the local or upstream schema to seach accordingly
     # Local schema IDs are 'L' prefixed
-    my $schema = ( lc($id) =~ /^l/ ) ? $LOCAL_SCHEMA : $UPSTREAM_SCHEMA;
+    my $schema;
+    if ( lc($id) =~ /^l/ ) {
+        $schema = $LOCAL_SCHEMA;
+        # We ensure we are uppercase in the event that the ID was passed lowercase (ex: l2)
+        $id = uc($id);
+    }
+    else {
+        $schema = $UPSTREAM_SCHEMA;
+    }
 
     $logger->debug("Looking for '$className' entry with ID '$id' in schema '$schema'");
 
@@ -201,7 +246,9 @@ sub read {
 
     # Building the resultset to be returned
     foreach my $column ( $resultset->result_source->columns ) {
-        $return->{$column} = $resultset->$column;
+        if($resultset->can($column)) {
+            $return->{$column} = $resultset->$column;
+        }
     }
 
     $logger->debug("Found '$className' entry with ID '$id' in schema '$schema'");
@@ -351,8 +398,7 @@ sub search {
     my $className = $self->_parseClassName;
     my @resultSets;
 
-    # From which schema do we want the results
-    my @schemas = ( defined($schema) ) ? ($schema) : @fingerbank::DB::schemas;
+    my @schemas = fingerbank::DB->get_schemas($schema);
 
     foreach my $schema ( @schemas ) {
         $logger->debug("Searching '$className' entries in schema '$schema'");
@@ -487,8 +533,7 @@ sub count {
     my $className = $self->_parseClassName;
     my $count;
 
-    # From which schema do we want the results
-    my @schemas = ( defined($schema) ) ? ($schema) : @fingerbank::DB::schemas;
+    my @schemas = fingerbank::DB->get_schemas($schema);
 
     foreach my $schema ( @schemas ) {
         my $db = fingerbank::DB_Factory->instantiate(schema => $schema);

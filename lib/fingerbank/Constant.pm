@@ -30,6 +30,7 @@ BEGIN {
         $MYSQL_DB_TYPE
         $LOCAL_SCHEMA
         $UPSTREAM_SCHEMA
+        $ALL_SCHEMAS_KW
     );
 }
 
@@ -176,6 +177,14 @@ Readonly our $LOCAL_SCHEMA => "Local";
 =cut
 
 Readonly our $UPSTREAM_SCHEMA => "Upstream";
+
+=item $ALL_SCHEMAS_KW
+
+Keyword to be used as a schema name to represent all the schemas.
+
+=cut
+
+Readonly our $ALL_SCHEMAS_KW => 'All';
 
 =back
 
