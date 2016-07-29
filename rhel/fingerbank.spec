@@ -1,5 +1,5 @@
 Name:       fingerbank
-Version:    2.3.0
+Version:    3.0.0
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
