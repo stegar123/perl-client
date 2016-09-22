@@ -62,7 +62,7 @@ sub match {
     $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
     my $query_args = encode_json(\%upstream_args);
 
-    return $self->cache->compute("upstream_result_$query_args", sub {
+    return  $self->cache->compute("upstream_result_$query_args", sub {
         my %parameters = ( key => $Config->{'upstream'}{'api_key'} );
         my $url = URI->new($Config->{'upstream'}{'interrogate_url'});
         $url->query_form(%parameters);
@@ -81,9 +81,9 @@ sub match {
             return ( $fingerbank::Status::OK, $result );
         } else {
             $logger->warn("An error occured while interrogating upstream Fingerbank project: " . $res->status_line);
-            return $fingerbank::Status::INTERNAL_SERVER_ERROR;
+            return ( $fingerbank::Status::INTERNAL_SERVER_ERROR );
         }
-    });
+    }) ;
 
 }
 
