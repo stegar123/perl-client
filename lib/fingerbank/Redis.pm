@@ -28,7 +28,7 @@ use List::MoreUtils qw(natatime);
 
 our $REDIS_DRIVER = "Redis::Fast";
 
-our $SADD_BATCH_BY = 1000;
+our $SADD_BATCH_BY = 100000;
 
 =head2 _build_redis
 
