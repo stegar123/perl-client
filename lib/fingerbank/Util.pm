@@ -247,7 +247,8 @@ sub fetch_file {
     my $url = URI->new($download_url);
     $url->query_form(%parameters);
 
-    unless (open(my $fh, ">", $out_file)) {
+    my $fh;
+    unless (open($fh, ">", $outfile)) {
         undef $ua;
         return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file $outfile in write mode")
     };
@@ -261,7 +262,12 @@ sub fetch_file {
     my $res = $ua->request($req, sub {
         my ($data, $response, $protocol) = @_;
         my $out = '';
-        $status = $gz->inflate($data, $out) ;
+        my $content_encoding = $response->content_encoding;
+        if (defined $content_encoding && ($content_encoding eq 'gzip' || $content_encoding eq 'x-gzip')) {
+            $status = $gz->inflate($data, $out) ;
+        } else {
+            $out = $data;
+        }
         print $fh $out;
         $ctx->add($out);
     });
@@ -275,15 +281,15 @@ sub fetch_file {
         my $file_md5 = $ctx->hexdigest;
         if(defined($md5) && $file_md5 ne $md5) {
             undef $ua;
-            unlink($out_file) if -f $out_file;
+            unlink($outfile) if -f $outfile;
             $logger->error("Checksum does not match for download expected '$md5' recieved '$file_md5'.");
             return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Checksum is not correct for download");
         }
-        set_permissions($out_file, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
+        set_permissions($outfile, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
     } else {
-        unlink($out_file) if -f $out_file;
+        unlink($outfile) if -f $outfile;
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $status_msg = "Failed to download latest version of file '$out_file' on '$download_url' with the following return code: " . $res->status_line;
+        $status_msg = "Failed to download latest version of file '$outfile' on '$download_url' with the following return code: " . $res->status_line;
         $logger->warn($status_msg);
     }
     undef $ua;
@@ -317,7 +323,7 @@ sub get_lwp_client {
         return $ua;
     }
     
-    $ua->default_header('Accept-Encoding' => scalar HTTP::Message::decodable());
+    $ua->default_header('Accept-Encoding' => 'gzip, x-gzip');
 
     return $ua;
 }
