@@ -24,8 +24,11 @@ use fingerbank::Util qw(is_success);
 use fingerbank::Constant qw($REDIS_RECONNECT_INTERVAL $TRUE);
 use Encode qw(encode);
 use I18N::Langinfo qw(langinfo CODESET);
+use List::MoreUtils qw(natatime);
 
 our $REDIS_DRIVER = "Redis::Fast";
+
+our $SADD_BATCH_BY = 100000;
 
 =head2 _build_redis
 
@@ -64,7 +67,10 @@ sub fill_from_map {
         $key = encode($os_locale, $key);
         $redis->del($key);
         if(@{$combination_ids}){
-            $redis->sadd($key, @{$combination_ids});
+            my $it = natatime $SADD_BATCH_BY, @$combination_ids;
+            while (my @ids = $it->()) {
+                $redis->sadd($key, @ids);
+            }
         }
     }
 }
