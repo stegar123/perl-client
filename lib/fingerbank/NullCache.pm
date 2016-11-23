@@ -46,6 +46,14 @@ Set a key in the cache
 
 sub set {return undef;}
 
+=head2 remove
+
+Remove a key from the cache
+
+=cut
+
+sub remove {return undef;}
+
 =head2 compute
 
 Compute a value from the cache
