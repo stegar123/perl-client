@@ -324,6 +324,7 @@ sub get_lwp_client {
     }
     
     $ua->default_header('Accept-Encoding' => 'gzip, x-gzip');
+    $ua->agent("Fingerbank-Perl-Library/".$fingerbank::Constant::VERSION);
 
     return $ua;
 }

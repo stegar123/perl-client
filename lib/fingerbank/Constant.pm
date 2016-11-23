@@ -38,6 +38,8 @@ BEGIN {
 
 =over
 
+=item $VERSION
+
 =item $FALSE
 
 =item $TRUE
@@ -48,10 +50,11 @@ BEGIN {
 
 =cut
 
-Readonly::Scalar our $FALSE     => 0;
-Readonly::Scalar our $TRUE      => 1;
-Readonly::Scalar our $YES       => 'yes';
-Readonly::Scalar our $NO        => 'no';
+Readonly::Scalar our $VERSION     => "3.0.1";
+Readonly::Scalar our $FALSE       => 0;
+Readonly::Scalar our $TRUE        => 1;
+Readonly::Scalar our $YES         => 'yes';
+Readonly::Scalar our $NO          => 'no';
 
 =back
 
