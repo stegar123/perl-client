@@ -227,7 +227,7 @@ sub fetch_file {
     }
 
     my $Config = fingerbank::Config::get_config();
-    my $outfile = $params{'destination'};
+    my $outfile = $params{'destination'}.".download";
     my $download_url = $params{'download_url'};
 
     unless ( fingerbank::Config::is_api_key_configured() || (exists($params{'api_key'}) && $params{'api_key'} ne "") ) {
@@ -285,11 +285,18 @@ sub fetch_file {
             $logger->error("Checksum does not match for download expected '$md5' recieved '$file_md5'.");
             return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Checksum is not correct for download");
         }
-        set_permissions($outfile, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
+        if(!rename $outfile, $params{'destination'}) {
+            undef $ua;
+            unlink($outfile) if -f $outfile;
+            my $msg = "Cannot move $outfile to $params{destination}"; 
+            $logger->error($msg);
+            return ($fingerbank::Status::INTERNAL_SERVER_ERROR, $msg);
+        }
+        set_permissions($params{'destination'}, { 'permissions' => $fingerbank::Constant::FILE_PERMISSIONS });
     } else {
         unlink($outfile) if -f $outfile;
         $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $status_msg = "Failed to download latest version of file '$outfile' on '$download_url' with the following return code: " . $res->status_line;
+        $status_msg = "Failed to download latest version of file '$params{destination}' on '$download_url' with the following return code: " . $res->status_line;
         $logger->warn($status_msg);
     }
     undef $ua;
