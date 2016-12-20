@@ -125,7 +125,7 @@ sub update_from_incrementals {
         unlink $download_dest;
         if($rt != 0) {
             my $msg = "MySQL incremental apply failed with code $rt : $output";
-            $logger->error();
+            $logger->error($msg);
             return ($fingerbank::Status::INTERNAL_SERVER_ERROR, $msg);
         }
         return ($fingerbank::Status::OK, "Successfully applied incremental to MySQL database.");
