@@ -50,7 +50,7 @@ BEGIN {
 
 =cut
 
-Readonly::Scalar our $VERSION     => "3.0.1";
+Readonly::Scalar our $VERSION     => "3.1.0";
 Readonly::Scalar our $FALSE       => 0;
 Readonly::Scalar our $TRUE        => 1;
 Readonly::Scalar our $YES         => 'yes';
