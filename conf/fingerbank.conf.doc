@@ -81,7 +81,7 @@ Hostname or IP address of the Redis server
 EOT
 
 [redis.port]
-type=text
+type=numeric
 description=<<EOT
 Port of the Redis server
 EOT
@@ -107,7 +107,7 @@ Host the proxy is listening on
 EOT
 
 [proxy.port]
-type=text
+type=numeric
 description=<<EOT
 Port the proxy is listening on
 EOT
@@ -133,7 +133,7 @@ The host to connect to the MySQL database
 EOT
 
 [mysql.port]
-type=text
+type=numeric
 description=<<EOT
 The port to connect to the MySQL database
 EOT
