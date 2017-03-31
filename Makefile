@@ -12,7 +12,7 @@ init-db-upstream:
 	chmod 664 /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 
 init-mysql:
-	perl -I/usr/local/fingerbank/lib -Mfingerbank::DB_Factory -e 'fingerbank::DB_Factory->instantiate(type => "MySQL", schema => "Upstream")->initialize_from_sqlite("/usr/local/fingerbank/db/fingerbank_Upstream.db")'
+	perl -I/usr/local/fingerbank/lib -Mfingerbank::DB_Factory -e 'my ($$code) = fingerbank::DB_Factory->instantiate(type => "MySQL", schema => "Upstream")->initialize_from_sqlite("/usr/local/fingerbank/db/fingerbank_Upstream.db") ; exit 1 if($$code != 200)'
 
 init-p0f-map:
 	@read -p "API key (ENTER if none): " api_key; \
