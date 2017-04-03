@@ -74,7 +74,7 @@ package-files-standalone:
 
 package-debian:
 	sudo apt-get install git dpkg-dev debhelper sudo curl -y; \
-	DEB_VERSION=$(shell (dpkg-parsechangelog --show-field Version)| sed 's/-[^-]*$$//'); \
+	read -p "Version: " DEB_VERSION; \
 	read -p "From Branch: " branch; \
 	tmp_dir=fingerbank-$$DEB_VERSION; \
 	if [ -d $$tmp_dir ]; then \
