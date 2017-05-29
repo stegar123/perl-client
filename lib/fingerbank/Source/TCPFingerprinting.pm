@@ -97,6 +97,8 @@ sub match {
     ($info{link_type}, $info{language}, $response) = unpack("a32 a32 a*", $response); 
 
     if($result eq 16){
+        return $fingerbank::Status::NOT_FOUND unless($info{os_name});
+
         $info{os_name} = int($info{os_name});
         $logger->info("Found device : ".$info{os_name}." through p0f.");
         return $self->_buildResult(\%info);
