@@ -10,10 +10,21 @@ fingerbank::Schema::Local::CombinationMacVendorByDevice - DB query
 =head1 DESCRIPTION
 
 DB query
+Query is rewritten to be able to use local combination if you need to add some specific MAC OUI to be allowed for device registration.
 
 =cut
 
 extends 'fingerbank::Base::Schema::CombinationMacVendorByDevice';
+
+# $1 = mac_vendor
+#
+__PACKAGE__->view_with_named_params(q{
+    SELECT device_id FROM combination
+    WHERE mac_vendor_id = $1
+    GROUP BY device_id
+    ORDER BY COUNT(device_id)
+    DESC LIMIT 1
+});
 
 =head1 AUTHOR
 Inverse inc. <info@inverse.ca>
