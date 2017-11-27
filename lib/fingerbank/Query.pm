@@ -8,7 +8,7 @@ use Module::Load;
 use POSIX;
 
 use fingerbank::Config;
-use fingerbank::Constant qw($TRUE);
+use fingerbank::Constant qw($TRUE $LOCAL_SCHEMA);
 use fingerbank::Log;
 use fingerbank::Model::Combination;
 use fingerbank::Model::Device;
@@ -35,7 +35,7 @@ sub match {
 
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
     if(is_enabled(fingerbank::Config::get_config('query', 'use_redis'))) {
-        $matcher->register_source(fingerbank::Source::LocalDB->new(search_schemas => ['Local']));
+        $matcher->register_source(fingerbank::Source::LocalDB->new(search_schemas => [$LOCAL_SCHEMA]));
         $matcher->register_source(fingerbank::Source::RedisDB->new);
     }
     else {

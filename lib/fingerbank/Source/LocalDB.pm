@@ -6,7 +6,7 @@ fingerbank::Source::LocalDB
 
 =head1 DESCRIPTION
 
-Source for interrogating the local Fingerbank databases (Upstream and Local)
+Source for interrogating the local Fingerbank database for local combinations
 
 =cut
 
@@ -41,7 +41,7 @@ has 'combination_id' => (is => 'rw', isa => 'Str');
 has 'combination_is_exact' => (is => 'rw', isa => 'Str');
 has 'matched_schema' => (is => 'rw', isa => 'Str');
 
-has 'search_schemas' => (is => 'rw', default => sub {\@fingerbank::DB::schemas});
+has 'search_schemas' => (is => 'rw', default => sub {[$LOCAL_SCHEMA]});
 
 =head2 match
 
