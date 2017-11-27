@@ -16,9 +16,6 @@ use fingerbank::Model::Endpoint;
 use fingerbank::Util qw(is_enabled is_disabled is_error is_success);
 use fingerbank::SourceMatcher;
 use fingerbank::Source::LocalDB;
-use fingerbank::Source::API;
-use fingerbank::Source::TCPFingerprinting;
-use fingerbank::Source::RedisDB;
 use fingerbank::NullCache;
 
 has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
@@ -34,10 +31,6 @@ sub match {
     $self->parseArgs($args);
 
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
-    if(is_enabled(fingerbank::Config::get_config('query', 'use_redis'))) {
-        $matcher->register_source(fingerbank::Source::LocalDB->new(search_schemas => [$LOCAL_SCHEMA]));
-        $matcher->register_source(fingerbank::Source::RedisDB->new);
-    }
     else {
         $matcher->register_source(fingerbank::Source::LocalDB->new);
     }

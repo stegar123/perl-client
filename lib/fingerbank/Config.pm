@@ -288,63 +288,6 @@ sub is_api_key_configured {
     ( defined($api_key) && $api_key ne "" ) ? return $TRUE : return $FALSE;
 }
 
-=head2 do_we_interrogate_upstream
-
-Return TRUE or FALSE whether if configured to interrogate Fingerbank upstream project
-
-=cut
-
-sub do_we_interrogate_upstream {
-    my $interrogate_upstream = get_config('upstream', 'interrogate');
-    ( fingerbank::Util::is_enabled($interrogate_upstream) ) ? return $TRUE : return $FALSE;
-}
-
-=head2 update_p0f_map
-
-Updates the p0f map from Fingerbank upstream
-
-=cut
-
-sub update_p0f_map {
-    my ( %params ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my ( $status, $status_msg );
-
-    my $Config = fingerbank::Config::get_config;
-
-    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'tcp_fingerprinting'}{'p0f_map_url'};
-    my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $Config->{'tcp_fingerprinting'}{'p0f_map_path'};
-
-    ($status, $status_msg) = fingerbank::Util::fetch_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
-
-    return ( $status, $status_msg )
-}
-
-=head2 update_attribute_map
-
-Updates the attribute map used to fill the redis instance
-
-=cut
-
-sub update_attribute_map {
-    my ( %params ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my ( $status, $status_msg );
-
-    my $Config = fingerbank::Config::get_config;
-
-    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'redis'}{'attribute_map_url'};
-    my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $COMBINATION_MAP_FILE;
-
-    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
-    
-    fingerbank::Util::cleanup_backup_files($destination);
-
-    return ( $status, $status_msg )
-}
-
 =head2 configured_for_api
 
 Checks whether or not, the configuration allows for API calls to the Fingerbank API
@@ -352,7 +295,7 @@ Checks whether or not, the configuration allows for API calls to the Fingerbank 
 =cut
 
 sub configured_for_api {
-    return (is_api_key_configured && do_we_interrogate_upstream);
+    return (is_api_key_configured);
 }
 
 package fingerbank::ConfigRestore;
