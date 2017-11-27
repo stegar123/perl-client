@@ -41,8 +41,7 @@ sub match {
     else {
         $matcher->register_source(fingerbank::Source::LocalDB->new);
     }
-    $matcher->register_source(fingerbank::Source::API->new);
-    $matcher->register_source(fingerbank::Source::TCPFingerprinting->new);
+    $matcher->register_source(fingerbank::Source::Collector->new);
 
     return $matcher->match_best($args);
 }
