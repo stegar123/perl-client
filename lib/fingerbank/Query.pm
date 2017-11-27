@@ -31,9 +31,7 @@ sub match {
     $self->parseArgs($args);
 
     my $matcher = fingerbank::SourceMatcher->new(cache => $self->cache);
-    else {
-        $matcher->register_source(fingerbank::Source::LocalDB->new);
-    }
+    $matcher->register_source(fingerbank::Source::LocalDB->new);
     $matcher->register_source(fingerbank::Source::Collector->new);
 
     return $matcher->match_best($args);
