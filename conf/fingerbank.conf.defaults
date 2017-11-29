@@ -4,6 +4,11 @@ db_url = https://fingerbank.inverse.ca/api/v2/download/db
 sqlite_db_retention = 2
 submit_url = https://fingerbank.inverse.ca/api/v1/combinations/submit
 
+[collector]
+use_https=disabled
+host=127.0.0.1
+port=8080
+
 [query]
 record_unmatched = disabled
 

@@ -16,6 +16,7 @@ use fingerbank::Model::Endpoint;
 use fingerbank::Util qw(is_enabled is_disabled is_error is_success);
 use fingerbank::SourceMatcher;
 use fingerbank::Source::LocalDB;
+use fingerbank::Source::Collector;
 use fingerbank::NullCache;
 
 has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });

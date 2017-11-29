@@ -22,6 +22,25 @@ description=<<EOT
 URL to submit unmatched parameter to upstream Fingerbank project
 EOT
 
+[collector.use_https]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not HTTPS should be used to communicate with the collector
+EOT
+
+[collector.host]
+type=text
+description=<<EOT
+The host on which the Fingerbank collector should be reached
+EOT
+
+[collector.port]
+type=numeric
+description=<<EOT
+The port on which the Fingerbank collector should be reached
+EOT
+
 [query.record_unmatched]
 type=toggle
 options=enabled|disabled

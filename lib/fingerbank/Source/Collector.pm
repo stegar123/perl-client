@@ -49,7 +49,11 @@ sub match {
     $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
     my $query_args = encode_json(\%upstream_args);
 
-    my $url = URI->new("http://127.0.0.1:8080/endpoint_data/".$args->{mac}."/details");
+
+    my $proto = is_enabled($Config->{collector}->{use_https}) ? "https" : "http";
+    my $host = $Config->{collector}->{host};
+    my $port = $Config->{collector}->{port};
+    my $url = URI->new("$proto://$host:$port/endpoint_data/".$args->{mac}."/details");
 
     my $req = HTTP::Request->new(GET => $url->as_string);
     $req->header(Authorization => "Token ".$Config->{'upstream'}{'api_key'});
@@ -58,7 +62,7 @@ sub match {
 
     if ( $res->is_success ) {
         my $result = decode_json($res->decoded_content);
-        $result->{device} = delete $result->{cloud_api_result};
+        $result = delete $result->{cloud_api_result};
         $logger->info("Successfully interrogate upstream Fingerbank project for matching. Got device : ".$result->{device}->{id});
         # Tracking down from where the result is coming
         $result->{'SOURCE'} = "Upstream";
