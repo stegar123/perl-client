@@ -21,6 +21,7 @@ use fingerbank::Log;
 use fingerbank::Model::Combination;
 use fingerbank::Model::Device;
 use fingerbank::Util qw(is_enabled is_disabled is_error is_success);
+use fingerbank::Collector;
 
 =head2 match
 
@@ -45,18 +46,11 @@ sub match {
 
     my %upstream_args = map {lc($_) => $args->{lc($_)}} @fingerbank::Constant::QUERY_PARAMETERS;
 
-    my $ua = fingerbank::Util::get_lwp_client();
-    $ua->timeout(2);   # An interrogate query should not take more than 2 seconds
+    my $collector = fingerbank::Collector->new_from_config();
+    my $ua = $collector->get_lwp_client();
     my $query_args = encode_json(\%upstream_args);
 
-
-    my $proto = is_enabled($Config->{collector}->{use_https}) ? "https" : "http";
-    my $host = $Config->{collector}->{host};
-    my $port = $Config->{collector}->{port};
-    my $url = URI->new("$proto://$host:$port/endpoint_data/".$args->{mac}."/details");
-
-    my $req = HTTP::Request->new(GET => $url->as_string);
-    $req->header(Authorization => "Token ".$Config->{'upstream'}{'api_key'});
+    my $req = $collector->build_request("GET", "/endpoint_data/".$args->{mac}."/details");
 
     my $res = $ua->request($req);
 
