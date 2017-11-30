@@ -24,6 +24,7 @@ use fingerbank::Schema::Local;
 use fingerbank::Schema::Upstream;
 use fingerbank::Util qw(is_success is_error is_disabled);
 use fingerbank::DB;
+use fingerbank::API;
 
 has 'schema'        => (is => 'rw');
 has 'handle'        => (is => 'rw', builder => 'build_handle', lazy => 1);
@@ -114,87 +115,14 @@ sub update_upstream {
 
     my $Config = fingerbank::Config::get_config;
 
-    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'upstream'}{'db_url'};
+    my $download_url    = ( exists($params{'download_url'}) && $params{'download_url'} ne "" ) ? $params{'download_url'} : $Config->{'upstream'}{'db_path'};
     my $destination     = ( exists($params{'destination'}) && $params{'destination'} ne "" ) ? $params{'destination'} : $UPSTREAM_DB_FILE;
 
-    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => $download_url, 'destination' => $destination, %params) );
+    ($status, $status_msg) = fingerbank::Util::update_file( ('download_url' => fingerbank::API->new_from_config->build_uri($download_url)->as_string, 'destination' => $destination, %params) );
 
     fingerbank::Util::cleanup_backup_files($destination, $Config->{upstream}{sqlite_db_retention});
 
     return ( $status, $status_msg )
-}
-
-=head2 submit_unknown
-
-=cut
-
-sub submit_unknown {
-    my ( $self ) = @_;
-    my $logger = fingerbank::Log::get_logger;
-
-    my ( $status, $status_msg );
-
-    my $Config = fingerbank::Config::get_config;
-
-    # Are we configured to do so ?
-    my $record_unmatched = $Config->{'query'}{'record_unmatched'};
-    if ( is_disabled($record_unmatched) ) {
-        $status = $fingerbank::Status::NOT_IMPLEMENTED;
-        $status_msg = ("Not configured to record unmatched parameters. Cannot submit so skipping");
-        $logger->debug($status_msg);
-        return ( $status, $status_msg );
-    }
-
-    # Is an API key configured ?
-    if ( !fingerbank::Config::is_api_key_configured ) {
-        $status = $fingerbank::Status::UNAUTHORIZED;
-        $status_msg = "Can't communicate with Fingerbank project without a valid API key.";
-        $logger->warn($status_msg);
-        return ( $status, $status_msg );
-    }
-
-    $logger->debug("Attempting to submit unmatched parameters to upstream Fingerbank project");
-
-    require fingerbank::DB_Factory;
-    my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
-    if ( $db->isError ) {
-        $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $status_msg = "Cannot read from 'Unmatched' table in schema 'Local'";
-        $logger->warn($status_msg . ". DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
-        return ( $status, $status_msg );
-    }
-
-    my $resultset = $db->handle->resultset('Unmatched')->search({ 'submitted' => $FALSE }, { columns => ['id', 'type', 'value'], order_by => { -asc => 'id' } });
-
-    my ( $id, %data );
-    foreach my $entry ( $resultset ) {
-        while ( my $row = $entry->next ) {
-            push ( @{ $data{$row->type} }, $row->value );
-        }
-    }
-
-    my $ua = fingerbank::Util::get_lwp_client();
-    $ua->timeout(10);  # A submit query should not take more than 10 seconds
-    my $submitted_data = encode_json(\%data);
-
-    my $req = HTTP::Request->new( POST => $Config->{'upstream'}{'submit_url'}.$Config->{'upstream'}{'api_key'} );
-    $req->content_type('application/json');
-    $req->content($submitted_data);
-
-    my $res = $ua->request($req);
-
-    if ( $res->is_success ) {
-        $status = $fingerbank::Status::OK;
-        $resultset->update( { 'submitted' => $TRUE } );
-        $status_msg = "Successfully submitted unmatched arguments to upstream Fingerbank project";
-        $logger->info($status_msg);
-    } else {
-        $status = $fingerbank::Status::INTERNAL_SERVER_ERROR;
-        $status_msg = "An error occured while submitting unmatched arguments to upstream Fingerbank project";
-        $logger->warn($status_msg . ": " . $res->status_line);
-    }
-
-    return ( $status, $status_msg );
 }
 
 =head2 get_schemas

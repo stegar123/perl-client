@@ -1,8 +1,10 @@
 [upstream]
 api_key =
-db_url = https://fingerbank.inverse.ca/api/v2/download/db
+host=api.fingerbank.org
+port=443
+use_https=enabled
+db_path = /api/v2/download/db
 sqlite_db_retention = 2
-submit_url = https://fingerbank.inverse.ca/api/v1/combinations/submit
 
 [collector]
 use_https=disabled

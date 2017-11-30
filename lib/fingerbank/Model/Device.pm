@@ -17,6 +17,8 @@ use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::Log;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Constant;
+use fingerbank::API;
+use JSON::MaybeXS;
 
 extends 'fingerbank::Base::CRUD';
 
@@ -79,32 +81,49 @@ sub is_a {
 
     my $status;
 
-    # We need to convert a device type to an ID if needed
-    my $device_id = $arg;
     if ( $arg !~ /^\d+$/ ) {
+        $logger->debug("Finding device ID for $arg");
         my $query = {};
         $query->{'name'} = $arg;
 
         ( $status, my $query_result ) = $self->find([$query, { columns => ['id'] }]);
-        return $FALSE if is_error($status);
+        if (is_error($status)) {
+            $logger->error("Unable to find device ID for device name $arg");
+            return $FALSE;
+        }
     
-        $device_id = $query_result->id;
+        $arg = $query_result->id;
     }
 
-    # We first check if the requested device is matching the condition
-    return $TRUE if ( $device_id eq $condition );
+    if ( $condition !~ /^\d+$/ ) {
+        $logger->debug("Finding device ID for $condition");
+        my $query = {};
+        $query->{'name'} = $condition;
 
-    # We want the device details including the parents
-    ( $status, my $device ) = $self->read($device_id, 1);
-    return $FALSE if is_error($status);
+        ( $status, my $query_result ) = $self->find([$query, { columns => ['id'] }]);
+        if (is_error($status)) {
+            $logger->error("Unable to find device ID for device name $condition");
+            return $FALSE;
+        }
+    
+        $condition = $query_result->id;
+    }
 
-    my %parents_id = map { $_ => 1 } @{$device->{parents_ids}};
 
-    if ( exists($parents_id{$condition}) ) {
-        return $TRUE;
-    } else {
+    my $api = fingerbank::API->new_from_config;
+    my $req = $api->build_request("GET", "/api/v2/devices/$arg/is_a/$condition");
+
+    my $res = $api->get_lwp_client->request($req);
+    if ($res->is_success) {
+        my $result = decode_json($res->decoded_content);
+        $logger->debug("Device $arg is a $condition. ".$result->{message});
+        return $result->{result};
+    }
+    else {
+        $logger->error("Error while communicating with the Fingerbank API to check if device $arg is linked to device $condition. ".$res->status_line);
         return $FALSE;
     }
+
 }
 
 =head1 AUTHOR

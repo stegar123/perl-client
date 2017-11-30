@@ -4,22 +4,35 @@ description=<<EOT
 API key to interact with upstream Fingerbank project
 EOT
 
-[upstream.db_url]
+[upstream.use_https]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not HTTPS should be used to communicate with the Fingerbank API
+EOT
+
+[upstream.host]
 type=text
 description=<<EOT
-URL to fetch the upstream Fingerbank project database
+The host on which the Fingerbank API should be reached
+EOT
+
+[upstream.port]
+type=numeric
+description=<<EOT
+The port on which the Fingerbank API should be reached
+EOT
+
+[upstream.db_path]
+type=text
+description=<<EOT
+Path to fetch the upstream Fingerbank project database
 EOT
 
 [upstream.sqlite_db_retention]
 type=numeric
 description=<<EOT
 Amount of upstream databases to retain on disk in db/. Should be at least one in case any running processes are still pointing on the old file descriptor of the database.
-EOT
-
-[upstream.submit_url]
-type=text
-description=<<EOT
-URL to submit unmatched parameter to upstream Fingerbank project
 EOT
 
 [collector.use_https]

@@ -212,7 +212,6 @@ sub read {
     my $logger = fingerbank::Log::get_logger;
 
     my $className = $self->_parseClassName;
-    my $return = {};
 
     # Verify if the provided ID is part of the local or upstream schema to seach accordingly
     # Local schema IDs are 'L' prefixed
@@ -244,16 +243,9 @@ sub read {
         return ( $fingerbank::Status::NOT_FOUND, $status_msg );
     }
 
-    # Building the resultset to be returned
-    foreach my $column ( $resultset->result_source->columns ) {
-        if($resultset->can($column)) {
-            $return->{$column} = $resultset->$column;
-        }
-    }
-
     $logger->debug("Found '$className' entry with ID '$id' in schema '$schema'");
 
-    return ( $fingerbank::Status::OK, $return );
+    return ( $fingerbank::Status::OK, $resultset );
 }
 
 =head2 update
