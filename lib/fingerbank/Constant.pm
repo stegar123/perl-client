@@ -102,10 +102,26 @@ A hash containing the parent ids for the base devices
 Readonly::Hash our %PARENT_IDS => (
     WINDOWS => 1,
     MACOS => 2,
-    ANDROID => 202,
-    IOS => 193,
-    WINDOWS_PHONE => 5474,
-    BLACKBERRY => 192,
+    LINUX => 5,
+    ANDROID => 33453,
+    IOS => 33450,
+    WINDOWS_PHONE => 33507,
+    BLACKBERRY => 33471,
+);
+
+Readonly::Hash our %DEVICE_CLASS_IDS => (
+    %PARENT_IDS,
+);
+
+Readonly::Hash our %MOBILE_IDS => (
+    ANDROID => $PARENT_IDS{ANDROID},
+    IOS => $PARENT_IDS{IOS},
+    WINDOWS_PHONE => $PARENT_IDS{WINDOWS_PHONE},
+    BLACKBERRY => $PARENT_IDS{BLACKBERRY},
+    WATCHOS => 33451,
+    PHONE_TABLET_WEARABLE => 11,
+    PALMOS => 204,
+    WEBOS => 33481,
 );
 
 =item $FINGERBANK_USER
