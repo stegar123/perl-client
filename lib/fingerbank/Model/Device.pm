@@ -43,10 +43,10 @@ sub read {
     return ($status, $return) if ( is_error($status) );
 
     # If parents are requested, we build them
-    if ( (defined($with_parents) && $with_parents) && defined($return->{parent_id}) ) {
+    if ( (defined($with_parents) && $with_parents) && defined($return->parent_id) ) {
         $logger->debug("Device ID '$id' have at least 1 parent. Building parent(s) list");
 
-        my $parent_id = $return->{parent_id};
+        my $parent_id = $return->parent_id;
         my $parent_exists = 1;  # We need to run at least once since we know parent(s) exists
         my @parents;            # Will keep the parent(s) attributes
         my @parents_ids;        # Will keep the ID(s) of parent(s) for easy access
@@ -57,11 +57,11 @@ sub read {
             push(@parents_ids, $parent_id);
             my $parent = $self->read($parent_id);
             foreach my $key ( keys %$parent ) {
-                $parents[$iteration]{$key} = $parent->{$key};
+                $parents[$iteration] = $parent;
             }
             $iteration ++;
-            $parent_id = $parent->{parent_id} if ( defined($parent->{parent_id}) );
-            $parent_exists = 0 if ( !defined($parent->{parent_id}) );
+            $parent_id = $parent->parent_id if ( defined($parent->parent_id) );
+            $parent_exists = 0 if ( !defined($parent->parent_id) );
         }
 
         $return->{parents} = \@parents;
