@@ -111,19 +111,27 @@ sub is_a {
 
 
     my $api = fingerbank::API->new_from_config;
-    my $req = $api->build_request("GET", "/api/v2/devices/$arg/is_a/$condition");
+    my $result = $api->cache->compute("fingerbank::Model::Device::is_a($arg,$condition)", sub {
+        my $req = $api->build_request("GET", "/api/v2/devices/$arg/is_a/$condition");
 
-    my $res = $api->get_lwp_client->request($req);
-    if ($res->is_success) {
-        my $result = decode_json($res->decoded_content);
-        $logger->debug("Device $arg is a $condition. ".$result->{message});
-        return $result->{result};
-    }
-    else {
-        $logger->error("Error while communicating with the Fingerbank API to check if device $arg is linked to device $condition. ".$res->status_line);
-        return $FALSE;
+        my $res = $api->get_lwp_client->request($req);
+        if ($res->is_success) {
+            my $result = decode_json($res->decoded_content);
+            $logger->debug("Device $arg is a $condition. ".$result->{message});
+            return $result->{result};
+        }
+        else {
+            $logger->error("Error while communicating with the Fingerbank API to check if device $arg is linked to device $condition. ".$res->status_line);
+            return undef;
+        }
+    });
+
+    # When the above failed, we return false
+    unless(defined($result)) {
+        $result = $FALSE;
     }
 
+    return $result;
 }
 
 =head1 AUTHOR

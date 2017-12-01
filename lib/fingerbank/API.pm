@@ -5,17 +5,20 @@ use fingerbank::Util;
 use HTTP::Request;
 use URI;
 use fingerbank::Util qw(is_enabled);
+use fingerbank::NullCache;
 
 use Moose;
 
 has 'host' => (is => 'rw');
 has 'port' => (is => 'rw');
 has 'use_https' => (is => 'rw');
+has 'cache' => (is => 'rw', default => sub { fingerbank::NullCache->new });
 
 sub new_from_config {
     my ($class) = @_;
     my $Config = fingerbank::Config::get_config();
     return $class->new(
+        cache => $fingerbank::Config::CACHE,
         map{$_ => $Config->{upstream}->{$_}} qw(host port use_https),
     );
 }
