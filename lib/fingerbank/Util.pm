@@ -311,7 +311,8 @@ Returns a LWP::UserAgent for WWW interaction
 =cut
 
 sub get_lwp_client {
-    my $ua = LWP::UserAgent->new;
+    my (%args) = @_;
+    my $ua = LWP::UserAgent->new(%args);
 
     my $Config = fingerbank::Config::get_config();
 
