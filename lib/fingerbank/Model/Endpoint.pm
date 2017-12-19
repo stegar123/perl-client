@@ -35,7 +35,7 @@ sub BUILD {
             ($status, $result) = fingerbank::Model::Device->read($device_id, $TRUE);
             if(is_success($status)){
                 $logger->debug("Looked up parents for $device_id successfully");
-                my @parents = map {$_->{name}} @{$result->{parents}};
+                my @parents = map {$_->name} @{$result->{parents}};
                 $self->parents(\@parents);
             }
             else {
