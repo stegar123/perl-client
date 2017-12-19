@@ -104,7 +104,7 @@ sub _buildResult {
     my $result = {};
 
     # Get the combination info
-    my ( $status, $combination ) = fingerbank::Model::Combination->read($self->combination_id);
+    my ( $status, $combination ) = fingerbank::Model::Combination->read_hashref($self->combination_id);
     return $status if ( is_error($status) );
 
     foreach my $key ( keys %$combination ) {
@@ -112,7 +112,7 @@ sub _buildResult {
     }
 
     # Get device info
-    ( $status, my $device ) = fingerbank::Model::Device->read($combination->{device_id}, $TRUE);
+    ( $status, my $device ) = fingerbank::Model::Device->read_hashref($combination->{device_id}, $TRUE);
     return $status if ( is_error($status) );
 
     foreach my $key ( keys %$device ) {

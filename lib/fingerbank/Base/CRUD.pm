@@ -248,6 +248,31 @@ sub read {
     return ( $fingerbank::Status::OK, $resultset );
 }
 
+=head2 read_hashref
+
+Performs the same as read but instead of returning the result set, it returns a hashref of the record.
+
+=cut
+
+sub read_hashref {
+    my ( $self, $id ) = @_;
+    
+    my ($status, $resultset) = $self->read($id);
+
+    if(is_error($status)) {
+        return ($status, $resultset);
+    }
+
+    my $return = {};
+    # Building the resultset to be returned
+    foreach my $column ( $resultset->result_source->columns ) {
+        if($resultset->can($column)) {
+            $return->{$column} = $resultset->$column;
+        }
+    }
+    return ($status, $return);
+}
+
 =head2 update
 
 Update an existing entry in the 'Local' database.
