@@ -26,7 +26,6 @@ BEGIN {
         $DEFAULT_BACKUP_RETENTION 
         $DEFAULT_SCORE
         $SQLITE_DB_TYPE
-        $MYSQL_DB_TYPE
         $LOCAL_SCHEMA
         $UPSTREAM_SCHEMA
         $ALL_SCHEMAS_KW
@@ -169,12 +168,6 @@ Readonly our $DEFAULT_SCORE => 1;
 =cut
 
 Readonly our $SQLITE_DB_TYPE => "SQLite";
-
-=item $MYSQL_DB_TYPE
-
-=cut
-
-Readonly our $MYSQL_DB_TYPE => "MySQL";
 
 =item $LOCAL_SCHEMA
 

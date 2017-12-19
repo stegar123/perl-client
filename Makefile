@@ -11,9 +11,6 @@ init-db-upstream:
 	chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 	chmod 664 /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 
-init-mysql:
-	perl -I/usr/local/fingerbank/lib -Mfingerbank::DB_Factory -e 'my ($$code) = fingerbank::DB_Factory->instantiate(type => "MySQL", schema => "Upstream")->initialize_from_sqlite("/usr/local/fingerbank/db/fingerbank_Upstream.db") ; exit 1 if($$code != 200)'
-
 package-files:
 	@read -p "Version (X.Y.Z): " version; \
 	read -p "From Branch: " branch; \
