@@ -6,6 +6,7 @@ use HTTP::Request;
 use URI;
 use fingerbank::Util qw(is_enabled);
 use fingerbank::NullCache;
+use fingerbank::Status;
 
 use Moose;
 
@@ -50,6 +51,32 @@ sub build_request {
     my $req = HTTP::Request->new($verb => $url->as_string);
 
     return $req;
+}
+
+sub test_key {
+    my ($self, $key) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my $req = $self->build_request("GET", "/api/v2/test/key/$key");
+
+    my $res = $self->get_lwp_client->request($req);
+
+    if($res->code == $fingerbank::Status::UNAUTHORIZED) {
+        $logger->info("Provided key ($key) is invalid");
+        return ($res->code, "Invalid key provided")
+    } elsif ($res->code == $fingerbank::Status::FORBIDDEN) {
+        my $msg = "Forbidden access to API. Possibly under rate limiting. Message was: ".$res->decoded_content;
+        $logger->error($msg);
+        return ($res->code, $msg);
+    } elsif ($res->is_success) {
+        $logger->info("Successfuly tested key $key"); 
+        return ($res->code, $res->decoded_content);
+    } else {
+        my $msg = "Error while testing API key $key. Error was: ".$res->status_line;
+        $logger->error($msg);
+        return ($res->code, $msg);
+    }
+
 }
 
 1;
