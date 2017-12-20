@@ -79,6 +79,11 @@ if [ ! -f /usr/local/fingerbank/conf/fingerbank.conf ]; then
     touch /usr/local/fingerbank/conf/fingerbank.conf
 fi
 
+if [ "$1" = "2"   ]; then
+  # Execute all the scripts in the configuration upgrade directory
+  /usr/local/fingerbank/conf/upgrade/*
+fi
+
 # applying / fixing permissions
 make fixpermissions
 
