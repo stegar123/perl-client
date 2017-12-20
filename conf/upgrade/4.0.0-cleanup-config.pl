@@ -16,6 +16,9 @@ This script is idempotent so it can be called on every upgrade without any issue
 use lib "/usr/local/fingerbank/lib";
 
 use fingerbank::Config;
+use fingerbank::Log;
+
+fingerbank::Log::init_logger;
 
 fingerbank::Config::read_config;
 
@@ -37,6 +40,8 @@ $tConfig->RewriteConfig() || die "Couldn't rewrite Fingerbank settings";
 
 # Rewrite the config using the Fingerbank lib to cleanup any defaults
 fingerbank::Config::write_config;
+
+print "Finished running 4.0.0 configuration migration\n";
 
 =head1 AUTHOR
 
