@@ -1,7 +1,7 @@
 [upstream.api_key]
 type=text
 description=<<EOT
-API key to interact with upstream Fingerbank project
+API key to interact with upstream Fingerbank project. Changing this value requires to restart the Fingerbank collector.
 EOT
 
 [upstream.use_https]
@@ -26,7 +26,7 @@ EOT
 [upstream.db_path]
 type=text
 description=<<EOT
-Path to fetch the upstream Fingerbank project database
+Path used to fetch the database on the Fingerbank API
 EOT
 
 [upstream.sqlite_db_retention]
@@ -54,11 +54,30 @@ description=<<EOT
 The port on which the Fingerbank collector should be reached
 EOT
 
+[collector.arp_lookup]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not the collector should perform ARP lookups for devices it doesn't have DHCP information.
+EOT
+
 [query.record_unmatched]
 type=toggle
 options=enabled|disabled
 description=<<EOT
 Should the local instance of Fingerbank record unmatched parameters so that it will be possible to submit thoses unmatched parameters to the upstream Fingerbank project for contribution
+EOT
+
+[collector.query_cache_time]
+type=numeric
+description=<<EOT
+Amount of minutes for which the collector API query results are cached.
+EOT
+
+[collector.inactive_endpoints_expiration]
+type=numeric
+description=<<EOT
+Amount of hours after which the information inactive endpoints should be removed from the collector.
 EOT
 
 [proxy.use_proxy]
