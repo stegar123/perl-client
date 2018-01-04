@@ -7,6 +7,7 @@ use URI;
 use fingerbank::Util qw(is_enabled);
 use fingerbank::NullCache;
 use fingerbank::Status;
+use JSON::MaybeXS;
 
 use Moose;
 
@@ -77,6 +78,34 @@ sub test_key {
         return ($res->code, $msg);
     }
 
+}
+
+=head2 account_info
+
+Get the account information for a specific key.
+If no key is provided, it will get the account information of the current configured API key
+
+=cut
+
+sub account_info {
+    my ($self, $key) = @_;
+
+    $key //= fingerbank::Config::get_config->{upstream}->{api_key};
+
+    my $logger = fingerbank::Log::get_logger;
+
+    my $req = $self->build_request("GET", "/api/v2/users/account_info/$key");
+
+    my $res = $self->get_lwp_client->request($req);
+
+    if($res->is_success) {
+        $logger->info("Fetched user account information successfully");
+        return ($res->code, decode_json($res->decoded_content));
+    }
+    else {
+        $logger->error("Error while fetching account information");
+        return ($res->code, $res->decoded_content);
+    }
 }
 
 1;
