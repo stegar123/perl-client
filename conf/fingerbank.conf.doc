@@ -62,7 +62,7 @@ description=<<EOT
 The path to the p0f socket
 EOT
 
-[tcp_fingerprinting.p0f_socket_map]
+[tcp_fingerprinting.p0f_map_path]
 type=text
 description=<<EOT
 The path to the p0f map
