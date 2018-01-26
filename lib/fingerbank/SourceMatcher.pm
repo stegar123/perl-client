@@ -46,7 +46,7 @@ sub match_best {
 
     my @ordered = reverse sort { $results->{$a} <=> $results->{$b} } keys %$results;
     my $best_match = $results_array->[$ordered[0]];
-    my $pretty_args = '[' . join(',', map { "'$_' : '$args->{$_}'" } keys %$args) . ']';
+    my $pretty_args = '[' . join(',', map { "'$_' : '$args->{$_}'" // "(undefined)" } keys %$args) . ']';
     if($best_match){
         $logger->debug("Found '$best_match->{device}->{name}' with score $best_match->{score} for args : $pretty_args");
         return $best_match;
