@@ -13,6 +13,7 @@ use_https=disabled
 inactive_endpoints_expiration=168
 arp_lookup=disabled
 query_cache_time=1440
+db_persistence_interval=60
 
 [query]
 record_unmatched = disabled

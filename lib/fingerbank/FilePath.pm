@@ -30,6 +30,8 @@ BEGIN {
         $LOCAL_DB_FILE
         $UPSTREAM_DB_FILE
         $COMBINATION_MAP_FILE
+        $COLLECTOR_ENDPOINTS_DATA_FILE
+        $COLLECTOR_IP_MAPS_FILE
         %SCHEMA_DBS
     );
 }
@@ -65,6 +67,8 @@ Readonly::Scalar our $LOG_FILE              => catfile($INSTALL_PATH, 'logs/fing
 Readonly::Scalar our $LOCAL_DB_FILE         => catfile($INSTALL_PATH, 'db/fingerbank_Local.db');
 Readonly::Scalar our $UPSTREAM_DB_FILE      => catfile($INSTALL_PATH, 'db/fingerbank_Upstream.db');
 Readonly::Scalar our $COMBINATION_MAP_FILE  => catfile($INSTALL_PATH, 'db/fingerbank_Combination_Map.json');
+Readonly::Scalar our $COLLECTOR_ENDPOINTS_DATA_FILE  => catfile($INSTALL_PATH, 'db/collector_endpoints.db');
+Readonly::Scalar our $COLLECTOR_IP_MAPS_FILE  => catfile($INSTALL_PATH, 'db/collector_ip_maps.db');
 
 our %SCHEMA_DBS = (
     Local => $LOCAL_DB_FILE,

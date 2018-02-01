@@ -80,6 +80,12 @@ description=<<EOT
 Amount of hours after which the information inactive endpoints should be removed from the collector.
 EOT
 
+[collector.db_persistence_interval]
+type=numeric
+description=<<EOT
+Interval in seconds at which the collector will persist its databases.
+EOT
+
 [proxy.use_proxy]
 type=toggle
 options=enabled|disabled

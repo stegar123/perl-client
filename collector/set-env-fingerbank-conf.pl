@@ -8,6 +8,7 @@
 use lib '/usr/local/fingerbank/lib';
 use fingerbank::Config;
 use fingerbank::Log;
+use fingerbank::FilePath qw($COLLECTOR_ENDPOINTS_DATA_FILE $COLLECTOR_IP_MAPS_FILE);
 use Data::Dumper;
 
 sub setenv {
@@ -20,11 +21,14 @@ fingerbank::Config->read_config;
 my %Config = %fingerbank::Config::Config;
 
 my %TO_SET = (
-    "FINGERBANK_API_KEY", $Config{upstream}->{api_key},,
-    "COLLECTOR_DELETE_INACTIVE_ENDPOINTS", $Config{collector}->{inactive_endpoints_expiration} . "h",
-    "COLLECTOR_ARP_LOOKUP", $Config{collector}->{arp_lookup},
-    "COLLECTOR_QUERY_CACHE_TIME", $Config{collector}->{query_cache_time} . "m",
-    "PORT", $Config{collector}->{port},
+    "FINGERBANK_API_KEY" => $Config{upstream}->{api_key},,
+    "COLLECTOR_DELETE_INACTIVE_ENDPOINTS" => $Config{collector}->{inactive_endpoints_expiration} . "h",
+    "COLLECTOR_ARP_LOOKUP" => $Config{collector}->{arp_lookup},
+    "COLLECTOR_QUERY_CACHE_TIME" => $Config{collector}->{query_cache_time} . "m",
+    "PORT" => $Config{collector}->{port},
+    "COLLECTOR_ENDPOINTS_DB_PATH" => $COLLECTOR_ENDPOINTS_DATA_FILE,
+    "COLLECTOR_IP_MAPS_DB_PATH" => $COLLECTOR_IP_MAPS_FILE,
+    "COLLECTOR_DB_PERSISTENCE_INTERVAL" => $Config{collector}->{db_persistence_interval} . "s",
 );
 
 while(my ($k, $v) = each(%TO_SET)) {
