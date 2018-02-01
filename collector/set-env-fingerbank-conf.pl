@@ -29,6 +29,7 @@ my %TO_SET = (
     "COLLECTOR_ENDPOINTS_DB_PATH" => $COLLECTOR_ENDPOINTS_DATA_FILE,
     "COLLECTOR_IP_MAPS_DB_PATH" => $COLLECTOR_IP_MAPS_FILE,
     "COLLECTOR_DB_PERSISTENCE_INTERVAL" => $Config{collector}->{db_persistence_interval} . "s",
+    "COLLECTOR_CLUSTERED" => "true",
 );
 
 while(my ($k, $v) = each(%TO_SET)) {
