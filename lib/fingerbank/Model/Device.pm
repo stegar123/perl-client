@@ -79,6 +79,8 @@ sub is_a {
     my ( $self, $arg, $condition ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
+    return $FALSE unless(defined($arg));
+
     my $status;
 
     if ( $arg !~ /^\d+$/ ) {
