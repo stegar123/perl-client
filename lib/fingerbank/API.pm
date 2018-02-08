@@ -48,7 +48,6 @@ Get the LWP client to talk to the API
 =cut
 
 sub get_lwp_client {
-    #TODO: allow control of usage of the configured proxy
     my $ua = fingerbank::Util::get_lwp_client(keep_alive => 1);
     $ua->timeout(2);   # An query should not take more than 2 seconds
     return $ua;
