@@ -56,7 +56,7 @@ sub read {
             $logger->debug("Found parent ID '$parent_id' for device ID '$id'");
             push(@parents_ids, $parent_id);
             my $parent = $self->read($parent_id);
-            foreach my $key ( keys %$parent ) {
+            foreach ( keys %$parent ) {
                 $parents[$iteration] = $parent;
             }
             $iteration ++;
