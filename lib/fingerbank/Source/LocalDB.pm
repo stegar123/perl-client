@@ -6,7 +6,7 @@ fingerbank::Source::LocalDB
 
 =head1 DESCRIPTION
 
-Source for interrogating the local Fingerbank databases (Upstream and Local)
+Source for interrogating the local Fingerbank database for local combinations
 
 =cut
 
@@ -41,7 +41,7 @@ has 'combination_id' => (is => 'rw', isa => 'Str');
 has 'combination_is_exact' => (is => 'rw', isa => 'Str');
 has 'matched_schema' => (is => 'rw', isa => 'Str');
 
-has 'search_schemas' => (is => 'rw', default => sub {\@fingerbank::DB::schemas});
+has 'search_schemas' => (is => 'rw', default => sub {[$LOCAL_SCHEMA]});
 
 =head2 match
 
@@ -104,7 +104,7 @@ sub _buildResult {
     my $result = {};
 
     # Get the combination info
-    my ( $status, $combination ) = fingerbank::Model::Combination->read($self->combination_id);
+    my ( $status, $combination ) = fingerbank::Model::Combination->read_hashref($self->combination_id);
     return $status if ( is_error($status) );
 
     foreach my $key ( keys %$combination ) {
@@ -112,7 +112,7 @@ sub _buildResult {
     }
 
     # Get device info
-    ( $status, my $device ) = fingerbank::Model::Device->read($combination->{device_id}, $TRUE);
+    ( $status, my $device ) = fingerbank::Model::Device->read_hashref($combination->{device_id}, $TRUE);
     return $status if ( is_error($status) );
 
     foreach my $key ( keys %$device ) {

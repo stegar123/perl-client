@@ -11,17 +11,6 @@ init-db-upstream:
 	chown fingerbank.fingerbank /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 	chmod 664 /usr/local/fingerbank/db/fingerbank_Upstream.db; \
 
-init-mysql:
-	perl -I/usr/local/fingerbank/lib -Mfingerbank::DB_Factory -e 'my ($$code) = fingerbank::DB_Factory->instantiate(type => "MySQL", schema => "Upstream")->initialize_from_sqlite("/usr/local/fingerbank/db/fingerbank_Upstream.db") ; exit 1 if($$code != 200)'
-
-init-p0f-map:
-	@read -p "API key (ENTER if none): " api_key; \
-	perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\") )"; \
-
-init-attribute-map:
-	@read -p "API key (ENTER if none): " api_key; \
-	perl -I/usr/local/fingerbank/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Config::update_attribute_map( (api_key => \"$$api_key\") )"; \
-
 package-files:
 	@read -p "Version (X.Y.Z): " version; \
 	read -p "From Branch: " branch; \
@@ -40,9 +29,7 @@ package-files:
 		rm -f $$tmp_dir/README.md; \
 		rm -rf $$tmp_dir/t; \
 		read -p "API key: " api_key; \
-		perl -I$$tmp_dir/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::DB::update_upstream( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
-		perl -I$$tmp_dir/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::Config::update_p0f_map( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download-p0f-map\", destination => \"$$tmp_dir/conf/fingerbank-p0f.fp\") )"; \
-		perl -I$$tmp_dir/lib -Mfingerbank::Config -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::Config::update_attribute_map( (api_key => \"$$api_key\", download_url => \"https://fingerbank.inverse.ca/api/v1/download-attribute-map\", destination => \"$$tmp_dir/db/fingerbank_Combination_Map.json\") )"; \
+		perl -I$$tmp_dir/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log '-MLog::Log4perl qw(:easy)' -e "Log::Log4perl->easy_init(\$$INFO); fingerbank::DB::update_upstream( (api_key => \"$$api_key\", destination => \"$$tmp_dir/db/fingerbank_Upstream.db\") )"; \
 		tar -czf fingerbank.tar.gz $$tmp_dir; \
 		rm -rf $$tmp_dir; \
 	fi \

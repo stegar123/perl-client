@@ -17,6 +17,8 @@ use fingerbank::Constant qw($TRUE $FALSE);
 use fingerbank::Log;
 use fingerbank::Util qw(is_error is_success);
 use fingerbank::Constant;
+use fingerbank::API;
+use JSON::MaybeXS;
 
 extends 'fingerbank::Base::CRUD';
 
@@ -41,10 +43,10 @@ sub read {
     return ($status, $return) if ( is_error($status) );
 
     # If parents are requested, we build them
-    if ( (defined($with_parents) && $with_parents) && defined($return->{parent_id}) ) {
+    if ( (defined($with_parents) && $with_parents) && defined($return->parent_id) ) {
         $logger->debug("Device ID '$id' have at least 1 parent. Building parent(s) list");
 
-        my $parent_id = $return->{parent_id};
+        my $parent_id = $return->parent_id;
         my $parent_exists = 1;  # We need to run at least once since we know parent(s) exists
         my @parents;            # Will keep the parent(s) attributes
         my @parents_ids;        # Will keep the ID(s) of parent(s) for easy access
@@ -54,12 +56,12 @@ sub read {
             $logger->debug("Found parent ID '$parent_id' for device ID '$id'");
             push(@parents_ids, $parent_id);
             my $parent = $self->read($parent_id);
-            foreach my $key ( keys %$parent ) {
-                $parents[$iteration]{$key} = $parent->{$key};
+            foreach ( keys %$parent ) {
+                $parents[$iteration] = $parent;
             }
             $iteration ++;
-            $parent_id = $parent->{parent_id} if ( defined($parent->{parent_id}) );
-            $parent_exists = 0 if ( !defined($parent->{parent_id}) );
+            $parent_id = $parent->parent_id if ( defined($parent->parent_id) );
+            $parent_exists = 0 if ( !defined($parent->parent_id) );
         }
 
         $return->{parents} = \@parents;
@@ -77,34 +79,61 @@ sub is_a {
     my ( $self, $arg, $condition ) = @_;
     my $logger = fingerbank::Log::get_logger;
 
+    return $FALSE unless(defined($arg));
+
     my $status;
 
-    # We need to convert a device type to an ID if needed
-    my $device_id = $arg;
     if ( $arg !~ /^\d+$/ ) {
+        $logger->debug("Finding device ID for $arg");
         my $query = {};
         $query->{'name'} = $arg;
 
         ( $status, my $query_result ) = $self->find([$query, { columns => ['id'] }]);
-        return $FALSE if is_error($status);
+        if (is_error($status)) {
+            $logger->error("Unable to find device ID for device name $arg");
+            return $FALSE;
+        }
     
-        $device_id = $query_result->id;
+        $arg = $query_result->id;
     }
 
-    # We first check if the requested device is matching the condition
-    return $TRUE if ( $device_id eq $condition );
+    if ( $condition !~ /^\d+$/ ) {
+        $logger->debug("Finding device ID for $condition");
+        my $query = {};
+        $query->{'name'} = $condition;
 
-    # We want the device details including the parents
-    ( $status, my $device ) = $self->read($device_id, 1);
-    return $FALSE if is_error($status);
-
-    my %parents_id = map { $_ => 1 } @{$device->{parents_ids}};
-
-    if ( exists($parents_id{$condition}) ) {
-        return $TRUE;
-    } else {
-        return $FALSE;
+        ( $status, my $query_result ) = $self->find([$query, { columns => ['id'] }]);
+        if (is_error($status)) {
+            $logger->error("Unable to find device ID for device name $condition");
+            return $FALSE;
+        }
+    
+        $condition = $query_result->id;
     }
+
+
+    my $api = fingerbank::API->new_from_config;
+    my $result = $api->cache->compute("fingerbank::Model::Device::is_a($arg,$condition)", sub {
+        my $req = $api->build_request("GET", "/api/v2/devices/$arg/is_a/$condition");
+
+        my $res = $api->get_lwp_client->request($req);
+        if ($res->is_success) {
+            my $result = decode_json($res->decoded_content);
+            $logger->debug("Device $arg is a $condition. ".$result->{message});
+            return $result->{result};
+        }
+        else {
+            $logger->error("Error while communicating with the Fingerbank API to check if device $arg is linked to device $condition. ".$res->status_line);
+            return undef;
+        }
+    });
+
+    # When the above failed, we return false
+    unless(defined($result)) {
+        $result = $FALSE;
+    }
+
+    return $result;
 }
 
 =head1 AUTHOR

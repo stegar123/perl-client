@@ -24,10 +24,8 @@ BEGIN {
         $YES $NO 
         $FINGERBANK_USER 
         $DEFAULT_BACKUP_RETENTION 
-        $REDIS_RECONNECT_INTERVAL
         $DEFAULT_SCORE
         $SQLITE_DB_TYPE
-        $MYSQL_DB_TYPE
         $LOCAL_SCHEMA
         $UPSTREAM_SCHEMA
         $ALL_SCHEMAS_KW
@@ -50,7 +48,7 @@ BEGIN {
 
 =cut
 
-Readonly::Scalar our $VERSION     => "3.1.1";
+Readonly::Scalar our $VERSION     => "4.0.0";
 Readonly::Scalar our $FALSE       => 0;
 Readonly::Scalar our $TRUE        => 1;
 Readonly::Scalar our $YES         => 'yes';
@@ -103,10 +101,26 @@ A hash containing the parent ids for the base devices
 Readonly::Hash our %PARENT_IDS => (
     WINDOWS => 1,
     MACOS => 2,
-    ANDROID => 202,
-    IOS => 193,
-    WINDOWS_PHONE => 5474,
-    BLACKBERRY => 192,
+    LINUX => 5,
+    ANDROID => 33453,
+    IOS => 33450,
+    WINDOWS_PHONE => 33507,
+    BLACKBERRY => 33471,
+);
+
+Readonly::Hash our %DEVICE_CLASS_IDS => (
+    %PARENT_IDS,
+);
+
+Readonly::Hash our %MOBILE_IDS => (
+    ANDROID => $PARENT_IDS{ANDROID},
+    IOS => $PARENT_IDS{IOS},
+    WINDOWS_PHONE => $PARENT_IDS{WINDOWS_PHONE},
+    BLACKBERRY => $PARENT_IDS{BLACKBERRY},
+    WATCHOS => 33451,
+    PHONE_TABLET_WEARABLE => 11,
+    PALMOS => 204,
+    WEBOS => 33481,
 );
 
 =item $FINGERBANK_USER
@@ -141,14 +155,6 @@ The amount of backups to keep by default in the file cleanup
 
 Readonly our $DEFAULT_BACKUP_RETENTION => 5;
 
-=item $REDIS_RECONNECT_INTERVAL
-
-Time (in ms) to wait between the reconnects after losing a redis connection
-
-=cut
-
-Readonly our $REDIS_RECONNECT_INTERVAL => 100;
-
 =item $DEFAULT_SCORE
 
 The score that is given by default on any match
@@ -162,12 +168,6 @@ Readonly our $DEFAULT_SCORE => 1;
 =cut
 
 Readonly our $SQLITE_DB_TYPE => "SQLite";
-
-=item $MYSQL_DB_TYPE
-
-=cut
-
-Readonly our $MYSQL_DB_TYPE => "MySQL";
 
 =item $LOCAL_SCHEMA
 

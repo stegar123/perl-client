@@ -35,7 +35,7 @@ sub BUILD {
             ($status, $result) = fingerbank::Model::Device->read($device_id, $TRUE);
             if(is_success($status)){
                 $logger->debug("Looked up parents for $device_id successfully");
-                my @parents = map {$_->{name}} @{$result->{parents}};
+                my @parents = map {$_->name} @{$result->{parents}};
                 $self->parents(\@parents);
             }
             else {
@@ -130,6 +130,17 @@ sub isBlackberry {
     return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{BLACKBERRY});
 }
 
+=head2 isLinux
+
+Test if endpoint is Linux based
+
+=cut
+
+sub isLinux {
+    my ( $self ) = @_;
+    return $self->is_a_by_id($fingerbank::Constant::PARENT_IDS{LINUX});
+}
+
 =head2 is_a
 
 =cut
@@ -137,7 +148,9 @@ sub isBlackberry {
 sub is_a {
     my ( $self, $device_name ) = @_;
     my $logger = fingerbank::Log::get_logger;
-    return $self->name eq $device_name || $self->hasParent($device_name);
+    $logger->debug("Testing if device '".$self->name."' is or has $device_name for parent");
+
+    return fingerbank::Model::Device->is_a($self->name, $device_name);
 }
 
 sub is_a_by_id {
@@ -145,13 +158,7 @@ sub is_a_by_id {
     my $logger = fingerbank::Log::get_logger;
     $logger->debug("Testing if device '".$self->name."' is or has $id for parent");
 
-    my ($status, $device) = fingerbank::Model::Device->read($id);
-
-    my $result = $self->is_a($device->{name});
-
-    $logger->debug("Device '".$self->name."' is or has $id for parent") if $result;
-
-    return $result;
+    return fingerbank::Model::Device->is_a($self->name, $id);
 }
 
 =head2 hasParent

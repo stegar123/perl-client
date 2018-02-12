@@ -1,13 +1,32 @@
 [upstream.api_key]
 type=text
 description=<<EOT
-API key to interact with upstream Fingerbank project
+API key to interact with upstream Fingerbank project. Changing this value requires to restart the Fingerbank collector.
 EOT
 
-[upstream.db_url]
+[upstream.use_https]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not HTTPS should be used to communicate with the Fingerbank API
+EOT
+
+[upstream.host]
 type=text
 description=<<EOT
-URL to fetch the upstream Fingerbank project database
+The host on which the Fingerbank API should be reached
+EOT
+
+[upstream.port]
+type=numeric
+description=<<EOT
+The port on which the Fingerbank API should be reached
+EOT
+
+[upstream.db_path]
+type=text
+description=<<EOT
+Path used to fetch the database on the Fingerbank API
 EOT
 
 [upstream.sqlite_db_retention]
@@ -16,23 +35,30 @@ description=<<EOT
 Amount of upstream databases to retain on disk in db/. Should be at least one in case any running processes are still pointing on the old file descriptor of the database.
 EOT
 
-[upstream.interrogate]
+[collector.use_https]
 type=toggle
 options=enabled|disabled
 description=<<EOT
-Should the local instance of Fingerbank interrogate the upstream Fingerbank project when unable to fullfil a match
+Whether or not HTTPS should be used to communicate with the collector
 EOT
 
-[upstream.interrogate_url]
+[collector.host]
 type=text
 description=<<EOT
-URL to interrogate the upstream Fingerbank project to fullfil a match
+The host on which the Fingerbank collector should be reached
 EOT
 
-[upstream.submit_url]
-type=text
+[collector.port]
+type=numeric
 description=<<EOT
-URL to submit unmatched parameter to upstream Fingerbank project
+The port on which the Fingerbank collector should be reached
+EOT
+
+[collector.arp_lookup]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not the collector should perform ARP lookups for devices it doesn't have DHCP information.
 EOT
 
 [query.record_unmatched]
@@ -42,56 +68,23 @@ description=<<EOT
 Should the local instance of Fingerbank record unmatched parameters so that it will be possible to submit thoses unmatched parameters to the upstream Fingerbank project for contribution
 EOT
 
-[query.use_tcp_fingerprinting]
-type=toggle
-options=enabled|disabled
-description=<<EOT
-Should the TCP fingerprinting be part of the discovery process to match a device ?
-EOT
-
-[query.use_redis]
-type=toggle
-options=enabled|disabled
-description=<<EOT
-Should Redis be used to match combinations ? Requires to have the Attribute map imported into the Redis instance
-EOT
-
-[tcp_fingerprinting.p0f_socket_path]
-type=text
-description=<<EOT
-The path to the p0f socket
-EOT
-
-[tcp_fingerprinting.p0f_map_path]
-type=text
-description=<<EOT
-The path to the p0f map
-EOT
-
-[tcp_fingerprinting.p0f_map_url]
-type=text
-description=<<EOT
-The URL to download the p0f map from
-EOT
-
-[redis.host]
-type=text
-description=<<EOT
-Hostname or IP address of the Redis server
-EOT
-
-[redis.port]
+[collector.query_cache_time]
 type=numeric
 description=<<EOT
-Port of the Redis server
+Amount of minutes for which the collector API query results are cached.
 EOT
 
-[redis.attribute_map_url]
-type=text
+[collector.inactive_endpoints_expiration]
+type=numeric
 description=<<EOT
-The URL to download the attribute map.
+Amount of hours after which the information inactive endpoints should be removed from the collector.
 EOT
 
+[collector.db_persistence_interval]
+type=numeric
+description=<<EOT
+Interval in seconds at which the collector will persist its databases.
+EOT
 
 [proxy.use_proxy]
 type=toggle
@@ -119,45 +112,3 @@ description=<<EOT
 Whether or not to verify SSL when using proxying
 EOT
 
-[mysql.state]
-type=toggle
-options=enabled|disabled
-description=<<EOT
-Should Fingerbank use MySQL instead of the SQLite3 database ?
-EOT
-
-[mysql.host]
-type=text
-description=<<EOT
-The host to connect to the MySQL database
-EOT
-
-[mysql.port]
-type=numeric
-description=<<EOT
-The port to connect to the MySQL database
-EOT
-
-[mysql.username]
-type=text
-description=<<EOT
-The username to connect to the MySQL database
-EOT
-
-[mysql.password]
-type=text
-description=<<EOT
-The password to connect to the MySQL database
-EOT
-
-[mysql.database]
-type=text
-description=<<EOT
-The database name in MySQL
-EOT
-
-[mysql.incrementals_url]
-type=text
-description=<<EOT
-The URL to download the SQL incremental scripts
-EOT

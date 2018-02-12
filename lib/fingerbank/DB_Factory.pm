@@ -13,9 +13,8 @@ Factory to create database connections
 use Moose;
 use namespace::autoclean;
 
-use fingerbank::Constant qw($SQLITE_DB_TYPE $MYSQL_DB_TYPE);
+use fingerbank::Constant qw($SQLITE_DB_TYPE);
 use fingerbank::DB::SQLite;
-use fingerbank::DB::MySQL;
 use fingerbank::Config;
 use fingerbank::Log;
 use fingerbank::Util qw(is_enabled);
@@ -32,21 +31,10 @@ sub instantiate {
     }
 
     $args{type} //= $SQLITE_DB_TYPE;
-    if(is_enabled($Config->{mysql}->{state}) && any { $_ eq $args{schema} } @fingerbank::DB::MySQL::schemas) {
-        $args{type} = $MYSQL_DB_TYPE;
-    }
-
     my $type = $args{forced_type} // $args{type};
 
-    # If MySQL is enabled and that the schema can be handled in MySQL
-    if($type eq $MYSQL_DB_TYPE) {
-        $logger->debug("Using MySQL as database for schema ".$args{schema});
-        return fingerbank::DB::MySQL->new(%args, %{$Config->{mysql}});
-    }
-    else {
-        $logger->debug("Using SQLite as database for schema ".$args{schema});
-        return fingerbank::DB::SQLite->new(%args);
-    }
+    $logger->debug("Using SQLite as database for schema ".$args{schema});
+    return fingerbank::DB::SQLite->new(%args);
 }
 
 =head1 AUTHOR

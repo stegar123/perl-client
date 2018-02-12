@@ -1,5 +1,5 @@
 Name:       fingerbank
-Version:    3.1.1
+Version:    4.0.0
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
@@ -35,6 +35,7 @@ Requires:   perl(LWP::Protocol::https)
 Requires:   perl(MooseX::NonMoose)
 Requires:   perl(SQL::Translator)
 Requires:   perl(File::Touch)
+Requires:   fingerbank-collector
 
 %description
 Fingerbank
@@ -79,6 +80,11 @@ if [ ! -f /usr/local/fingerbank/conf/fingerbank.conf ]; then
     touch /usr/local/fingerbank/conf/fingerbank.conf
 fi
 
+if [ "$1" = "2"   ]; then
+  # Execute all the scripts in the configuration upgrade directory
+  /usr/local/fingerbank/conf/upgrade/*
+fi
+
 # applying / fixing permissions
 make fixpermissions
 
@@ -93,7 +99,9 @@ rm -rf %{buildroot}
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
                                     /usr/local/fingerbank/*
+%attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/collector/set-env-fingerbank-conf.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
+%attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
     %dir                            %{_sysconfdir}/logrotate.d
 %endif
@@ -103,3 +111,4 @@ rm -rf %{buildroot}
 
 
 %changelog
+
