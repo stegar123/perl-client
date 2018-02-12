@@ -81,6 +81,8 @@ binary-arch: build install
 	# PERMISSIONS
 	# Executables
 	chmod 0775 $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/db/upgrade.pl
+	chmod 0775 $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/collector/set-env-fingerbank-conf.pl
+	chmod 0775 $(CURDIR)/debian/fingerbank$(PREFIX)/$(NAME)/conf/upgrade/*
 #	dh_fixperms
 #	dh_perl
 	dh_makeshlibs
