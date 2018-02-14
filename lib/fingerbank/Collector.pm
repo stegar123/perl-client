@@ -47,6 +47,7 @@ Get the LWP client to talk to the collector
 
 sub get_lwp_client {
     my $ua = fingerbank::Util::get_lwp_client(keep_alive => 1);
+    $ua->ssl_opts(verify_hostname => 0);
     $ua->timeout(2);   # An query should not take more than 2 seconds
     return $ua;
 }
