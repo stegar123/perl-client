@@ -31,6 +31,8 @@ my %TO_SET = (
     "COLLECTOR_IP_MAPS_DB_PATH" => $COLLECTOR_IP_MAPS_FILE,
     "COLLECTOR_DB_PERSISTENCE_INTERVAL" => $Config{collector}->{db_persistence_interval} . "s",
     "COLLECTOR_CLUSTERED" => "true",
+    "GOGC" => "100",
+    "GODEBUG" => "gctrace=0",
 );
 
 while(my ($k, $v) = each(%TO_SET)) {
