@@ -14,6 +14,7 @@ use fingerbank::Config;
 use fingerbank::Util;
 use HTTP::Request;
 use URI;
+use URI::https;
 use fingerbank::Util qw(is_enabled);
 use fingerbank::NullCache;
 
