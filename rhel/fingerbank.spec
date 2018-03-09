@@ -99,7 +99,6 @@ rm -rf %{buildroot}
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
                                     /usr/local/fingerbank/*
-%attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/collector/set-env-fingerbank-conf.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
