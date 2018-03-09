@@ -128,11 +128,6 @@ sub is_a {
         }
     });
 
-    # When the above failed, we return false
-    unless(defined($result)) {
-        $result = $FALSE;
-    }
-
     return $result;
 }
 
