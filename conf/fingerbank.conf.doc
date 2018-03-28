@@ -86,6 +86,13 @@ description=<<EOT
 Interval in seconds at which the collector will persist its databases.
 EOT
 
+[collector.cluster_resync_interval]
+type=numeric
+description=<<EOT
+Interval in seconds at which the collector will fully resynchronize with its peers when in cluster mode. 
+The collector synchronizes in real-time, so this only acts as a safety net when there is a communication error between the collectors. 
+EOT
+
 [proxy.use_proxy]
 type=toggle
 options=enabled|disabled
