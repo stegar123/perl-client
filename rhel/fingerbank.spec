@@ -83,6 +83,12 @@ fi
 if [ "$1" = "2"   ]; then
   # Execute all the scripts in the configuration upgrade directory
   /usr/local/fingerbank/conf/upgrade/*
+
+  # Flush the Fingerbank cache if running with PacketFence
+  if [ -f /usr/local/pf/bin/pfcmd ]; then 
+    /usr/local/pf/bin/pfcmd cache fingerbank clear
+    echo "Cleared the PacketFence Fingerbank cache"
+  fi
 fi
 
 # applying / fixing permissions
