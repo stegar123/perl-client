@@ -75,8 +75,6 @@ package-debian:
 		read -p "API key: " api_key; \
 		curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$$api_key -H 'Accept-Encoding: gzip, deflate, sdch, br' --compressed --keepalive-time 3 --retry 5 --output $$tmp_dir/db/fingerbank_Upstream.db; \
 		cp $$tmp_dir/db/fingerbank_Upstream.db db/fingerbank_Upstream.db; \
-		cp $$tmp_dir/conf/fingerbank-p0f.fp conf/fingerbank-p0f.fp; \
-		cp $$tmp_dir/db/fingerbank_Combination_Map.json db/fingerbank_Combination_Map.json; \
 		tar cvfj ../fingerbank_$$DEB_VERSION.orig.tar.bz2 $$tmp_dir; \
 		rm -rf $$tmp_dir; \
 		echo run dpkg-buildpackage -rfakeroot to build the package; \
