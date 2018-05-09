@@ -33,6 +33,7 @@ case "$1" in
         make fixpermissions
         /usr/local/fingerbank/conf/upgrade/*
         db_stop
+        chown pf.pf /usr/local/fingerbank/conf/fingerbank.conf
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
