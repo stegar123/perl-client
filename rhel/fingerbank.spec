@@ -35,7 +35,7 @@ Requires:   perl(LWP::Protocol::https)
 Requires:   perl(MooseX::NonMoose)
 Requires:   perl(SQL::Translator)
 Requires:   perl(File::Touch)
-Requires:   fingerbank-collector
+Requires:   fingerbank-collector >= 1.0.1
 
 %description
 Fingerbank
