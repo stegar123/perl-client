@@ -148,6 +148,33 @@ sub account_info {
     }
 }
 
+=head2 device_id_from_oui
+
+Find the most probable device ID for a given OUI
+
+=cut
+
+sub device_id_from_oui {
+    my ($self, $oui) = @_;
+
+    my $logger = fingerbank::Log::get_logger;
+
+    my $req = $self->build_request("GET", "/api/v2/oui/$oui/to_device_id");
+
+    my $res = $self->get_lwp_client->request($req);
+
+    if($res->is_success) {
+        my $result = decode_json($res->decoded_content);
+        my $device_id = $result->{device_id};
+        $logger->info("Found device ID $device_id for OUI $oui");
+        return ($res->code, $device_id);
+    }
+    else {
+        $logger->error("Cannot find device ID for OUI $oui: ".$res->status_line);
+        return ($res->code, $res->decoded_content);
+    }
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
