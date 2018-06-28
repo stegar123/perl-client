@@ -10,7 +10,6 @@ Homepage: http://www.fingerbank.org/
 
 Package: fingerbank
 Architecture: all
-Pre-Depends: debconf (>= 0.2.17)
 Depends: ${misc:Depends},
  perl, curl,
  libcatalyst-perl (>= 5.90011), libcatalyst-modules-perl,
