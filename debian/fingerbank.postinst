@@ -30,7 +30,6 @@ case "$1" in
         make init-db-local
         make fixpermissions
         /usr/local/fingerbank/conf/upgrade/*
-        db_stop
         chown pf.pf /usr/local/fingerbank/conf/fingerbank.conf
     ;;
 
