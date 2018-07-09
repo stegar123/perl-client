@@ -11,7 +11,7 @@ Homepage: http://www.fingerbank.org/
 Package: fingerbank
 Architecture: all
 Depends: ${misc:Depends},
- perl, curl,
+ perl, curl, make,
  libcatalyst-perl (>= 5.90011), libcatalyst-modules-perl,
  libaliased-perl, libmoosex-types-loadableclass-perl,
  libconfig-general-perl,libreadonly-xs-perl, 
