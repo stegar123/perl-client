@@ -312,6 +312,8 @@ sub fetch_file {
 sub get_proxy_url {
     my ($proto) = @_;
     my $Config = fingerbank::Config::get_config();
+    
+    return "" if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
 
     my $proxy_host = $Config->{'proxy'}{'host'};
     my $proxy_port = $Config->{'proxy'}{'port'};
