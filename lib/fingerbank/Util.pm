@@ -20,6 +20,7 @@ use LWP::UserAgent;
 use HTTP::Message;
 use Compress::Raw::Zlib;
 use POSIX;
+use LWP::Protocol::connect;
 
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
@@ -324,11 +325,8 @@ sub get_lwp_client {
         my $proxy_port = $Config->{'proxy'}{'port'};
         my $verify_ssl = ( is_enabled($Config->{'proxy'}{'verify_ssl'}) ) ? $TRUE : $FALSE;
 
-        $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => $verify_ssl });
-        $ua->proxy(['https', 'http', 'ftp'] => "$proxy_host:$proxy_port");
-        $ua->protocols_allowed([ 'https', 'http', 'ftp' ]);
-
-        return $ua;
+        $ua = LWP::UserAgent->new(%args, ssl_opts => { verify_hostname => $verify_ssl });
+        $ua->proxy(['https', 'http', 'ftp'] => "connect://$proxy_host:$proxy_port");
     }
     
     $ua->default_header('Accept-Encoding' => 'gzip, x-gzip');

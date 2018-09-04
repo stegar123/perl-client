@@ -103,7 +103,7 @@ EOT
 [proxy.host]
 type=text
 description=<<EOT
-Host the proxy is listening on
+Host the proxy is listening on. Only the host must be specified here without any port or protocol.
 EOT
 
 [proxy.port]
