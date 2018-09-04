@@ -305,6 +305,20 @@ sub fetch_file {
     return ($status, $status_msg);
 }
 
+=head2 get_proxy_url
+
+=cut
+
+sub get_proxy_url {
+    my ($proto) = @_;
+    my $Config = fingerbank::Config::get_config();
+
+    my $proxy_host = $Config->{'proxy'}{'host'};
+    my $proxy_port = $Config->{'proxy'}{'port'};
+
+    return "$proto://$proxy_host:$proxy_port";
+}
+
 =head2 get_lwp_client
 
 Returns a LWP::UserAgent for WWW interaction
@@ -321,12 +335,10 @@ sub get_lwp_client {
     if ( is_enabled($Config->{'proxy'}{'use_proxy'}) ) {
         return $ua if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
 
-        my $proxy_host = $Config->{'proxy'}{'host'};
-        my $proxy_port = $Config->{'proxy'}{'port'};
         my $verify_ssl = ( is_enabled($Config->{'proxy'}{'verify_ssl'}) ) ? $TRUE : $FALSE;
 
         $ua = LWP::UserAgent->new(%args, ssl_opts => { verify_hostname => $verify_ssl });
-        $ua->proxy(['https', 'http', 'ftp'] => "connect://$proxy_host:$proxy_port");
+        $ua->proxy(['https', 'http', 'ftp'] => get_proxy_url("connect"));
     }
     
     $ua->default_header('Accept-Encoding' => 'gzip, x-gzip');
