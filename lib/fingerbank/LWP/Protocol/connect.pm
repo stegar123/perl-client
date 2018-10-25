@@ -1,4 +1,4 @@
-package fingerbank::LWP::Protocol::connect;
+package LWP::Protocol::connect;
 
 use warnings;
 use strict;
