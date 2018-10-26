@@ -18,6 +18,7 @@ Depends: ${misc:Depends},
  liblog-log4perl-perl (>=1.43),libcatalyst-action-rest-perl,
  libdbd-sqlite3-perl, liblwp-protocol-https-perl, sqlite3,
  libdata-powerset-perl,
+ liblwp-protocol-connect,
  libsql-translator-perl, libfile-touch-perl, libconfig-inifiles-perl (>= 2.88),
  fingerbank-collector (>= 1.0.1),
 Description: fingerbank
