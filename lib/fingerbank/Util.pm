@@ -20,7 +20,7 @@ use LWP::UserAgent;
 use HTTP::Message;
 use Compress::Raw::Zlib;
 use POSIX;
-use fingerbank::LWP::Protocol::connect;
+use LWP::Protocol::connect;
 
 use fingerbank::Constant qw($TRUE $FALSE $FINGERBANK_USER $DEFAULT_BACKUP_RETENTION);
 use fingerbank::Config;
