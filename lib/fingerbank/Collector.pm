@@ -17,6 +17,7 @@ use URI;
 use URI::https;
 use fingerbank::Util qw(is_enabled);
 use fingerbank::NullCache;
+use fingerbank::Constant qw($FALSE);
 
 use Moose;
 
@@ -47,7 +48,7 @@ Get the LWP client to talk to the collector
 =cut
 
 sub get_lwp_client {
-    my $ua = fingerbank::Util::get_lwp_client(keep_alive => 1);
+    my $ua = fingerbank::Util::get_lwp_client(keep_alive => 1, use_proxy => $FALSE);
     $ua->ssl_opts(verify_hostname => 0, SSL_verify_mode => 0x00);
     $ua->timeout(2);   # An query should not take more than 2 seconds
     return $ua;

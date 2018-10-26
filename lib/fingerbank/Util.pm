@@ -329,12 +329,13 @@ Returns a LWP::UserAgent for WWW interaction
 
 sub get_lwp_client {
     my (%args) = @_;
+    $args{use_proxy} //= $TRUE;
     my $ua = LWP::UserAgent->new(%args);
 
     my $Config = fingerbank::Config::get_config();
 
     # Proxy is enabled
-    if ( is_enabled($Config->{'proxy'}{'use_proxy'}) ) {
+    if ( $args{use_proxy} && is_enabled($Config->{'proxy'}{'use_proxy'}) ) {
         return $ua if ( !$Config->{'proxy'}{'host'} || !$Config->{'proxy'}{'port'} );
 
         my $verify_ssl = ( is_enabled($Config->{'proxy'}{'verify_ssl'}) ) ? $TRUE : $FALSE;
