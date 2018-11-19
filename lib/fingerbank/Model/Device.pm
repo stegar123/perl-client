@@ -19,6 +19,7 @@ use fingerbank::Util qw(is_error is_success);
 use fingerbank::Constant;
 use fingerbank::API;
 use JSON::MaybeXS;
+use List::MoreUtils qw(uniq);
 
 extends 'fingerbank::Base::CRUD';
 
@@ -129,6 +130,22 @@ sub is_a {
     });
 
     return $result;
+}
+
+=head2 all_device_class_ids
+
+Method to obtain all the device class IDs (top level from the DB and constant device classes)
+
+=cut
+
+sub all_device_class_ids {
+    my ($class) = @_;
+    my @db_classes = map{ $_->id } fingerbank::Model::Device->search([{parent_id => undef, approved => 1}, {columns => ["id"]}])->[0]->all;
+    my @constant_classes = values(%fingerbank::Constant::DEVICE_CLASS_IDS);
+
+    my @all_ids = uniq(@db_classes, @constant_classes);
+
+    return [sort { $a <=> $b } @all_ids];
 }
 
 =head1 AUTHOR

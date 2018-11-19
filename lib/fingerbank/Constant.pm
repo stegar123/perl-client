@@ -123,6 +123,8 @@ Readonly::Hash our %MOBILE_IDS => (
     WEBOS => 33481,
 );
 
+Readonly::Scalar our $HARDWARE_MANUFACTURER_ID => 16861;
+
 =item $FINGERBANK_USER
 
 The OS user for Fingerbank
