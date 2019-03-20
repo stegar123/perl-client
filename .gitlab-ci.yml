@@ -1,0 +1,100 @@
+# YAML anchors to reuse code
+.build_job: &job_build
+  stage: build
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - result/*
+  tags:
+    - docker
+
+.debian_script: &deb_script
+  script:
+    # to have latest version of gitlab-builpkg-tools
+    - apt-get update && apt-get -y dist-upgrade
+    # Converting to native package (don't use a tar archive)
+    - sed -i "1{s/-2) /$suffix) /}" debian/changelog
+    - sed -i 's/3.0 (quilt)/3.0 (native)/' debian/source/format
+    - ci-build-pkg
+
+.rhel_script: &rpm_script
+  script:
+    - yum update -y && yum install epel-release -y
+    - ci-build-pkg
+    
+stages:
+ - build
+ - sign
+ - publish
+ - test
+
+# for debug purpose
+before_script:
+  - unset http_proxy ; unset https_proxy
+  - env | grep ^CI_
+
+# we use YAML anchors to define same parameters for all builds
+build_debian_jessie:
+  image: buildpkg/debian:jessie
+  <<: *job_build
+  <<: *deb_script
+
+build_debian_stretch:
+  image: buildpkg/debian:stretch
+  <<: *job_build
+  <<: *deb_script
+
+build_centos_7:
+  image: buildpkg/centos:7
+  <<: *job_build
+  <<: *rpm_script
+
+
+sign:
+  image: buildpkg/debian:stretch
+  stage: sign
+#  secret variables defined:
+#    SIGN_USER: firstname.lastname@example.com
+#    GPG_PRIVATE_KEY: `gpg --armor --export-secret-keys firstname.lastname@example.com`
+  script:
+    - ci-sign-pkg
+  dependencies:
+    - build_debian_jessie
+    - build_debian_stretch
+    - build_centos_7
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - result/*
+  tags:
+    - docker
+
+pages:
+  image: buildpkg/debian:stretch
+  stage: publish
+  variables:
+    PAGES_DIR: public
+  environment:
+    name: PPA
+    url: http://${CI_PROJECT_NAMESPACE}.gitlab.io/
+  script:
+    - ci-pages-ppa
+    - ci-pages-home
+    - ci-pages-tree
+  dependencies:
+    - sign
+  artifacts:
+    paths:
+      - public
+  tags:
+    - docker
+
+
+kitchen_tests:
+  stage: test
+  script:
+    # - cd /home/gitlab-runner/git/ansible-hello-doc-ng
+    # - git pull
+    # - kitchen test
+  tags:
+    - futura
