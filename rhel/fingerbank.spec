@@ -1,3 +1,4 @@
+%define     package fingerbank
 Name:       fingerbank
 Version:    4.1.3
 Release:    1%{?dist}
@@ -7,7 +8,7 @@ Packager:   Inverse inc. <info@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
-
+Source0:    %{package}-%{version}.tar.gz
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
