@@ -8,8 +8,6 @@ Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
 
-Source0:    https://support.inverse.ca/~dwuelfrath/fingerbank.tar.gz
-
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
