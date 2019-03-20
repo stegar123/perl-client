@@ -61,7 +61,7 @@ cp -r * $RPM_BUILD_ROOT/usr/local/fingerbank
 touch $RPM_BUILD_ROOT/usr/local/fingerbank/logs/fingerbank.log
 
 # Logrotate
-%{__install} -D rhel/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
+%{__install} -D rpm/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
 
 
 %post
