@@ -40,7 +40,7 @@ Requires:   fingerbank-collector >= 1.0.1
 %description
 Fingerbank
 
-
+# Scriptlet that is executed just before the package is installed on the target system.
 %pre
 /usr/bin/getent group fingerbank || /usr/sbin/groupadd -r fingerbank
 /usr/bin/getent passwd fingerbank || /usr/sbin/useradd -r -d /usr/local/fingerbank -s /sbin/nologin -g fingerbank fingerbank
@@ -55,15 +55,16 @@ Fingerbank
 
 %install
 # /usr/local/fingerbank
-rm -rf %{buildroot}
-%{__install} -d $RPM_BUILD_ROOT/usr/local/fingerbank
-cp -r * $RPM_BUILD_ROOT/usr/local/fingerbank
-touch $RPM_BUILD_ROOT/usr/local/fingerbank/logs/fingerbank.log
+%{__rm} -rf %{buildroot}
+%{__install} -d %{buildroot}/usr/local/fingerbank
+cp -r * %{buildroot}/usr/local/fingerbank
+touch %{buildroot}/usr/local/fingerbank/logs/fingerbank.log
 
 # Logrotate
-%{__install} -D rpm/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
+%{__install} -D rpm/fingerbank.logrotate %{buildroot}/etc/logrotate.d/fingerbank
 
 
+# Scriptlet that is executed just after the package is installed on the target system.
 %post
 # Local database initialization
 cd /usr/local/fingerbank/
