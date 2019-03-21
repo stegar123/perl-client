@@ -1,6 +1,7 @@
 # YAML anchors to reuse code
 .build_job: &job_build
   stage: build
+  # SECRET_VARIABLE: API_KEY
   artifacts:
     expire_in: 1 hour
     paths:
@@ -15,11 +16,15 @@
     # Converting to native package (don't use a tar archive)
     - sed -i "1{s/-2) /$suffix) /}" debian/changelog
     - sed -i 's/3.0 (quilt)/3.0 (native)/' debian/source/format
+    - rm -f README.md ; rm -rf t/
+    - curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
     - ci-build-pkg
 
 .rhel_script: &rpm_script
   script:
     - yum update -y && yum install epel-release -y
+    - rm -f README.md ; rm -rf t/
+    - curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
     - ci-build-pkg
     
 stages:
