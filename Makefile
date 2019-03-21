@@ -1,4 +1,45 @@
+# This Makefile contains 2 main sections
+#  - Variables
+#  - targets
+
+# ---------
+# VARIABLES
+# ---------
+
 SHELL = /bin/bash
+# Prefix for packaging
+DESTDIR=
+
+# Default directories install
+# ---------------------------
+
+## Common dirs
+# Prefix
+PREFIX=/usr/local
+FBPREFIX=$(PREFIX)/fingerbank
+PFPREFIX=$(PREFIX)/pf
+
+# Fingerbank
+LOGDIR=$(FBPREFIX)/logs
+CONFDIR=$(FBPREFIX)/conf
+
+# PF
+PFBINDIR=$(PFPREFIX)/bin
+
+# Commands
+PFCMD_BIN=$(PFBINDIR)/pfcmd
+
+FBUSER=fingerbank
+FBGROUP=fingerbank
+
+
+VERSION=
+
+
+# ---------
+# TARGETS
+# ---------
+
 
 init-db-local:
 	@db/upgrade.pl --database db/fingerbank_Local.db; \
