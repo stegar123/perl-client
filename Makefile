@@ -75,29 +75,6 @@ package-files:
 		rm -rf $$tmp_dir; \
 	fi \
 
-package-files-standalone:
-	@read -p "Version (X.Y.Z): " version; \
-	read -p "From Branch: " branch; \
-	tmp_dir=fingerbank-$$version; \
-	echo Building package files tgz for fingerbank-$$version; \
-	if [ -d $$tmp_dir ]; then \
-		echo "Destination for git clone ($$tmp_dir) already exists"; \
-	else \
-		mkdir $$tmp_dir; \
-		git clone https://github.com/fingerbank/perl-client.git $$tmp_dir; \
-		if [ -n $$branch ]; then \
-			cd $$tmp_dir ; \
-			git checkout $$branch ; \
-			cd .. ; \
-		fi ; \
-		rm -f $$tmp_dir/README.md; \
-		rm -rf $$tmp_dir/t; \
-		read -p "API key: " api_key; \
-		curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$$api_key --output $$tmp_dir/db/fingerbank_Upstream.db; \
-		tar -czf fingerbank.tar.gz $$tmp_dir; \
-		rm -rf $$tmp_dir; \
-	fi \
-
 package-debian:
 	sudo apt-get install git dpkg-dev debhelper sudo curl -y; \
 	read -p "Version: " DEB_VERSION; \
