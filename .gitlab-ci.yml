@@ -17,14 +17,16 @@
     - sed -i "1{s/-2) /$suffix) /}" debian/changelog
     - sed -i 's/3.0 (quilt)/3.0 (native)/' debian/source/format
     - rm -f README.md ; rm -rf t/
-    - curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    # get Upstream db 
+    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
     - ci-build-pkg
 
 .rhel_script: &rpm_script
   script:
     - yum update -y && yum install epel-release -y
-    - rm -f README.md ; rm -rf t/
-    - curl -X GET  https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    # get Upstream db to use as an additional source (see SPEC file)
+    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    - tar c -zf upstream-db.tar.gz db/fingerbank_Upstream.db
     - ci-build-pkg
     
 stages:
