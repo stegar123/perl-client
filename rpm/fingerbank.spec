@@ -1,4 +1,5 @@
 %define     package fingerbank
+%global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
 Version:    4.1.3
 Release:    1%{?dist}
@@ -9,6 +10,7 @@ Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
 Source0:    %{package}-%{version}.tar.gz
+Source1:    upstream-db.tar.gz
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
@@ -47,7 +49,8 @@ Fingerbank
 
 
 %prep
-%setup -q
+# expand Source1 **after** Source0
+%setup -q -a 1
 
 
 %build
@@ -105,7 +108,12 @@ rm -rf %{buildroot}
 %files
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
-                                    /usr/local/fingerbank/*
+/usr/local/fingerbank/*
+# exclude useless files
+%exclude                            /usr/local/fingerbank/README.md
+%exclude                            /usr/local/fingerbank/t
+%exclude                            /usr/local/fingerbank/debian
+%exclude                            /usr/local/fingerbank/rpm
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
