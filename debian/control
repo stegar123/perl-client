@@ -1,7 +1,7 @@
 Source: fingerbank
 Section: net
 Priority: optional
-Maintainer: Durand fabrice <fdurand@inverse.ca>
+Maintainer: Inverse inc. <info@inverse.ca>
 Build-Depends: debhelper (>= 7.0.50~), curl
 Standards-Version: 3.8.4
 Vcs-Git: git://github.com/inverse-inc/fingerbank.git
