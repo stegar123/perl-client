@@ -15,8 +15,6 @@
     # to have latest version of gitlab-builpkg-tools
     - apt-get update && apt-get -y dist-upgrade
     - rm -f README.md
-    # get Upstream db 
-    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
     - ci-build-pkg
 
 .rhel_script: &rpm_script
@@ -48,7 +46,6 @@ download_upstream_db:
   artifacts:
     paths:
       - db/fingerbank_Upstream.db
-
 
 # we use YAML anchors to define same parameters for all builds
 build_debian_stretch:
