@@ -26,7 +26,7 @@
     - yum update -y && yum install epel-release -y
     # get Upstream db to use as an additional source (see SPEC file)
     - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
-    - tar c -zf upstream-db.tar.gz db/fingerbank_Upstream.db
+    - tar c -zf upstream-db.tar db/fingerbank_Upstream.db
     - ci-build-pkg
     
 stages:
