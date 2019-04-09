@@ -10,7 +10,7 @@ Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
 Source0:    %{package}-%{version}.tar.gz
-Source1:    upstream-db.tar.gz
+Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
