@@ -13,8 +13,8 @@
 .debian_script: &deb_script
   script:
     # to have latest version of gitlab-builpkg-tools
-    - apt-get update && apt-get -y dist-upgrade
-    - rm -f README.md
+    # - apt-get update && apt-get -y dist-upgrade
+    - export USER='root'; dh_make --createorig -p fingerbank_4.1.3 -s -y -e info@inverse.ca
     - ci-build-pkg
 
 .rhel_script: &rpm_script
