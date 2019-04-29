@@ -33,7 +33,6 @@ stages:
  - build
  - sign
  - publish
- - test
 
 # for debug purpose
 before_script:
