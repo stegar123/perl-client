@@ -41,11 +41,6 @@ before_script:
   - env | grep ^CI_
 
 # we use YAML anchors to define same parameters for all builds
-build_debian_jessie:
-  image: buildpkg/debian:jessie
-  <<: *job_build
-  <<: *deb_script
-
 build_debian_stretch:
   image: buildpkg/debian:stretch
   <<: *job_build
