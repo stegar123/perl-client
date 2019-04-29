@@ -1,7 +1,8 @@
 # YAML anchors to reuse code
 .build_job: &job_build
   stage: build
-  # SECRET_VARIABLE: API_KEY
+  dependencies:
+    - download_upstream_db
   artifacts:
     expire_in: 1 hour
     paths:
@@ -23,13 +24,12 @@
 
 .rhel_script: &rpm_script
   script:
-    - yum update -y && yum install epel-release -y
-    # get Upstream db to use as an additional source (see SPEC file)
-    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    - yum install epel-release -y
     - tar c -zf upstream-db.tar db/fingerbank_Upstream.db
     - ci-build-pkg
     
 stages:
+ - download
  - build
  - sign
  - publish
@@ -38,6 +38,20 @@ stages:
 before_script:
   - unset http_proxy ; unset https_proxy
   - env | grep ^CI_
+
+download_upstream_db:
+  image: buildpkg/debian:stretch
+  stage: download
+  # secret variables defined
+  # API_KEY = fingerbank API KEY
+  script:
+    # get Upstream DB (not part of source)
+    - curl --retry 3 --fail -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+  # pass artifact to build jobs
+  artifacts:
+    paths:
+      - db/fingerbank_Upstream.db
+
 
 # we use YAML anchors to define same parameters for all builds
 build_debian_stretch:
@@ -60,7 +74,6 @@ sign:
   script:
     - ci-sign-pkg
   dependencies:
-    - build_debian_jessie
     - build_debian_stretch
     - build_centos_7
   artifacts:
