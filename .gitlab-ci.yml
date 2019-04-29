@@ -90,13 +90,3 @@ pages:
       - public
   tags:
     - docker
-
-
-kitchen_tests:
-  stage: test
-  script:
-    # - cd /home/gitlab-runner/git/ansible-hello-doc-ng
-    # - git pull
-    # - kitchen test
-  tags:
-    - futura
