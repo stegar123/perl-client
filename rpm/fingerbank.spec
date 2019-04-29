@@ -1,15 +1,16 @@
+%define     package fingerbank
+%global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
 Version:    4.1.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
 Packager:   Inverse inc. <info@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
-
-Source0:    https://support.inverse.ca/~dwuelfrath/fingerbank.tar.gz
-
+Source0:    %{package}-%{version}.tar.gz
+Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
@@ -41,14 +42,15 @@ Requires:   fingerbank-collector >= 1.0.1
 %description
 Fingerbank
 
-
+# Scriptlet that is executed just before the package is installed on the target system.
 %pre
 /usr/bin/getent group fingerbank || /usr/sbin/groupadd -r fingerbank
 /usr/bin/getent passwd fingerbank || /usr/sbin/useradd -r -d /usr/local/fingerbank -s /sbin/nologin -g fingerbank fingerbank
 
 
 %prep
-%setup -q
+# expand Source1 **after** Source0
+%setup -q -a 1
 
 
 %build
@@ -56,15 +58,16 @@ Fingerbank
 
 %install
 # /usr/local/fingerbank
-rm -rf %{buildroot}
-%{__install} -d $RPM_BUILD_ROOT/usr/local/fingerbank
-cp -r * $RPM_BUILD_ROOT/usr/local/fingerbank
-touch $RPM_BUILD_ROOT/usr/local/fingerbank/logs/fingerbank.log
+%{__rm} -rf %{buildroot}
+%{__install} -d %{buildroot}/usr/local/fingerbank
+cp -r * %{buildroot}/usr/local/fingerbank
+touch %{buildroot}/usr/local/fingerbank/logs/fingerbank.log
 
 # Logrotate
-%{__install} -D rhel/fingerbank.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/fingerbank
+%{__install} -D rpm/fingerbank.logrotate %{buildroot}/etc/logrotate.d/fingerbank
 
 
+# Scriptlet that is executed just after the package is installed on the target system.
 %post
 # Local database initialization
 cd /usr/local/fingerbank/
@@ -105,7 +108,12 @@ rm -rf %{buildroot}
 %files
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
-                                    /usr/local/fingerbank/*
+/usr/local/fingerbank/*
+# exclude useless files
+%exclude                            /usr/local/fingerbank/README.md
+%exclude                            /usr/local/fingerbank/t
+%exclude                            /usr/local/fingerbank/debian
+%exclude                            /usr/local/fingerbank/rpm
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
@@ -117,4 +125,5 @@ rm -rf %{buildroot}
 
 
 %changelog
-
+* Tue Apr 09 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.3-2
+- Adapt spec file to CI

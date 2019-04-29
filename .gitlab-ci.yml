@@ -1,0 +1,104 @@
+# YAML anchors to reuse code
+.build_job: &job_build
+  stage: build
+  dependencies:
+    - download_upstream_db
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - result/*
+  tags:
+    - docker
+
+.debian_script: &deb_script
+  script:
+    # to have latest version of gitlab-builpkg-tools
+    - apt-get update && apt-get -y dist-upgrade
+    # Converting to native package (don't use a tar archive)
+    - sed -i "1{s/-2) /$suffix) /}" debian/changelog
+    - sed -i 's/3.0 (quilt)/3.0 (native)/' debian/source/format
+    - rm -f README.md ; rm -rf t/
+    # get Upstream db 
+    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    - ci-build-pkg
+
+.rhel_script: &rpm_script
+  script:
+    - yum install epel-release -y
+    - tar c -zf upstream-db.tar db/fingerbank_Upstream.db
+    - ci-build-pkg
+    
+stages:
+ - download
+ - build
+ - sign
+ - publish
+
+# for debug purpose
+before_script:
+  - unset http_proxy ; unset https_proxy
+  - env | grep ^CI_
+
+download_upstream_db:
+  image: buildpkg/debian:stretch
+  stage: download
+  # secret variables defined
+  # API_KEY = fingerbank API KEY
+  script:
+    # get Upstream DB (not part of source)
+    - curl --retry 3 --fail -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+  # pass artifact to build jobs
+  artifacts:
+    paths:
+      - db/fingerbank_Upstream.db
+
+
+# we use YAML anchors to define same parameters for all builds
+build_debian_stretch:
+  image: buildpkg/debian:stretch
+  <<: *job_build
+  <<: *deb_script
+
+build_centos_7:
+  image: buildpkg/centos:7
+  <<: *job_build
+  <<: *rpm_script
+
+
+sign:
+  image: buildpkg/debian:stretch
+  stage: sign
+#  secret variables defined:
+#    SIGN_USER: firstname.lastname@example.com
+#    GPG_PRIVATE_KEY: `gpg --armor --export-secret-keys firstname.lastname@example.com`
+  script:
+    - ci-sign-pkg
+  dependencies:
+    - build_debian_stretch
+    - build_centos_7
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - result/*
+  tags:
+    - docker
+
+pages:
+  image: buildpkg/debian:stretch
+  stage: publish
+  variables:
+    PAGES_DIR: public
+  environment:
+    name: PPA
+    url: http://${CI_PROJECT_NAMESPACE}.gitlab.io/
+  script:
+    - ci-pages-ppa
+    - ci-pages-home
+    - ci-pages-tree
+  dependencies:
+    - sign
+  artifacts:
+    paths:
+      - public
+  tags:
+    - docker
