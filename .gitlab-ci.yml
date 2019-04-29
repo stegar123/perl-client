@@ -1,4 +1,4 @@
-# YAML anchors to reuse code
+### COMMON PARAMETERS
 .build_job: &job_build
   stage: build
   dependencies:
@@ -12,28 +12,29 @@
 
 .debian_script: &deb_script
   script:
-    # to have latest version of gitlab-builpkg-tools
-    - apt-get update && apt-get -y dist-upgrade
-    # Converting to native package (don't use a tar archive)
-    - sed -i "1{s/-2) /$suffix) /}" debian/changelog
-    - sed -i 's/3.0 (quilt)/3.0 (native)/' debian/source/format
-    - rm -f README.md ; rm -rf t/
-    # get Upstream db 
-    - curl -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    - export DEBFULLNAME='Inverse inc.'; dh_make --createorig -p fingerbank_$(cat $UPSTREAM_VERSION_FILE) -s -y -e info@inverse.ca
     - ci-build-pkg
 
 .rhel_script: &rpm_script
   script:
     - yum install epel-release -y
-    - tar c -zf upstream-db.tar db/fingerbank_Upstream.db
+    - tar c -zf upstream-db.tar $UPSTREAM_DB_FILE
     - ci-build-pkg
-    
+
+### STAGES
 stages:
  - download
  - build
  - sign
  - publish
 
+### VARIABLES
+variables:
+  UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
+  UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
+  UPSTREAM_VERSION_FILE: /tmp/upstream_version.txt
+
+### JOBS
 # for debug purpose
 before_script:
   - unset http_proxy ; unset https_proxy
@@ -42,16 +43,19 @@ before_script:
 download_upstream_db:
   image: buildpkg/debian:stretch
   stage: download
-  # secret variables defined
+  # secret variable defined
   # API_KEY = fingerbank API KEY
   script:
     # get Upstream DB (not part of source)
-    - curl --retry 3 --fail -X GET https://api.fingerbank.org/api/v2/download/db?key=$API_KEY --output db/fingerbank_Upstream.db
+    - curl --retry 3 --fail -X GET $UPSTREAM_DB_URL?key=$API_KEY --output $UPSTREAM_DB_FILE
+    - apt install libreadonly-perl
+    # get Upstream version from source code (workaround for https://gitlab.com/gitlab-org/gitlab-ce/issues/47517)
+    - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
   # pass artifact to build jobs
   artifacts:
     paths:
-      - db/fingerbank_Upstream.db
-
+      - $UPSTREAM_DB_FILE
+      - $UPSTREAM_VERSION_FILE
 
 # we use YAML anchors to define same parameters for all builds
 build_debian_stretch:
@@ -63,7 +67,6 @@ build_centos_7:
   image: buildpkg/centos:7
   <<: *job_build
   <<: *rpm_script
-
 
 sign:
   image: buildpkg/debian:stretch
