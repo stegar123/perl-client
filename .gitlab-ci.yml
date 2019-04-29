@@ -1,4 +1,4 @@
-# YAML anchors to reuse code
+### COMMON PARAMETERS
 .build_job: &job_build
   stage: build
   dependencies:
@@ -20,18 +20,21 @@
     - yum install epel-release -y
     - tar c -zf upstream-db.tar $UPSTREAM_DB_FILE
     - ci-build-pkg
-    
+
+### STAGES
 stages:
  - download
  - build
  - sign
  - publish
 
+### VARIABLES
 variables:
   UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
   UPSTREAM_VERSION_FILE: /tmp/upstream_version.txt
 
+### JOBS
 # for debug purpose
 before_script:
   - unset http_proxy ; unset https_proxy
