@@ -5,7 +5,7 @@ Maintainer: Inverse inc. <info@inverse.ca>
 Build-Depends: debhelper (>= 7.0.50~), curl
 Standards-Version: 3.8.4
 Vcs-Git: git://github.com/inverse-inc/fingerbank.git
-Vcs-browser: https://github.com/inverse-inc/fingerbank/
+Vcs-Browser: https://github.com/inverse-inc/fingerbank/
 Homepage: http://www.fingerbank.org/
 
 Package: fingerbank
