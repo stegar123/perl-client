@@ -32,7 +32,8 @@ stages:
 variables:
   UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
-  UPSTREAM_VERSION_FILE: /tmp/upstream_version.txt
+  # stored in a temp place
+  UPSTREAM_VERSION_FILE: t/upstream_version.txt
 
 ### JOBS
 # for debug purpose
