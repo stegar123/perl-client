@@ -48,7 +48,7 @@ download_upstream_db:
   script:
     # get Upstream DB (not part of source)
     - curl --retry 3 --fail -X GET $UPSTREAM_DB_URL?key=$API_KEY --output $UPSTREAM_DB_FILE
-    - apt install libreadonly-perl
+    - apt-get install libreadonly-perl -y
     # get Upstream version from source code (workaround for https://gitlab.com/gitlab-org/gitlab-ce/issues/47517)
     - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
   # pass artifact to build jobs
