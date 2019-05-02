@@ -12,7 +12,7 @@
 
 .debian_script: &deb_script
   script:
-    - export DEBFULLNAME='Inverse inc.'; dh_make --createorig -p fingerbank_$(cat $UPSTREAM_VERSION_FILE) -s -y -e info@inverse.ca
+    - tar c -zf ../fingerbank-$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
     - ci-build-pkg
 
 .rhel_script: &rpm_script
