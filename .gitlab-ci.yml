@@ -12,7 +12,7 @@
 
 .debian_script: &deb_script
   script:
-    - tar c -zf ../fingerbank-$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    - tar c -zf ../fingerbank_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
     - ci-build-pkg
 
 .rhel_script: &rpm_script
