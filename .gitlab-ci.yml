@@ -18,7 +18,7 @@
 .rhel_script: &rpm_script
   script:
     - yum install epel-release -y
-    - tar c -zf upstream-db.tar $UPSTREAM_DB_FILE
+    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
     - ci-build-pkg
 
 ### STAGES
