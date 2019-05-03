@@ -12,13 +12,13 @@
 
 .debian_script: &deb_script
   script:
-    - export DEBFULLNAME='Inverse inc.'; dh_make --createorig -p fingerbank_$(cat $UPSTREAM_VERSION_FILE) -s -y -e info@inverse.ca
+    - tar c -zf ../fingerbank_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
     - ci-build-pkg
 
 .rhel_script: &rpm_script
   script:
     - yum install epel-release -y
-    - tar c -zf upstream-db.tar $UPSTREAM_DB_FILE
+    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
     - ci-build-pkg
 
 ### STAGES
@@ -32,7 +32,8 @@ stages:
 variables:
   UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
-  UPSTREAM_VERSION_FILE: /tmp/upstream_version.txt
+  # stored in a temp place
+  UPSTREAM_VERSION_FILE: t/upstream_version.txt
 
 ### JOBS
 # for debug purpose
@@ -48,7 +49,7 @@ download_upstream_db:
   script:
     # get Upstream DB (not part of source)
     - curl --retry 3 --fail -X GET $UPSTREAM_DB_URL?key=$API_KEY --output $UPSTREAM_DB_FILE
-    - apt install libreadonly-perl
+    - apt-get install libreadonly-perl -y
     # get Upstream version from source code (workaround for https://gitlab.com/gitlab-org/gitlab-ce/issues/47517)
     - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
   # pass artifact to build jobs
