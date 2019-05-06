@@ -85,7 +85,7 @@ sign:
     paths:
       - result/*
   tags:
-    - docker
+    - futura
 
 pages:
   image: buildpkg/debian:stretch
