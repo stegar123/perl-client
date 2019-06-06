@@ -105,4 +105,4 @@ pages:
     paths:
       - public
   tags:
-    - docker
+    - futura
