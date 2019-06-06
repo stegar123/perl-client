@@ -70,6 +70,7 @@ build_centos_7:
   <<: *rpm_script
 
 sign:
+  # only use when executor is docker
   image: buildpkg/debian:stretch
   stage: sign
 #  secret variables defined:
@@ -88,6 +89,7 @@ sign:
     - futura
 
 pages:
+  # only use when executor is docker
   image: buildpkg/debian:stretch
   stage: publish
   variables:
