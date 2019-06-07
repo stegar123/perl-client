@@ -13,7 +13,12 @@
 .debian_script: &deb_script
   script:
     - tar c -zf ../fingerbank_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    # to include source tar in changes file used by reprepro
+    - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
     - ci-build-pkg
+    # copy source in result dir
+    - cp ../fingerbank_*.orig.tar.gz result/debian/stretch/
+
 
 .rhel_script: &rpm_script
   script:
