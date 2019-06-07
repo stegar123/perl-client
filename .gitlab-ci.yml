@@ -12,12 +12,12 @@
 
 .debian_script: &deb_script
   script:
-    - tar c -zf ../fingerbank_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    - tar c -zf ../$PACKAGE_NAME_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
     # to include source tar in changes file used by reprepro
     - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
     - ci-build-pkg
     # copy source in result dir
-    - cp ../fingerbank_*.orig.tar.gz result/debian/stretch/
+    - cp ../$PACKAGE_NAME_*.orig.tar.gz result/debian/stretch/
 
 
 .rhel_script: &rpm_script
@@ -40,12 +40,14 @@ variables:
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
   # stored in a temp place
   UPSTREAM_VERSION_FILE: t/upstream_version.txt
+  PACKAGE_NAME: fingerbank
 
 ### JOBS
 # for debug purpose
 before_script:
   - unset http_proxy ; unset https_proxy
   - env | grep ^CI_
+  - echo $PACKAGE_NAME
 
 download_upstream_db:
   image: buildpkg/debian:stretch
