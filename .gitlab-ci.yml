@@ -118,13 +118,17 @@ pages:
 install_debian_stretch:
   stage: install
   script:
-    - vagrant up fbdeb9dev
+    # will destroy vm if any fatal error occurs
+    - sudo vagrant up fbdeb9dev --provider=libvirt
+    - sudo vagrant destroy -f fbdeb9dev
   tags:
     - futura
 
 install_centos_7:
   stage: install
   script:
-    - vagrant up fbcendev
+    # will destroy vm if any fatal error occurs
+    - sudo vagrant up fbcendev --provider=libvirt
+    - sudo vagrant destroy -f fbcendev
   tags:
     - futura
