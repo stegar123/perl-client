@@ -12,12 +12,12 @@
 
 .debian_script: &deb_script
   script:
-    - tar c -zf ../$PACKAGE_NAME_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    - tar c -zf ../$PACKAGE_NAME\_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
     # to include source tar in changes file used by reprepro
     - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
     - ci-build-pkg
     # copy source in result dir
-    - cp ../$PACKAGE_NAME_*.orig.tar.gz result/debian/stretch/
+    - cp ../$PACKAGE_NAME\_*.orig.tar.gz result/debian/stretch/
 
 
 .rhel_script: &rpm_script
