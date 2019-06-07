@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Require YAML module
+require 'yaml'
+ 
+# Read YAML file with box details
+inventory = YAML.load_file('inventory/hosts')
+
+Vagrant.configure("2") do |fbservers|
+
+  ## Global settings for fbservers
+
+  # use same private key on all machines
+  fbservers.ssh.insert_key = false
+  
+  # disable default rule
+  fbservers.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", disabled: true
+
+  # provisionners
+  # Sync timezone with host
+  fbservers.vm.provision "shell", inline: "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/#{inventory['all']['vars']['tz']} /etc/localtime", run: "always"
+
+  # Allow SSH as root with insecure_private_key
+  fbservers.vm.provision "ssh", type:"shell", inline: "sudo mkdir -p /root/.ssh && sudo cp /home/vagrant/.ssh/authorized_keys /root/.ssh/"
+
+  # Provision with ansible
+  fbservers.vm.provision "ansible" do |ansible|
+    ansible.playbook = "site.yml"
+    ansible.become = true
+    ansible.config_file = "ansible.cfg"
+    ansible.inventory_path = "inventory"
+    ansible.galaxy_role_file = "requirements.yml"
+    # only for debug
+    #ansible.verbose = "-v"
+  end
+
+  # loop on host(s) in 'stable' group in inventory to create VM(s)  
+  inventory['all']['children']['fbservers']['children']['stable']['hosts'].each do |server,details|
+    # don't start automatically virtual machines
+    fbservers.vm.define server, autostart: false do |srv|
+      srv.vm.box = details['box']
+      srv.vm.hostname = server
+
+      # set new rule for ssh
+      srv.vm.network "forwarded_port", guest: 22, host: details['ssh_port'], host_ip: "127.0.0.1", auto_correct: true
+
+    end
+  end
+
+  # loop on host(s) in 'dev' group in inventory to create VM(s)  
+  inventory['all']['children']['fbservers']['children']['dev']['hosts'].each do |server,details|
+    # don't start automatically virtual machines
+    fbservers.vm.define server, autostart: false do |srv|
+      srv.vm.box = details['box']
+      srv.vm.hostname = server
+
+      # set new rule for ssh
+      srv.vm.network "forwarded_port", guest: 22, host: details['ssh_port'], host_ip: "127.0.0.1", auto_correct: true
+    end
+  end
+end

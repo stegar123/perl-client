@@ -1,0 +1,8 @@
+---
+- hosts: dev
+  name: install fingerbank development packages
+  become: True
+
+  roles:
+    - role: pf.gitlab
+      tags: ci
