@@ -32,6 +32,7 @@ stages:
  - build
  - sign
  - publish
+ - install
 
 ### VARIABLES
 variables:
@@ -111,5 +112,19 @@ pages:
   artifacts:
     paths:
       - public
+  tags:
+    - futura
+
+install_debian_stretch:
+  stage: install
+  script:
+    - vagrant up fbdeb9dev
+  tags:
+    - futura
+
+install_centos_7:
+  stage: install
+  script:
+    - vagrant up fbcendev
   tags:
     - futura
