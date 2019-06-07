@@ -32,7 +32,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-	rm -rf README.md t/ rpm/
+	rm -rf README.md t/ rpm/ vagrant/
 	dh_clean 
 
 install: build

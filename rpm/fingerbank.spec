@@ -114,6 +114,7 @@ rm -rf %{buildroot}
 %exclude                            /usr/local/fingerbank/t
 %exclude                            /usr/local/fingerbank/debian
 %exclude                            /usr/local/fingerbank/rpm
+%exclude                            /usr/local/fingerbank/vagrant
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
