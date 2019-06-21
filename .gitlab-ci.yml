@@ -124,6 +124,7 @@ pages:
 install_debian_stretch:
   stage: install
   script:
+    - cd vagrant/
     # will destroy vm if any fatal error occurs
     - sudo vagrant up fbdeb9dev --provider=libvirt
     - sudo vagrant destroy -f fbdeb9dev
@@ -133,6 +134,7 @@ install_debian_stretch:
 install_centos_7:
   stage: install
   script:
+    - cd vagrant/
     # will destroy vm if any fatal error occurs
     - sudo vagrant up fbcendev --provider=libvirt
     - sudo vagrant destroy -f fbcendev
