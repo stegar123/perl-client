@@ -4,7 +4,7 @@
   dependencies:
     - download_upstream_db
   artifacts:
-    expire_in: 1 hour
+    expire_in: 1 day
     paths:
       - result/*
   tags:
@@ -62,9 +62,12 @@ download_upstream_db:
     - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
   # pass artifact to build jobs
   artifacts:
+    expire_in: 1 h
     paths:
       - $UPSTREAM_DB_FILE
       - $UPSTREAM_VERSION_FILE
+  tags:
+    - docker
 
 # we use YAML anchors to define same parameters for all builds
 build_debian_stretch:
@@ -94,7 +97,7 @@ sign:
     paths:
       - result/*
   tags:
-    - futura
+    - shell
 
 pages:
   # only use when executor is docker
@@ -112,10 +115,11 @@ pages:
   dependencies:
     - sign
   artifacts:
+    expire_in: 1 day
     paths:
       - public
   tags:
-    - futura
+    - docker
 
 install_debian_stretch:
   stage: install
@@ -124,7 +128,7 @@ install_debian_stretch:
     - sudo vagrant up fbdeb9dev --provider=libvirt
     - sudo vagrant destroy -f fbdeb9dev
   tags:
-    - futura
+    - shell
 
 install_centos_7:
   stage: install
@@ -133,4 +137,4 @@ install_centos_7:
     - sudo vagrant up fbcendev --provider=libvirt
     - sudo vagrant destroy -f fbcendev
   tags:
-    - futura
+    - shell
