@@ -119,7 +119,7 @@ pages:
     paths:
       - public
   tags:
-    - docker
+    - shell
 
 install_debian_stretch:
   stage: install
