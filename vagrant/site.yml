@@ -4,5 +4,5 @@
   become: True
 
   roles:
-    - role: inverse-inc.gitlab-buildpkg-tools
+    - role: nqb.gitlab_buildpkg_tools
       tags: ci
