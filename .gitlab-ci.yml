@@ -41,13 +41,13 @@ variables:
   # stored in a temp place
   UPSTREAM_VERSION_FILE: t/upstream_version.txt
   PACKAGE_NAME: fingerbank
+  PACKAGES_NAME: fingerbank
 
 ### JOBS
 # for debug purpose
 before_script:
   - unset http_proxy ; unset https_proxy
   - env | grep ^CI_
-  - echo $PACKAGE_NAME
 
 download_upstream_db:
   image: buildpkg/debian:stretch
