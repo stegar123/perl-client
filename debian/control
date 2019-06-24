@@ -19,6 +19,7 @@ Depends: ${misc:Depends},
  libdbd-sqlite3-perl, liblwp-protocol-https-perl, sqlite3,
  libdata-powerset-perl,
  liblwp-protocol-connect-perl,
+ libjson-perl,
  libsql-translator-perl, libfile-touch-perl, libconfig-inifiles-perl (>= 2.88),
  fingerbank-collector (>= 1.0.1),
 Description: fingerbank
