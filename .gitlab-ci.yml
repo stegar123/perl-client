@@ -41,7 +41,8 @@ variables:
   # stored in a temp place
   UPSTREAM_VERSION_FILE: t/upstream_version.txt
   PACKAGE_NAME: fingerbank
-  PACKAGES_NAME: fingerbank
+  DEB_PACKAGES_NAME: "['fingerbank']"
+  RPM_PACKAGES_NAME: "['fingerbank']"
 
 ### JOBS
 # for debug purpose
@@ -127,6 +128,7 @@ install_debian_stretch:
     - cd vagrant/ ; sudo vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
   after_script:
     - cd vagrant/ ; sudo vagrant destroy -f fbdeb9dev
+    - rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
@@ -137,6 +139,7 @@ install_centos_7:
     - cd vagrant/ ; sudo vagrant up fbcendev --provider=libvirt --destroy-on-error
   after_script:
     - cd vagrant/ ; sudo vagrant destroy -f fbcendev
+    - rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
