@@ -4,7 +4,7 @@
   become: True
 
   roles:
-    - role: nqb.gitlab_buildpkg_tools
+    - role: inverse_inc.gitlab_buildpkg_tools
       tags: ci
       vars:
         gitlab_buildpkg_tools__rpm_deps_repos:
