@@ -128,7 +128,7 @@ install_debian_stretch:
     - cd vagrant/ ; sudo vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
   after_script:
     - cd vagrant/ ; sudo vagrant destroy -f fbdeb9dev
-    - rm -rf .vagrant/ roles/
+    - sudo rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
@@ -139,7 +139,7 @@ install_centos_7:
     - cd vagrant/ ; sudo vagrant up fbcendev --provider=libvirt --destroy-on-error
   after_script:
     - cd vagrant/ ; sudo vagrant destroy -f fbcendev
-    - rm -rf .vagrant/ roles/
+    - sudo rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
