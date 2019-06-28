@@ -11,7 +11,7 @@
           - name: packetfence-devel
             baseurl: http://inverse.ca/downloads/PacketFence
             extra_path: devel
-            gpgkey_url: https://packetfence.org/downloads/RPM-GPG-KEY-PACKETFENCE-CENTOS
+            gpgkey_url: https://inverse.ca/downloads/RPM-GPG-KEY-PACKETFENCE-CENTOS
         gitlab_buildpkg_tools__deb_deps_repos:
           - name: packetfence-devel
             baseurl: http://inverse.ca/downloads/PacketFence
