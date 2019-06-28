@@ -125,10 +125,10 @@ pages:
 install_debian_stretch:
   stage: install
   script:
-    - cd vagrant/ ; sudo vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
+    - cd vagrant/ ; vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
   after_script:
-    - cd vagrant/ ; sudo vagrant destroy -f fbdeb9dev
-    - sudo rm -rf .vagrant/ roles/
+    - cd vagrant/ ; vagrant destroy -f fbdeb9dev
+    - rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
@@ -136,10 +136,10 @@ install_debian_stretch:
 install_centos_7:
   stage: install
   script:
-    - cd vagrant/ ; sudo vagrant up fbcendev --provider=libvirt --destroy-on-error
+    - cd vagrant/ ; vagrant up fbcendev --provider=libvirt --destroy-on-error
   after_script:
-    - cd vagrant/ ; sudo vagrant destroy -f fbcendev
-    - sudo rm -rf .vagrant/ roles/
+    - cd vagrant/ ; vagrant destroy -f fbcendev
+    - rm -rf .vagrant/ roles/
   dependencies: []
   tags:
     - shell
