@@ -4,7 +4,7 @@
   dependencies:
     - download_upstream_db
   artifacts:
-    expire_in: 1 hour
+    expire_in: 1 day
     paths:
       - result/*
   tags:
@@ -12,8 +12,13 @@
 
 .debian_script: &deb_script
   script:
-    - tar c -zf ../fingerbank_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    - tar c -zf ../$PACKAGE_NAME\_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    # to include source tar in changes file used by reprepro
+    - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
     - ci-build-pkg
+    # copy source in result dir
+    - cp ../$PACKAGE_NAME\_*.orig.tar.gz result/debian/stretch/
+
 
 .rhel_script: &rpm_script
   script:
@@ -27,6 +32,7 @@ stages:
  - build
  - sign
  - publish
+ - install
 
 ### VARIABLES
 variables:
@@ -34,6 +40,9 @@ variables:
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
   # stored in a temp place
   UPSTREAM_VERSION_FILE: t/upstream_version.txt
+  PACKAGE_NAME: fingerbank
+  DEB_PACKAGES_NAME: "['fingerbank']"
+  RPM_PACKAGES_NAME: "['fingerbank']"
 
 ### JOBS
 # for debug purpose
@@ -54,9 +63,12 @@ download_upstream_db:
     - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
   # pass artifact to build jobs
   artifacts:
+    expire_in: 1 h
     paths:
       - $UPSTREAM_DB_FILE
       - $UPSTREAM_VERSION_FILE
+  tags:
+    - docker
 
 # we use YAML anchors to define same parameters for all builds
 build_debian_stretch:
@@ -86,7 +98,7 @@ sign:
     paths:
       - result/*
   tags:
-    - futura
+    - shell
 
 pages:
   # only use when executor is docker
@@ -104,7 +116,30 @@ pages:
   dependencies:
     - sign
   artifacts:
+    expire_in: 1 day
     paths:
       - public
   tags:
-    - futura
+    - shell
+
+install_debian_stretch:
+  stage: install
+  script:
+    - cd vagrant/ ; vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
+  after_script:
+    - cd vagrant/ ; vagrant destroy -f fbdeb9dev
+    - rm -rf .vagrant/ roles/
+  dependencies: []
+  tags:
+    - shell
+
+install_centos_7:
+  stage: install
+  script:
+    - cd vagrant/ ; vagrant up fbcendev --provider=libvirt --destroy-on-error
+  after_script:
+    - cd vagrant/ ; vagrant destroy -f fbcendev
+    - rm -rf .vagrant/ roles/
+  dependencies: []
+  tags:
+    - shell

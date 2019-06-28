@@ -1,0 +1,44 @@
+---
+# inventory file use by Vagrantfile
+# to create VMs
+# also use as a Ansible inventory file to provision VMs
+all:
+  children:
+    fbservers:
+      children:
+        stable:
+          hosts:
+            fbcenstable:
+              box: centos/7
+              ssh_port: 3300
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+            fbdeb9stable:
+              box: debian/stretch64
+              ssh_port: 3700
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+            fbdeb10stable:
+              box: debian/buster64
+              ssh_port: 3500
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+        dev:
+          hosts:
+            fbcendev:
+              box: centos/7
+              ssh_port: 3200
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+            fbdeb10dev:
+              box: debian/buster64
+              ssh_port: 3400
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+            fbdeb9dev:
+              box: debian/stretch64
+              ssh_port: 3600
+              ansible_host: 127.0.0.1
+              ansible_port: "{{ ssh_port }}"
+  vars:
+    tz: Europe/Paris
