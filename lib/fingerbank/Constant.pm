@@ -112,6 +112,11 @@ Readonly::Hash our %DEVICE_CLASS_IDS => (
     %PARENT_IDS,
 );
 
+Readonly::Array our @DEVICE_CLASS_LOOKUP_ORDER => (
+    "WINDOWS",
+    grep { $_ ne "WINDOWS" } keys(%DEVICE_CLASS_IDS),
+);
+
 Readonly::Hash our %MOBILE_IDS => (
     ANDROID => $PARENT_IDS{ANDROID},
     IOS => $PARENT_IDS{IOS},
