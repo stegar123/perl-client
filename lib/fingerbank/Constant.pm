@@ -113,8 +113,8 @@ Readonly::Hash our %DEVICE_CLASS_IDS => (
 );
 
 Readonly::Array our @DEVICE_CLASS_LOOKUP_ORDER => (
+    (grep { $_ ne "WINDOWS" } keys(%DEVICE_CLASS_IDS)),
     "WINDOWS",
-    grep { $_ ne "WINDOWS" } keys(%DEVICE_CLASS_IDS),
 );
 
 Readonly::Hash our %MOBILE_IDS => (
