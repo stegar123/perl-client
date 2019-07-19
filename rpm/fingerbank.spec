@@ -1,7 +1,7 @@
 %define     package fingerbank
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
-Version:    4.1.3
+Version:    4.1.4
 Release:    3%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
