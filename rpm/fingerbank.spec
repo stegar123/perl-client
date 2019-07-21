@@ -8,7 +8,7 @@ Packager:   Inverse inc. <support@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
-Source0:    %{name}-%{version}.tar.gz
+Source0:    %{name}-%{version}.tar
 Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
