@@ -4,7 +4,7 @@ Version:    4.1.4
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
-Packager:   Inverse inc. <info@inverse.ca>
+Packager:   Inverse inc. <support@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
