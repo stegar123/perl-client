@@ -1,4 +1,3 @@
-%define     package fingerbank
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
 Version:    4.1.4
@@ -9,7 +8,7 @@ Packager:   Inverse inc. <info@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
-Source0:    %{package}-%{version}.tar.gz
+Source0:    %{name}-%{version}.tar.gz
 Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
