@@ -1,7 +1,7 @@
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
 Version:    4.1.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
 Packager:   Inverse inc. <support@inverse.ca>
@@ -125,6 +125,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+<<<<<<< HEAD
+* Sun Jun 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2
+- Update Packager and Source0 directives and remove package variable
 * Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-1
 - Update package version to upstream version
 * Fri Jun 28 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.3-3
