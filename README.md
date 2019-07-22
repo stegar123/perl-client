@@ -19,3 +19,24 @@ remote
 ------
 Codebase of the application / webservice that runs locally in conjunction with your application and handling local 
 Fingerbank database / interface syncing with the upstream.
+
+Checkliste before upstream release
+----------------------------------
+
+### Upstream ###
+
+- [ ] update `$VERSION` in [Constant.pm](lib/fingerbank/Constant.pm)
+
+### RPM packages ###
+
+- In [fingerbank.spec](rpm/fingerbank.spec):
+  - [ ] update `Version` directive to new upstream version
+  - [ ] update `Release` directive
+  - [ ] add a new changelog entry
+- Update current version to new upstream version in [rpm/source](rpm/source) file
+
+### Debian packages ###
+
+- Add a changelog entry in [debian/changelog](debian/changelog) to new upstream version
+
+Then run a pipeline and wait its complete execution.
