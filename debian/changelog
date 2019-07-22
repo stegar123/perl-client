@@ -1,3 +1,9 @@
+fingerbank (4.1.4-2) unstable; urgency=medium
+
+  * Fix permissions for fingerbank.conf
+
+ -- Inverse inc. <info@inverse.ca>  Sun, 21 Jul 2019 17:13:12 +0200
+
 fingerbank (4.1.4-1) unstable; urgency=medium
 
  -- Inverse inc. <info@inverse.ca>  Fri, 19 Jul 2019 14:39:12 -0400
