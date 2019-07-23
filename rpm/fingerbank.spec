@@ -1,15 +1,14 @@
-%define     package fingerbank
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
 Version:    4.1.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
-Packager:   Inverse inc. <info@inverse.ca>
+Packager:   Inverse inc. <support@inverse.ca>
 Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
-Source0:    %{package}-%{version}.tar.gz
+Source0:    %{name}-%{version}.tar
 Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
@@ -126,6 +125,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2
+- Update Packager and Source0 directives and remove package variable
 * Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-1
 - Update package version to upstream version
 * Fri Jun 28 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.3-3
