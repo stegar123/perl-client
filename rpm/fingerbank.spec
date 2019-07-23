@@ -125,7 +125,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Sun Jun 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2
+* Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2
 - Update Packager and Source0 directives and remove package variable
 * Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-1
 - Update package version to upstream version
