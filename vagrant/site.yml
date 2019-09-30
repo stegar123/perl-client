@@ -7,18 +7,17 @@
     - role: inverse_inc.gitlab_buildpkg_tools
       tags: ci
       vars:
-        gitlab_buildpkg_tools__rpm_deps_repos:
-          - name: packetfence-devel
-            baseurl: http://inverse.ca/downloads/PacketFence
-            extra_path: devel
-            gpgkey_url: https://inverse.ca/downloads/RPM-GPG-KEY-PACKETFENCE-CENTOS
+        gitlab_buildpkg_tools__deb_keys:
+          - http://inverse.ca/downloads/APT-GPG-KEY-PACKETFENCE-DEBIAN
+
         gitlab_buildpkg_tools__deb_deps_repos:
           - name: packetfence-devel
-            baseurl: http://inverse.ca/downloads/PacketFence
-            gpgkey_url: http://inverse.ca/downloads/APT-GPG-KEY-PACKETFENCE-DEBIAN
-            extra_path: debian-devel
-            pool: stretch
+            baseurl: 'http://inverse.ca/downloads/PacketFence/debian-devel {{ ansible_distribution_release }} {{ ansible_distribution_release }}'
+
           - name: packetfence
-            baseurl: http://inverse.ca/downloads/PacketFence
-            gpgkey_url: http://inverse.ca/downloads/APT-GPG-KEY-PACKETFENCE-DEBIAN
-            pool: stretch
+            baseurl: 'http://inverse.ca/downloads/PacketFence/debian {{ ansible_distribution_release }} {{ ansible_distribution_release }}'
+
+        # no need to add extra key because PPA use same GPG public key as packetfence-devel current repo
+        gitlab_buildpkg_tools__rpm_deps_repos:
+          - name: packetfence-devel
+            baseurl: http://inverse.ca/downloads/PacketFence/centos/$releasever/devel/$basearch
