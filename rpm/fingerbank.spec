@@ -1,6 +1,6 @@
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
-Version:    4.1.4
+Version:    4.1.5
 Release:    2%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
