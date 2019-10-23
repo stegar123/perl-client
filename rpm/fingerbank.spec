@@ -125,7 +125,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Web Oct 23 2019 Inverse inc. <info@inverse.ca> - 4.1.5-1
+* Wed Oct 23 2019 Inverse inc. <info@inverse.ca> - 4.1.5-1
 - New upstream version
 * Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2
 - Update Packager and Source0 directives and remove package variable
