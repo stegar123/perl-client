@@ -21,7 +21,7 @@ Depends: ${misc:Depends},
  liblwp-protocol-connect-perl,
  libjson-perl,
  libsql-translator-perl, libfile-touch-perl, libconfig-inifiles-perl (>= 2.88),
- fingerbank-collector (>= 1.0.1),
+ fingerbank-collector (>= 1.2.0),
 Description: fingerbank
  No! Fingerbank is not an organ bank for nice fingers ;)
  It is a database for device fingerprinting based on different properties
