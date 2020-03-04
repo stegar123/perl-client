@@ -61,6 +61,13 @@ description=<<EOT
 Whether or not the collector should perform ARP lookups for devices it doesn't have DHCP information.
 EOT
 
+[collector.network_behavior_analysis]
+type=toggle
+options=enabled|disabled
+description=<<EOT
+Whether or not the collector should perform network behavior analysis of the endpoints it sees.
+EOT
+
 [query.record_unmatched]
 type=toggle
 options=enabled|disabled
