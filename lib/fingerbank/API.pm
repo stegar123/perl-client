@@ -76,12 +76,15 @@ Given a verb and a path, build the HTTP::Request  based on the client configurat
 =cut
 
 sub build_request {
-    my ($self, $verb, $path) = @_;
+    my ($self, $verb, $path, %options) = @_;
     
     my $Config = fingerbank::Config::get_config();
 
     my $url = $self->build_uri($path);
-    $url->query_form(key => $Config->{'upstream'}{'api_key'});
+
+    unless($options{dont_add_key}) {
+        $url->query_form(key => $Config->{'upstream'}{'api_key'});
+    }
 
     my $req = HTTP::Request->new($verb => $url->as_string);
 
@@ -98,7 +101,7 @@ sub test_key {
     my ($self, $key) = @_;
     my $logger = fingerbank::Log::get_logger;
 
-    my $req = $self->build_request("GET", "/api/v2/test/key/$key");
+    my $req = $self->build_request("GET", "/api/v2/test/key/$key", dont_add_key => 1);
 
     my $res = $self->get_lwp_client->request($req);
 
