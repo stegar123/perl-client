@@ -178,6 +178,31 @@ sub device_id_from_oui {
     }
 }
 
+=head2 device_id_from_oui
+
+Get the outbound communications profile of a device
+
+=cut
+
+sub device_outbound_communications {
+    my ($self, $device_id) = @_;
+
+    my $logger = fingerbank::Log::get_logger;
+
+    my $req = $self->build_request("GET", "/api/v2/devices/$device_id/outbound_communications");
+
+    my $res = $self->get_lwp_client->request($req);
+
+    if($res->is_success) {
+        my $result = decode_json($res->decoded_content);
+        return ($res->code, $result);
+    }
+    else {
+        $logger->error("Cannot find outbound communications for device '$device_id': ".$res->status_line);
+        return ($res->code, $res->decoded_content);
+    }
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
