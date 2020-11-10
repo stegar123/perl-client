@@ -132,7 +132,6 @@ install_debian_stretch:
   dependencies: []
   tags:
     - shell
-    - inverse.ca
 
 install_centos_7:
   stage: install
@@ -144,4 +143,3 @@ install_centos_7:
   dependencies: []
   tags:
     - shell
-    - inverse.ca
