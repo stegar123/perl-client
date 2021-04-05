@@ -89,13 +89,13 @@ sub _getTableID {
     my $db = fingerbank::DB_Factory->instantiate(schema => $LOCAL_SCHEMA);
     if ( $db->isError ) {
         $logger->warn("Can't get '$table' table ID. DB layer returned '" . $db->statusCode . " - " . $db->statusMsg . "'");
-        return $db->statusCode;
+        return ($db->statusCode, undef);
     }
 
     my $resultset = $db->handle->resultset('TablesIDs')->first;
 
     $table = lc($table);
-    return $resultset->$table;
+    return ($fingerbank::Status::OK, $resultset->$table);
 }
 
 =head2 _incrementTableID
@@ -148,10 +148,10 @@ sub create {
     my $className = $self->_parseClassName;
     my $return = {};
 
-    my $entry_id = $self->_getTableID($className);
-    if ( is_error($entry_id) ) {
+    my ($status, $entry_id) = $self->_getTableID($className);
+    if ( is_error($status) ) {
         my $status_msg = "Cannot create new '$className' entry in schema 'Local'";
-        return ( $fingerbank::Status::INTERNAL_SERVER_ERROR, $status_msg );
+        return ( $status, $status_msg );
     }
 
     $entry_id = 'L' . $entry_id;    # Local entries IDs are prefixed by L
