@@ -116,7 +116,7 @@ sub test_key {
         $logger->info("Successfuly tested key $key"); 
         return ($res->code, $res->decoded_content);
     } else {
-        my $msg = "Error while testing API key $key. Error was: ".$res->status_line;
+        my $msg = "Error while testing API key. Error was: ".$res->status_line;
         $logger->error($msg);
         return ($res->code, $msg);
     }
