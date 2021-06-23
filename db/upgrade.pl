@@ -16,7 +16,7 @@ upgrade.pl --database PATH_TO_DATABASE
 
 use strict;
 BEGIN {
-    use lib "/usr/local/fingerbank/lib/";
+    use lib qw ( /usr/local/fingerbank/lib/ /usr/local/pf/lib_perl/lib/perl5 );
     use fingerbank::Log;
     fingerbank::Log::init_logger;
 }
