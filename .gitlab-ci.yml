@@ -9,7 +9,6 @@ before_script:
 # STAGES
 ################################################################################
 stages:
- - download
  - build_pkg
  - sign
  - publish
@@ -19,10 +18,6 @@ stages:
 # VARIABLES
 ################################################################################
 variables:
-  UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
-  UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
-  # stored in a temp place
-  UPSTREAM_VERSION_FILE: t/upstream_version.txt
   PACKAGE_NAME: fingerbank
   DEB_PACKAGES_NAME: "['fingerbank']"
   RPM_PACKAGES_NAME: "['fingerbank']"
@@ -32,8 +27,7 @@ variables:
 ################################################################################
 .build_job:
   stage: build_pkg
-  dependencies:
-    - download_upstream_db
+  dependencies: []
   artifacts:
     expire_in: 1 day
     paths:
@@ -60,26 +54,6 @@ variables:
 ########################################
 # JOBS
 ########################################
-download_upstream_db:
-  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
-  stage: download
-  # secret variable defined
-  # API_KEY = fingerbank API KEY
-  script:
-    # get Upstream DB (not part of source)
-    - curl --retry 3 --fail -X GET $UPSTREAM_DB_URL?key=$API_KEY --output $UPSTREAM_DB_FILE
-    - apt-get install libreadonly-perl -y
-    # get Upstream version from source code (workaround for https://gitlab.com/gitlab-org/gitlab-ce/issues/47517)
-    - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
-  # pass artifact to build jobs
-  artifacts:
-    expire_in: 1 h
-    paths:
-      - $UPSTREAM_DB_FILE
-      - $UPSTREAM_VERSION_FILE
-  tags:
-    - docker
-
 build_pkg_debian_bullseye:
   image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:bullseye
   extends:
