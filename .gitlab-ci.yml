@@ -1,40 +1,23 @@
-### COMMON PARAMETERS
-.build_job: &job_build
-  stage: build
-  dependencies:
-    - download_upstream_db
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - result/*
-  tags:
-    - docker
+################################################################################
+# COMMON PARAMETERS
+################################################################################
+before_script:
+  - unset http_proxy ; unset https_proxy
+  - env | grep ^CI_
 
-.debian_script: &deb_script
-  script:
-    - tar c -zf ../$PACKAGE_NAME\_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
-    # to include source tar in changes file used by reprepro
-    - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
-    - ci-build-pkg
-    # copy source in result dir
-    - cp ../$PACKAGE_NAME\_*.orig.tar.gz result/debian/stretch/
-
-
-.rhel_script: &rpm_script
-  script:
-    - yum install epel-release -y
-    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
-    - ci-build-pkg
-
-### STAGES
+################################################################################
+# STAGES
+################################################################################
 stages:
  - download
- - build
+ - build_pkg
  - sign
  - publish
- - install
+ - test
 
-### VARIABLES
+################################################################################
+# VARIABLES
+################################################################################
 variables:
   UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
   UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
@@ -44,14 +27,41 @@ variables:
   DEB_PACKAGES_NAME: "['fingerbank']"
   RPM_PACKAGES_NAME: "['fingerbank']"
 
-### JOBS
-# for debug purpose
-before_script:
-  - unset http_proxy ; unset https_proxy
-  - env | grep ^CI_
+################################################################################
+# TEMPLATES
+################################################################################
+.build_job:
+  stage: build_pkg
+  dependencies:
+    - download_upstream_db
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - result/*
+  tags:
+    - docker
 
+.debian_script:
+  script:
+    - tar c -zf ../$PACKAGE_NAME\_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
+    # to include source tar in changes file used by reprepro
+    - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
+    - ci-build-pkg
+    # copy source in result dir
+    - cp ../$PACKAGE_NAME\_*.orig.tar.gz result/debian/stretch/
+
+.rpm_script:
+  script:
+    - yum install epel-release -y
+    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
+    - ci-build-pkg
+
+
+########################################
+# JOBS
+########################################
 download_upstream_db:
-  image: buildpkg/debian:stretch
+  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
   stage: download
   # secret variable defined
   # API_KEY = fingerbank API KEY
@@ -70,29 +80,28 @@ download_upstream_db:
   tags:
     - docker
 
-# we use YAML anchors to define same parameters for all builds
-build_debian_stretch:
-  image: buildpkg/debian:stretch
-  <<: *job_build
-  <<: *deb_script
+build_pkg_debian_bullseye:
+  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:bullseye
+  extends:
+    - .build_job
+    - .debian_script
 
-build_centos_7:
-  image: buildpkg/centos:7
-  <<: *job_build
-  <<: *rpm_script
+build_pkg_centos_8:
+  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/centos:8
+  extends:
+    - .build_job
+    - .rpm_script
 
 sign:
   # only use when executor is docker
-  image: buildpkg/debian:stretch
+  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
   stage: sign
-#  secret variables defined:
-#    SIGN_USER: firstname.lastname@example.com
-#    GPG_PRIVATE_KEY: `gpg --armor --export-secret-keys firstname.lastname@example.com`
+  # use secret variables defined in GitLab UI
   script:
     - ci-sign-pkg
   dependencies:
-    - build_debian_stretch
-    - build_centos_7
+    - build_pkg_debian_bullseye
+    - build_pkg_centos_8
   artifacts:
     expire_in: 1 day
     paths:
@@ -102,7 +111,7 @@ sign:
 
 pages:
   # only use when executor is docker
-  image: buildpkg/debian:stretch
+  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
   stage: publish
   variables:
     PAGES_DIR: public
@@ -122,8 +131,8 @@ pages:
   tags:
     - shell
 
-install_debian_stretch:
-  stage: install
+test_debian_bullseye:
+  stage: test
   script:
     - cd vagrant/ ; vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
   after_script:
@@ -133,8 +142,8 @@ install_debian_stretch:
   tags:
     - shell
 
-install_centos_7:
-  stage: install
+test_centos_7:
+  stage: test
   script:
     - cd vagrant/ ; vagrant up fbcendev --provider=libvirt --destroy-on-error
   after_script:
