@@ -36,6 +36,7 @@ Requires:   perl(MooseX::NonMoose)
 Requires:   perl(SQL::Translator)
 Requires:   perl(File::Touch)
 Requires:   perl(LWP::Protocol::connect)
+Requires:   perl(Data::OptList)
 Requires:   fingerbank-collector >= 1.2.0
 Requires:   sqlite
 

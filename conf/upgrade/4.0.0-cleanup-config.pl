@@ -13,7 +13,7 @@ This script is idempotent so it can be called on every upgrade without any issue
 
 =cut
 
-use lib qw ( /usr/local/fingerbank/lib/ /usr/local/pf/lib_perl/lib/perl5 );
+use lib qw ( /usr/local/fingerbank/lib/ /usr/local/pf/lib_perl/lib/perl5/ );
 
 use fingerbank::Config;
 use fingerbank::Log;
