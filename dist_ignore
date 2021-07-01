@@ -1,0 +1,9 @@
+dist_ignore
+*.gitignore
+.gitlab-ci.yml
+*.gitattributes
+*.git
+config.mk
+Makefile
+README.md
+client-development-guidelines.md

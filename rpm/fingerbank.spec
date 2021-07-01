@@ -1,6 +1,6 @@
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
-Version:    4.2.1
+Version:    4.2.2
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
@@ -9,7 +9,6 @@ Group:      System Environment/Daemons
 License:    GPL
 URL:        http://www.fingerbank.org/
 Source0:    %{name}-%{version}.tar
-Source1:    upstream-db.tar
 BuildRoot:  %{_tmppath}/%{name}-root
 
 Requires(post):     /sbin/chkconfig
@@ -48,14 +47,10 @@ Fingerbank
 /usr/bin/getent group fingerbank || /usr/sbin/groupadd -r fingerbank
 /usr/bin/getent passwd fingerbank || /usr/sbin/useradd -r -d /usr/local/fingerbank -s /sbin/nologin -g fingerbank fingerbank
 
-
 %prep
-# expand Source1 **after** Source0
-%setup -q -a 1
-
+%setup -q -n %{name}-%{version}
 
 %build
-
 
 %install
 # /usr/local/fingerbank
@@ -65,7 +60,7 @@ cp -r * %{buildroot}/usr/local/fingerbank
 touch %{buildroot}/usr/local/fingerbank/logs/fingerbank.log
 
 # Logrotate
-%{__install} -D rpm/fingerbank.logrotate %{buildroot}/etc/logrotate.d/fingerbank
+%{__install} -D utils/fingerbank.logrotate %{buildroot}/etc/logrotate.d/fingerbank
 
 
 # Scriptlet that is executed just after the package is installed on the target system.
@@ -110,12 +105,6 @@ rm -rf %{buildroot}
 %defattr(664,fingerbank,fingerbank,2775)
 %dir                                /usr/local/fingerbank
 /usr/local/fingerbank/*
-# exclude useless files
-%exclude                            /usr/local/fingerbank/README.md
-%exclude                            /usr/local/fingerbank/t
-%exclude                            /usr/local/fingerbank/debian
-%exclude                            /usr/local/fingerbank/rpm
-%exclude                            /usr/local/fingerbank/vagrant
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/db/upgrade.pl
 %attr(775,fingerbank,fingerbank)    /usr/local/fingerbank/conf/upgrade/*
 %if 0%{?el6}
@@ -127,6 +116,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jul 01 2021 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.2.2-1
+- Use tar in place of git archive to get sources
 * Wed Oct 23 2019 Inverse inc. <info@inverse.ca> - 4.1.5-1
 - New upstream version
 * Sun Jul 21 2019 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.1.4-2

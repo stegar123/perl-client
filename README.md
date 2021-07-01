@@ -31,9 +31,8 @@ Checkliste before upstream release
 
 - In [fingerbank.spec](rpm/fingerbank.spec):
   - [ ] update `Version` directive to new upstream version
-  - [ ] update `Release` directive
+  - [ ] update `Release` directive (if necessary)
   - [ ] add a new changelog entry
-- Update current version to new upstream version in [rpm/source](rpm/source) file
 
 ### Debian packages ###
 

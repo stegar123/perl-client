@@ -149,6 +149,8 @@ dist: distclean db/fingerbank_Upstream.db
 	rm -rf fingerbank-$(FB_VERSION)
 
 build_rpm: dist
+	yum install epel-release -y
+	ci-build-pkg
 
 build_deb: dist
 

@@ -46,9 +46,7 @@ variables:
 
 .rpm_script:
   script:
-    - yum install epel-release -y
-    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
-    - ci-build-pkg
+    - make -e build_rpm
 
 
 ########################################
