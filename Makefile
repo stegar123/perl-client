@@ -152,5 +152,7 @@ build_rpm: dist
 	yum install epel-release -y
 	ci-build-pkg
 
-build_deb: dist
-
+# no dist dependencie because build process will automatically create an archive
+build_deb: db/fingerbank_Upstream.db
+	cp $(SRC_CIDIR)/debian/.devscripts $(HOME)
+	ci-build-pkg
