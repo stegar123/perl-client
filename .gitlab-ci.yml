@@ -18,9 +18,12 @@ stages:
 # VARIABLES
 ################################################################################
 variables:
-  PACKAGE_NAME: fingerbank
-  DEB_PACKAGES_NAME: "['fingerbank']"
-  RPM_PACKAGES_NAME: "['fingerbank']"
+  BUILDPKG_REGISTRY: registry.gitlab.com/orange-opensource/gitlab-buildpkg
+  CENTOS_8_IMG: centos:8
+  DEB_BULLSEYE_IMG: debian:bullseye
+  DEB_BUSTER_IMG: debian:buster
+  VAGRANT_DIR: vagrant
+  ANSIBLE_FORCE_COLOR: 1
 
 ################################################################################
 # TEMPLATES
@@ -33,7 +36,7 @@ variables:
     paths:
       - result/*
   tags:
-    - docker
+    - docker-inverse
 
 .debian_script:
   script:
@@ -100,22 +103,26 @@ pages:
 
 test_debian_bullseye:
   stage: test
+  variables:
+    VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-debian-bullseye-dev
   script:
-    - cd vagrant/ ; vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
+    - make -e -C $VAGRANT_DIR fbdeb11dev
   after_script:
-    - cd vagrant/ ; vagrant destroy -f fbdeb9dev
-    - rm -rf .vagrant/ roles/
-  dependencies: []
+    - make -e -C $VAGRANT_DIR halt-fbdeb11dev
+  dependencies:
+    - pages
   tags:
     - shell
 
-test_centos_7:
+test_el_8:
   stage: test
+  variables:
+    VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-el-8-dev
   script:
-    - cd vagrant/ ; vagrant up fbcendev --provider=libvirt --destroy-on-error
+    - make -e -C $VAGRANT_DIR fbel8dev
   after_script:
-    - cd vagrant/ ; vagrant destroy -f fbcendev
-    - rm -rf .vagrant/ roles/
-  dependencies: []
+    - make -e -C $VAGRANT_DIR halt-fbel8dev
+  dependencies:
+    - pages
   tags:
     - shell

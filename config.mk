@@ -32,3 +32,8 @@ files_to_include = $(shell find $(SRC_ROOT_DIR)/* \
 	-not -path "$(SRC_RPMDIR)" \
 	-not -path "$(SRC_TESTDIR)" \
 	-not -path "$(SRC_VAGRANTDIR)" )
+
+## PacketFence variables
+PF_DEV_RELEASE_PATH=https://raw.githubusercontent.com/inverse-inc/packetfence/devel/conf/pf-release
+# X.Y
+PF_DEV_MINOR_RELEASE=$(shell curl $(PF_DEV_RELEASE_PATH) | perl -ne 'print $$1 if (m/.*?(\d+\.\d+)./)')

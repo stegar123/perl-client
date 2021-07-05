@@ -4,3 +4,5 @@
 # Emacs
 *~
 \#*\#
+roles/
+ansible_collections/
