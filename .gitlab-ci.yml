@@ -51,20 +51,20 @@ variables:
 # JOBS
 ########################################
 build_pkg_debian_bullseye:
-  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:bullseye
+  image: $BUILDPKG_REGISTRY/$DEB_BULLSEYE_IMG
   extends:
     - .build_job
     - .debian_script
 
 build_pkg_centos_8:
-  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/centos:8
+  image: $BUILDPKG_REGISTRY/$CENTOS_8_IMG
   extends:
     - .build_job
     - .rpm_script
 
 sign:
   # only use when executor is docker
-  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
+  image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
   stage: sign
   # use secret variables defined in GitLab UI
   script:
@@ -81,7 +81,7 @@ sign:
 
 pages:
   # only use when executor is docker
-  image: registry.gitlab.com/orange-opensource/gitlab-buildpkg/debian:buster
+  image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
   stage: publish
   variables:
     PAGES_DIR: public
