@@ -46,9 +46,12 @@ variables:
   script:
     - make -e build_rpm
 
+################################################################################
+# JOBS
+################################################################################
 
 ########################################
-# JOBS
+#  BUILD_PKG JOBS
 ########################################
 build_pkg_debian_bullseye:
   image: $BUILDPKG_REGISTRY/$DEB_BULLSEYE_IMG
@@ -62,6 +65,9 @@ build_pkg_centos_8:
     - .build_job
     - .rpm_script
 
+########################################
+# SIGN JOBS
+########################################
 sign:
   # only use when executor is docker
   image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
@@ -79,6 +85,10 @@ sign:
   tags:
     - shell
 
+
+########################################
+# PAGES JOBS
+########################################
 pages:
   # only use when executor is docker
   image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
@@ -101,6 +111,9 @@ pages:
   tags:
     - shell
 
+########################################
+# TEST JOBS
+########################################
 test_debian_bullseye:
   stage: test
   variables:
