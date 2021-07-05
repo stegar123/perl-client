@@ -8,8 +8,9 @@ all:
       children:
         dev:
           hosts:
-            fbcendev:
-              box: centos/7
+            fbel8dev:
+              box: generic/rhel8
+              box_version: 3.2.24
               mgmt_ip: 172.17.18.10
               mgmt_netmask: 255.255.255.0              
               ansible_host: "{{ mgmt_ip}}"
