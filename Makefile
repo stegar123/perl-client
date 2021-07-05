@@ -122,10 +122,10 @@ package-debian:
 	fi \
 
 reset-db-handles:
-		@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::reset_db_handles"; \
+		@perl -I/usr/local/fingerbank/lib -I/usr/local/pf/lib_perl/lib/perl5 -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::reset_db_handles"; \
 
 fixpermissions:
-	@perl -I/usr/local/fingerbank/lib -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::fix_permissions"; \
+	@perl -I/usr/local/fingerbank/lib -I/usr/local/pf/lib_perl/lib/perl5 -Mfingerbank::DB -Mfingerbank::Util -Mfingerbank::Log -e "fingerbank::Log::init_logger; fingerbank::Util::fix_permissions"; \
 
 test:
 	FINGERBANK_KEY=$$api_key perl t/smoke.t
