@@ -13,6 +13,7 @@ stages:
  - sign
  - publish
  - test
+ - upload
 
 ################################################################################
 # VARIABLES
@@ -23,6 +24,9 @@ variables:
   DEB_BULLSEYE_IMG: debian:bullseye
   DEB_BUSTER_IMG: debian:buster
   VAGRANT_DIR: vagrant
+  CIDIR: ci
+  CILIBDIR: ci/lib
+  UPLOAD_DIR: $CILIBDIR/upload
   ANSIBLE_FORCE_COLOR: 1
 
 ################################################################################
@@ -45,6 +49,31 @@ variables:
 .rpm_script:
   script:
     - make -e build_rpm
+
+.deploy_deb_job:
+  stage: upload
+  dependencies:
+    - sign
+  variables:
+    DEPLOY_USER: reposync
+    DEPLOY_HOST: web.inverse.ca
+  script:
+    - ./${UPLOAD_DIR}/deploy-artifacts.sh deb
+  tags:
+    - shell
+
+.deploy_rpm_job:
+  stage: upload
+  dependencies:
+    - sign
+  variables:
+    DEPLOY_USER: reposync
+    DEPLOY_HOST: web.inverse.ca
+    DEPLOY_SRPMS: "no"
+  script:
+    - ./${UPLOAD_DIR}/deploy-artifacts.sh rpm
+  tags:
+    - shell
 
 ################################################################################
 # JOBS
@@ -139,3 +168,44 @@ test_el_8:
     - pages
   tags:
     - shell
+
+########################################
+# UPLOAD JOBS
+########################################
+deploy_rpm_master:
+  extends:
+    - .deploy_rpm_job
+  environment:
+    name: devel
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+
+deploy_rpm_branches:
+  extends:
+    - .deploy_rpm_job
+  environment:
+    name: branches
+  variables:
+    RPM_DEPLOY_DIR: branches/x86_64
+  rules:
+   - if: '$CI_COMMIT_REF_NAME != "master"'
+
+deploy_deb_master:
+  extends:
+    - .deploy_deb_job
+  variables:
+    DEB_DEPLOY_DIR: debian
+  environment:
+    name: devel
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+
+deploy_deb_branches:
+  extends:
+    - .deploy_deb_job
+  environment:
+    name: branches
+  variables:
+    DEB_DEPLOY_DIR: debian-branches
+  rules:
+   - if: '$CI_COMMIT_REF_NAME != "master"'
