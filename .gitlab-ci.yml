@@ -12,7 +12,7 @@ stages:
  - build_pkg
  - sign
  - publish
- - test
+ # - test
  - upload
 
 ################################################################################
@@ -163,35 +163,37 @@ pages:
 ########################################
 # TEST JOBS
 ########################################
-test_debian_bullseye:
-  stage: test
-  variables:
-    VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-debian-bullseye-dev
-  script:
-    - make -e -C $VAGRANT_DIR fbdeb11dev
-  after_script:
-    - make -e -C $VAGRANT_DIR halt-fbdeb11dev
-  dependencies:
-    - pages
-  tags:
-    - shell
-  extends:
-    - .common_rules
+# test_debian_bullseye:
+#   stage: test
+#   variables:
+#     VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-debian-bullseye-dev
+#   script:
+#     - make -e -C $VAGRANT_DIR fbdeb11dev
+#   after_script:
+#     - make -e -C $VAGRANT_DIR halt-fbdeb11dev
+#   dependencies:
+#     - pages
+#   tags:
+#     - shell
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "master"'
+#     - if: '$CI_COMMIT_TAG'
 
-test_el_8:
-  stage: test
-  variables:
-    VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-el-8-dev
-  script:
-    - make -e -C $VAGRANT_DIR fbel8dev
-  after_script:
-    - make -e -C $VAGRANT_DIR halt-fbel8dev
-  dependencies:
-    - pages
-  tags:
-    - shell
-  extends:
-    - .common_rules
+# test_el_8:
+#   stage: test
+#   variables:
+#     VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-el-8-dev
+#   script:
+#     - make -e -C $VAGRANT_DIR fbel8dev
+#   after_script:
+#     - make -e -C $VAGRANT_DIR halt-fbel8dev
+#   dependencies:
+#     - pages
+#   tags:
+#     - shell
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "master"'
+#     - if: '$CI_COMMIT_TAG'
 
 ########################################
 # UPLOAD JOBS
