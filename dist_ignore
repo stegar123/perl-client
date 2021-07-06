@@ -3,7 +3,5 @@ dist_ignore
 .gitlab-ci.yml
 *.gitattributes
 *.git
-config.mk
-Makefile
 README.md
 client-development-guidelines.md

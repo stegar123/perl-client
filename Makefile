@@ -1,7 +1,7 @@
 # This Makefile contains 2 main sections
 #  - Variables
 #  - targets
-include config.mk
+include vars.mk
 
 # ---------
 # VARIABLES

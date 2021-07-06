@@ -1,4 +1,4 @@
-include ../config.mk
+include ../vars.mk
 
 fbdeb11dev: clean-fbdeb11dev
 	PF_MINOR_RELEASE=$(PF_DEV_MINOR_RELEASE) vagrant up $@ --provider=libvirt --no-destroy-on-error
