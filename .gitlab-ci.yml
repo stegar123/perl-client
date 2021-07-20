@@ -1,108 +1,144 @@
-### COMMON PARAMETERS
-.build_job: &job_build
-  stage: build
-  dependencies:
-    - download_upstream_db
+################################################################################
+# COMMON PARAMETERS
+################################################################################
+before_script:
+  - unset http_proxy ; unset https_proxy
+  - env | grep ^CI_
+
+################################################################################
+# STAGES
+################################################################################
+stages:
+ - build_pkg
+ - sign
+ - publish
+ # - test
+ - upload
+
+################################################################################
+# VARIABLES
+################################################################################
+variables:
+  BUILDPKG_REGISTRY: registry.gitlab.com/orange-opensource/gitlab-buildpkg
+  CENTOS_8_IMG: centos:8
+  DEB_BULLSEYE_IMG: debian:bullseye
+  DEB_BUSTER_IMG: debian:buster
+  VAGRANT_DIR: vagrant
+  CIDIR: ci
+  CILIBDIR: ci/lib
+  UPLOAD_DIR: $CILIBDIR/upload
+  ANSIBLE_FORCE_COLOR: 1
+
+################################################################################
+# TEMPLATES
+################################################################################
+.build_job:
+  stage: build_pkg
+  dependencies: []
   artifacts:
     expire_in: 1 day
     paths:
       - result/*
   tags:
-    - docker
+    - docker-inverse
 
-.debian_script: &deb_script
+# add jobs to pipeline:
+# - when branch is master (default branch)
+# - when making a release (using a tag)
+# - when running a pipeline from GitLab UI
+.common_rules:
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+
+# add jobs to pipeline only when running from GitLab UI, not on master branch and not a tag
+.branches_only_rules:
+  rules:
+   - if: '$CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_TAG == null && $CI_PIPELINE_SOURCE == "web"'
+
+.debian_script:
   script:
-    - tar c -zf ../$PACKAGE_NAME\_$(cat $UPSTREAM_VERSION_FILE).orig.tar.gz .
-    # to include source tar in changes file used by reprepro
-    - echo "DEBUILD_DPKG_BUILDPACKAGE_OPTS='-sa'" > ~/.devscripts
-    - ci-build-pkg
-    # copy source in result dir
-    - cp ../$PACKAGE_NAME\_*.orig.tar.gz result/debian/stretch/
+    - make -e build_deb
 
-
-.rhel_script: &rpm_script
+.rpm_script:
   script:
-    - yum install epel-release -y
-    - tar c -f upstream-db.tar $UPSTREAM_DB_FILE
-    - ci-build-pkg
+    - make -e build_rpm
 
-### STAGES
-stages:
- - download
- - build
- - sign
- - publish
- - install
-
-### VARIABLES
-variables:
-  UPSTREAM_DB_URL: https://api.fingerbank.org/api/v2/download/db
-  UPSTREAM_DB_FILE: db/fingerbank_Upstream.db
-  # stored in a temp place
-  UPSTREAM_VERSION_FILE: t/upstream_version.txt
-  PACKAGE_NAME: fingerbank
-  DEB_PACKAGES_NAME: "['fingerbank']"
-  RPM_PACKAGES_NAME: "['fingerbank']"
-
-### JOBS
-# for debug purpose
-before_script:
-  - unset http_proxy ; unset https_proxy
-  - env | grep ^CI_
-
-download_upstream_db:
-  image: buildpkg/debian:stretch
-  stage: download
-  # secret variable defined
-  # API_KEY = fingerbank API KEY
+.deploy_deb_job:
+  stage: upload
+  dependencies:
+    - sign
+  variables:
+    DEPLOY_USER: reposync
+    DEPLOY_HOST: web.inverse.ca
   script:
-    # get Upstream DB (not part of source)
-    - curl --retry 3 --fail -X GET $UPSTREAM_DB_URL?key=$API_KEY --output $UPSTREAM_DB_FILE
-    - apt-get install libreadonly-perl -y
-    # get Upstream version from source code (workaround for https://gitlab.com/gitlab-org/gitlab-ce/issues/47517)
-    - perl -I'lib/fingerbank' -M'Constant' -e 'print "$fingerbank::Constant::VERSION"' > $UPSTREAM_VERSION_FILE
-  # pass artifact to build jobs
-  artifacts:
-    expire_in: 1 h
-    paths:
-      - $UPSTREAM_DB_FILE
-      - $UPSTREAM_VERSION_FILE
+    - ./${UPLOAD_DIR}/deploy-artifacts.sh deb
   tags:
-    - docker
+    - shell
 
-# we use YAML anchors to define same parameters for all builds
-build_debian_stretch:
-  image: buildpkg/debian:stretch
-  <<: *job_build
-  <<: *deb_script
+.deploy_rpm_job:
+  stage: upload
+  dependencies:
+    - sign
+  variables:
+    DEPLOY_USER: reposync
+    DEPLOY_HOST: web.inverse.ca
+    DEPLOY_SRPMS: "no"
+  script:
+    - ./${UPLOAD_DIR}/deploy-artifacts.sh rpm
+  tags:
+    - shell
 
-build_centos_7:
-  image: buildpkg/centos:7
-  <<: *job_build
-  <<: *rpm_script
+################################################################################
+# JOBS
+################################################################################
 
+########################################
+#  BUILD_PKG JOBS
+########################################
+build_pkg_debian_bullseye:
+  image: $BUILDPKG_REGISTRY/$DEB_BULLSEYE_IMG
+  extends:
+    - .build_job
+    - .debian_script
+    - .common_rules
+
+build_pkg_centos_8:
+  image: $BUILDPKG_REGISTRY/$CENTOS_8_IMG
+  extends:
+    - .build_job
+    - .rpm_script
+    - .common_rules
+
+########################################
+# SIGN JOBS
+########################################
 sign:
   # only use when executor is docker
-  image: buildpkg/debian:stretch
+  image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
   stage: sign
-#  secret variables defined:
-#    SIGN_USER: firstname.lastname@example.com
-#    GPG_PRIVATE_KEY: `gpg --armor --export-secret-keys firstname.lastname@example.com`
+  # use secret variables defined in GitLab UI
   script:
     - ci-sign-pkg
   dependencies:
-    - build_debian_stretch
-    - build_centos_7
+    - build_pkg_debian_bullseye
+    - build_pkg_centos_8
   artifacts:
     expire_in: 1 day
     paths:
       - result/*
   tags:
     - shell
+  extends:
+    - .common_rules
 
+########################################
+# PAGES JOBS
+########################################
 pages:
   # only use when executor is docker
-  image: buildpkg/debian:stretch
+  image: $BUILDPKG_REGISTRY/$DEB_BUSTER_IMG
   stage: publish
   variables:
     PAGES_DIR: public
@@ -121,25 +157,97 @@ pages:
       - public
   tags:
     - shell
+  extends:
+    - .common_rules
 
-install_debian_stretch:
-  stage: install
-  script:
-    - cd vagrant/ ; vagrant up fbdeb9dev --provider=libvirt --destroy-on-error
-  after_script:
-    - cd vagrant/ ; vagrant destroy -f fbdeb9dev
-    - rm -rf .vagrant/ roles/
-  dependencies: []
-  tags:
-    - shell
+########################################
+# TEST JOBS
+########################################
+# test_debian_bullseye:
+#   stage: test
+#   variables:
+#     VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-debian-bullseye-dev
+#   script:
+#     - make -e -C $VAGRANT_DIR fbdeb11dev
+#   after_script:
+#     - make -e -C $VAGRANT_DIR halt-fbdeb11dev
+#   dependencies:
+#     - pages
+#   tags:
+#     - shell
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "master"'
+#     - if: '$CI_COMMIT_TAG'
 
-install_centos_7:
-  stage: install
-  script:
-    - cd vagrant/ ; vagrant up fbcendev --provider=libvirt --destroy-on-error
-  after_script:
-    - cd vagrant/ ; vagrant destroy -f fbcendev
-    - rm -rf .vagrant/ roles/
-  dependencies: []
-  tags:
-    - shell
+# test_el_8:
+#   stage: test
+#   variables:
+#     VAGRANT_DOTFILE_PATH: /var/local/gitlab-runner/vagrant/vagrant-fb-el-8-dev
+#   script:
+#     - make -e -C $VAGRANT_DIR fbel8dev
+#   after_script:
+#     - make -e -C $VAGRANT_DIR halt-fbel8dev
+#   dependencies:
+#     - pages
+#   tags:
+#     - shell
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "master"'
+#     - if: '$CI_COMMIT_TAG'
+
+########################################
+# UPLOAD JOBS
+########################################
+deploy_rpm_master:
+  extends:
+    - .deploy_rpm_job
+  environment:
+    name: fb-devel
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+
+deploy_rpm_release:
+  extends:
+    - .deploy_rpm_job
+  environment:
+    name: fb-stable
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
+deploy_rpm_branches:
+  extends:
+    - .deploy_rpm_job
+    - .branches_only_rules
+  environment:
+    name: fb-branches
+  variables:
+    RPM_DEPLOY_DIR: branches/x86_64
+
+deploy_deb_master:
+  extends:
+    - .deploy_deb_job
+  variables:
+    DEB_DEPLOY_DIR: debian
+  environment:
+    name: fb-devel
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+
+deploy_deb_release:
+  extends:
+    - .deploy_deb_job
+  environment:
+    name: fb-stable
+  variables:
+    DEB_DEPLOY_DIR: debian
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
+deploy_deb_branches:
+  extends:
+    - .deploy_deb_job
+    - .branches_only_rules
+  environment:
+    name: fb-branches
+  variables:
+    DEB_DEPLOY_DIR: debian-branches

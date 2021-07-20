@@ -1,6 +1,7 @@
 # This Makefile contains 2 main sections
 #  - Variables
 #  - targets
+include vars.mk
 
 # ---------
 # VARIABLES
@@ -31,10 +32,6 @@ PFCMD_BIN=$(PFBINDIR)/pfcmd
 
 FBUSER=fingerbank
 FBGROUP=fingerbank
-
-
-VERSION=
-
 
 # ---------
 # TARGETS
@@ -133,3 +130,29 @@ test:
 full-test:
 	@read -p "API key (ENTER if none): " api_key; \
 	FINGERBANK_KEY=$$api_key perl t/smoke.t
+
+.PHONY: db/fingerbank_Upstream.db
+db/fingerbank_Upstream.db:
+	@# @ to hide API_KEY even if API_KEY is hidden by GitLab CI
+	@curl --retry 3 --fail -X GET $(UPSTREAM_DB_URL)?key=$(API_KEY) --output $@
+
+.PHONY: distclean
+distclean:
+	rm -rf fingerbank-$(FB_VERSION).tar
+
+.PHONY: dist
+dist: distclean db/fingerbank_Upstream.db
+	mkdir -p fingerbank-$(FB_VERSION)
+	cp -pRH $(files_to_include) fingerbank-$(FB_VERSION)
+	tar c --exclude-from=$(SRC_ROOT_DIR)/dist_ignore \
+		-f fingerbank-$(FB_VERSION).tar fingerbank-$(FB_VERSION)
+	rm -rf fingerbank-$(FB_VERSION)
+
+build_rpm: dist
+	yum install epel-release -y
+	ci-build-pkg
+
+# no dist dependencie because build process will automatically create an archive
+build_deb: db/fingerbank_Upstream.db
+	cp $(SRC_CIDIR)/debian/.devscripts $(HOME)
+	ci-build-pkg

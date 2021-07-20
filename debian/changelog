@@ -1,3 +1,10 @@
+fingerbank (4.2.2) unstable; urgency=medium
+
+  * New upstream version
+  * Switch from non-native to native package
+
+ -- Inverse inc. <info@inverse.ca>  Thu, 01 Jul 2021 10:36:12 +0200
+
 fingerbank (4.2.1-1) unstable; urgency=medium
 
   * New upstream version
