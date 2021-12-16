@@ -170,7 +170,11 @@ sub update_file {
 
     ($status, $status_msg) = fetch_file(%params, $is_an_update ? ('destination' => $params{'destination'} . '.new') : ());
 
-    if ( is_success($status) && $is_an_update ) {
+    if (is_error($status)) {
+        return ($status, $status_msg);
+    }
+
+    if ( $is_an_update ) {
         my $date                    = POSIX::strftime( "%Y%m%d_%H%M%S", localtime );
         my $destination_backup    = $params{'destination'} . "_$date";
         my $destination_new       = $params{'destination'} . ".new";
@@ -251,7 +255,9 @@ sub fetch_file {
     my $fh;
     unless (open($fh, ">", $outfile)) {
         undef $ua;
-        return ($fingerbank::Status::INTERNAL_SERVER_ERROR, "Unable to open file $outfile in write mode")
+        my $msg = "Unable to open file $outfile in write mode";
+        $logger->error($msg);
+        return ($fingerbank::Status::INTERNAL_SERVER_ERROR, $msg)
     };
     my ($status, $status_msg);
 
