@@ -100,6 +100,12 @@ Interval in seconds at which the collector will fully resynchronize with its pee
 The collector synchronizes in real-time, so this only acts as a safety net when there is a communication error between the collectors. 
 EOT
 
+[collector.additional_env]
+type=text
+description=<<EOT
+Additional environment variables to setup for the collector. Comma-delimited values. Example: 'COLLECTOR_ALL_HOSTS_CACHE_SIZE=100,COLLECTOR_DISABLE_TCP_HANDLER=true'
+EOT
+
 [proxy.use_proxy]
 type=toggle
 options=enabled|disabled
