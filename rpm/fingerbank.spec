@@ -1,6 +1,6 @@
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
-Version:    4.2.2
+Version:    4.2.3
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
@@ -116,6 +116,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Feb 14 2022 Inverse Inc. <info@inverse.ca> - 4.2.3-1
+- Allow to add environment overrides to collector via the config
 * Thu Jul 01 2021 Nicolas Quiniou-Briand <nqb@inverse.ca> - 4.2.2-1
 - Use tar in place of git archive to get sources
 * Wed Oct 23 2019 Inverse inc. <info@inverse.ca> - 4.1.5-1
