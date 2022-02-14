@@ -16,6 +16,7 @@ query_cache_time=1440
 db_persistence_interval=60
 cluster_resync_interval=120
 network_behavior_analysis=disabled
+additional_env=
 
 [query]
 record_unmatched = disabled
