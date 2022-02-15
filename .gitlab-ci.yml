@@ -63,6 +63,8 @@ variables:
 
 .rpm_script:
   script:
+    - sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-*
+    - sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://mirror.nsc.liu.se/centos-store|g' /etc/yum.repos.d/CentOS-Linux-*
     - make -e build_rpm
 
 .deploy_deb_job:
