@@ -1,3 +1,9 @@
+fingerbank (4.3.0) unstable; urgency=medium
+
+  * Support containers based PacketFence (v12)
+
+ -- Inverse inc. <info@inverse.ca>  Fri, 29 Apr 2022 10:36:12 +0200
+
 fingerbank (4.2.3) unstable; urgency=medium
 
   * Allow to add environment overrides to collector via the config
