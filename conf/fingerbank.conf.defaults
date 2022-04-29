@@ -7,7 +7,7 @@ db_path = /api/v2/download/db
 sqlite_db_retention = 2
 
 [collector]
-host=127.0.0.1
+host=100.64.0.1
 port=4723
 use_https=enabled
 inactive_endpoints_expiration=168
