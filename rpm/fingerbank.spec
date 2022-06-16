@@ -1,6 +1,6 @@
 %global     fb_prefix %{_prefix}/local/%{name}
 Name:       fingerbank
-Version:    4.3.0
+Version:    4.3.1
 Release:    1%{?dist}
 BuildArch:  noarch
 Summary:    An exhaustive device profiling tool
@@ -116,6 +116,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jun 16 2022 Inverse Inc. <info@inverse.ca> - 4.3.1-1
+- Add function to list top device classes as objects
 * Fri Apr 29 2022 Inverse Inc. <info@inverse.ca> - 4.3.0-1
 - Support containers based PacketFence (v12)
 * Mon Feb 14 2022 Inverse Inc. <info@inverse.ca> - 4.2.3-1

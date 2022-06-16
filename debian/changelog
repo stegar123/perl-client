@@ -1,3 +1,9 @@
+fingerbank (4.3.1) unstable; urgency=medium
+
+  * Add function to list top device classes as objects
+
+ -- Inverse inc. <info@inverse.ca>  Thu, 16 Jun 2022 10:36:12 +0200
+
 fingerbank (4.3.0) unstable; urgency=medium
 
   * Support containers based PacketFence (v12)
