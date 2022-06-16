@@ -148,6 +148,31 @@ sub all_device_class_ids {
     return [sort { $a <=> $b } @all_ids];
 }
 
+=head2 all_device_classes
+
+Method to obtain all the device classes (top level from the DB and constant device classes)
+
+=cut
+
+sub all_device_classes {
+    my ($class) = @_;
+    my $logger = fingerbank::Log::get_logger;
+
+    my @all_ids = @{fingerbank::Model::Device->all_device_class_ids};
+
+    my @all_devices;
+    for my $id (@all_ids) {
+        my ($status, $device) = fingerbank::Model::Device->read($id);
+        if(is_error($status)) {
+            $logger->error("Unable to obtain information for device ID '$id'. Omitting it from the result.");
+        }
+        else {
+            push @all_devices, $device;
+        }
+    }
+    return \@all_devices;
+}
+
 =head1 AUTHOR
 
 Inverse inc. <info@inverse.ca>
